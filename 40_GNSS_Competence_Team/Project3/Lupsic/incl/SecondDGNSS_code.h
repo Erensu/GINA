@@ -40,7 +40,7 @@ namespace secondDGNSS_code {
 
 	static void makefromFirstDiff2SecondDifferenceObservationVector(double, Eigen::VectorXd&);
 
-	static void makefromFirstDiff2SecondDifferenceDesignMatrix(Eigen::VectorXd&, Eigen::MatrixXd);
+	static void makefromFirstDiff2SecondDifferenceDesignMatrix(Eigen::Vector3d, Eigen::MatrixXd&);
 
 	static void getOneRowofTheMatrixEquation(Eigen::Vector3d&, double&, double, double, int);
 

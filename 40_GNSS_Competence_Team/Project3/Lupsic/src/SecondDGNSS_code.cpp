@@ -201,7 +201,7 @@ static double updatePosition(void) {
 	makefromFirstDiff2SecondDifferenceObservationVector(reference_observation, y);
 
 	// Set up design matrix 
-	makefromFirstDiff2SecondDifferenceDesignMatrix(best_row_of_the_first_Differenced_DesignMatrix, designMatrix);
+	makefromFirstDiff2SecondDifferenceDesignMatrix(reference_row_ofDesignMatrix, designMatrix);
 		
 	// Create covariance matrix
 	covMatrix = designMatrix.transpose() * designMatrix;
@@ -249,7 +249,7 @@ static double updatePosition(void) {
 		}
 	}
 
-	static void makefromFirstDiff2SecondDifferenceDesignMatrix(Eigen::VectorXd& reference_row_of_the_first_Differenced_DesignMatrix, Eigen::MatrixXd designMatrix) {
+	static void makefromFirstDiff2SecondDifferenceDesignMatrix(Eigen::Vector3d reference_row_of_the_first_Differenced_DesignMatrix, Eigen::MatrixXd& designMatrix) {
 
 		for (size_t i = 0; i < designMatrix.rows(); i++) {
 
@@ -265,9 +265,10 @@ static double updatePosition(void) {
 		
 		// Calculate Geometry Distance
 		double satPos[3];
-		calculateGeometryDistance(WNRover, ToWRover, SatIdv, roverPos, rhoRover, satPos);
+
 		calculateGeometryDistance(WNBase, ToWBase, SatIdv, basePosition, rhoBase, satPos);
-	
+		calculateGeometryDistance(WNRover, ToWRover, SatIdv, roverPos, rhoRover, satPos);
+		
 		row_of_designMatrix(0) = (roverPos[0] - satPos[0]) / rhoRover;
 		row_of_designMatrix(1) = (roverPos[1] - satPos[1]) / rhoRover;
 		row_of_designMatrix(2) = (roverPos[2] - satPos[2]) / rhoRover;
