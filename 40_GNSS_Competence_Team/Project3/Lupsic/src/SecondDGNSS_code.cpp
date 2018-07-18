@@ -176,7 +176,7 @@ static double updatePosition(void) {
 	
 	for (int i = 0; i < SatIdv.size(); i++) {
 
-		if (i == referenceSatId) {
+		if (SatIdv[i] == referenceSatId) {
 			// Get the observation of the best Sat and design matrix row of the best Sat
 			getOneRowofTheMatrixEquation(reference_row_ofDesignMatrix, reference_observation, prvRover[i], prvBase[i], SatIdv[i]);
 
@@ -222,18 +222,22 @@ static double updatePosition(void) {
 	static int getSatId_With_MaxElevation(vector<int> &SatIdv) {
 		double elevation, maxelevation;
 		maxelevation = 0;
-		int BestId = 0;
+		int maxElSatId = 0;
 		double temp_satPos[3];
 
 		for (size_t i = 0; i < SatIdv.size(); i++) {
-			elevation = get_satPos(roverPos, WNRover, ToWRover, SatIdv[i], temp_satPos);
+			if (!get_satPos(roverPos, WNRover, ToWRover, SatIdv[i], temp_satPos, elevation)) {
+				cout << "get_satPos had en error in getSatId_With_MaxElevation fcn";
+				throw("get_satPos had en error in getSatId_With_MaxElevation fcn");
+			}
+			
 				if (elevation > maxelevation){
 					maxelevation = elevation;
-					BestId = i;
+					maxElSatId = SatIdv[i];
 				}
 			}
 
-		return BestId;
+		return maxElSatId;
 
 	}
 
@@ -343,8 +347,8 @@ static double updatePosition(void) {
 		double tempToW;
 		int tempWN;
 
-		checkSatValidity(WNRover, ToWRover, satIdRover);
-		checkSatValidity(WNBase, ToWBase, satIdBase);
+		checkSatValidity(WNRover, ToWRover, satIdRover, MAXSATNUMBER);
+		checkSatValidity(WNBase, ToWBase, satIdBase, MAXSATNUMBER);
 
 		for (size_t itRover = 0; itRover < vectorSizeRover; itRover++) {
 			for (size_t itBase = 0; itBase < vectorSizeBase; itBase++) {
@@ -356,7 +360,7 @@ static double updatePosition(void) {
 			}
 		}
 
-		if (SatIdv.size() == SatIdv.size() == SatIdv.size() && SatIdv.size() >= 4) {
+		if (SatIdv.size() == prvRover.size() && prvRover.size() == prvBase.size() && SatIdv.size() >= 4) {
 			return true;
 		}
 		else { 
@@ -386,16 +390,14 @@ static double updatePosition(void) {
 
 	}
 
-	static void checkSatValidity(int WN, double ToW, int satId[]) {
+	static void checkSatValidity(int WN, double ToW, int satId[], int vectorSize) {
 
 		double temp_satPos[3];
 		double tempToW;
 		int tempWN;
-		int vectorSize;
 		double maxTransmissionTime = 0.086;
-
-		vectorSize = sizeof(satId) / sizeof(int);
-
+		double elevation;
+		
 		for (size_t i = 0; i < vectorSize; i++) {
 
 			if (satId[i] < 1) {
@@ -407,9 +409,11 @@ static double updatePosition(void) {
 			tempWN = WN;
 			addTime2ToW_WeekRollOverChecked(tempWN, ToW, tempToW, -maxTransmissionTime);
 
-			if (get_satPos(tempWN, tempToW, satId[i], temp_satPos) == 0) {
+			get_satPos(roverPos, tempWN, tempToW, satId[i], temp_satPos, elevation);
+			if (elevation < 5) {
 				satId[i] = 0;
 			}
+			
 		}
 
 	}

@@ -59,9 +59,9 @@ namespace utility_secondDGNSS_code {
 
 	void setDGNSSNaviagtionCalculator_Base(CommonTime, vector<SatID>, vector<double>, double[3]);
 
-	int get_satPos(int, double, int, double*);
+	bool get_satPos(int, double, int, double[3]);
 
-	int get_satPos(double[3], int, double, int, double*);
+	bool get_satPos(double[3], int, double, int, double[3], double&);
 
 	int get_satClock(int, double, int, double&);
 

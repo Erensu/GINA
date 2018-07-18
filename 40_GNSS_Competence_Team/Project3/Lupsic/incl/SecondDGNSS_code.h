@@ -58,7 +58,7 @@ namespace secondDGNSS_code {
 
 	static void addTime2ToW_WeekRollOverChecked(int&, const double, double&, const double);
 
-	static void checkSatValidity(int, double, int[]);
+	static void checkSatValidity(int, double, int[], int);
 
 	static void calculateGeometryDistance(int, double, int, double[], double&, double[]);
 

@@ -281,7 +281,7 @@ namespace utility_secondDGNSS_code {
 		set_pseudoRange_Rover(pr, vsize);
 	}
 
-	int get_satPos(int wn, double tow, int satId, double* pos) {
+	bool get_satPos(int wn, double tow, int satId, double pos[3]) {
 
 		SatID id;
 		id.id = satId;
@@ -301,7 +301,7 @@ namespace utility_secondDGNSS_code {
 			pos[1] = xvt.x[1];
 			pos[2] = xvt.x[2];
 
-			return 1;
+			return true;
 		}
 		catch (Exception& e) {
 
@@ -311,11 +311,11 @@ namespace utility_secondDGNSS_code {
 
 			//cerr << e << endl;
 
-			return 0;
+			return false;
 		}
 	}
 
-	int get_satPos(double roverPos[3], int wn, double tow, int satId, double* pos) {
+	bool get_satPos(double roverPos[3], int wn, double tow, int satId, double pos[3], double& elevation) {
 
 		SatID id;
 		id.id = satId;
@@ -331,20 +331,20 @@ namespace utility_secondDGNSS_code {
 
 			xvt = bcestore.getXvt(id, gpstime);
 			Position rovPos(roverPos[0], roverPos[1], roverPos[2]);
-			double elevation = rovPos.elevation(xvt.x);
+			elevation = rovPos.elevation(xvt.x);
 			if (elevation > 0) {
 
 				pos[0] = xvt.x[0];
 				pos[1] = xvt.x[1];
 				pos[2] = xvt.x[2];
-				return elevation;
+				return true;
 			}
 			else {
 
 				pos[0] = 0;
 				pos[1] = 0;
 				pos[2] = 0;
-				return 0;
+				return false;
 			}
 
 
