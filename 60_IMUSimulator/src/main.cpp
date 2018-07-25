@@ -8,9 +8,9 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-	std::string trajFileNamewPath = ROOT "\\30_Evaulation\\Matlab_scripts&funcs\\plots\\ginaFiles\\new_traj.gina";
-	std::string imuFileNamewPath = ROOT "\\30_Evaulation\\Matlab_scripts&funcs\\plots\\ginaFiles\\new_imu.gina";
-	std::string imuControlFileNamewPath = ROOT "\\30_Evaulation\\Matlab_scripts&funcs\\plots\\ginaFiles\\new_control.gina";
+	std::string trajFileNamewPath = ROOT "\\30_Evaulation\\Matlab_scripts&funcs\\GINA_Eval_IMU\\ginaFiles\\new_traj.gina";
+	std::string imuFileNamewPath = ROOT "\\30_Evaulation\\Matlab_scripts&funcs\\GINA_Eval_IMU\\ginaFiles\\new_imu.gina";
+	std::string imuControlFileNamewPath = ROOT "\\30_Evaulation\\Matlab_scripts&funcs\\GINA_Eval_IMU\\ginaFiles\\new_control.gina";
 
 	//IMUGeneratorForTrajectory(trajFileNamewPath, imuFileNamewPath);
 	IMUCommandForTrajectory(trajFileNamewPath, imuFileNamewPath, imuControlFileNamewPath);
