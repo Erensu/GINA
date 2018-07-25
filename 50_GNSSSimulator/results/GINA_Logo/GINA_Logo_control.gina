@@ -1,0 +1,62 @@
+START OF HEADER
+TYPE GINA IMU CONTROL DATA											# This strictly shall follow the first line
+																# Case sensitive. In th e header everythin shall be capital 
+										
+CREATOR	xxx														# This is optional. Format is optional				
+TIME OF CREATIONS mm-dd-yyyy									# This is optional. Format is optional	
+										
+TIME SYSTEM GPS													# TIME SYSTEM GPS | GALILEO but the time format is always shall be in WN and ToW format
+START TIME 1956 0.000 										    # Start time in Week Number Time of Week format. GPS Time	OPTIONAL
+END TIME 1956 100.000 											# End time in Week Number Time of Week format. GPS Time	OPTIONAL
+
+POSITION FORMAT LLH												# Position format van be LLH or ECEF || POSITION FORMAT LLH	|| POSITION FORMAT ECEF	
+START POSITION 47.464405   19.154166   120.0000					# Start position. LLH [rad] [rad] || [m] ECEF [m] [m] [m]
+																# 1st coordinate at 15-28 carrier position
+																# 2nd coordinate at 29-42 carrier position
+																# 3rd coordinate at 43-56 carrier position
+
+START VELOCITY 1.0000 0.0000 0.0000								# vx [m/s] vy [m/s] vz [m/s] in local coordinate system
+START ATTITUDE 0.0000 0.0000 90						    		# Start attitude in the local frame. Units are in degree [degree]. roll pitch yaw
+
+
+END OF HEADER
+
+# Observation data format.
+# WN in 1-4 carrier position		
+# ToW in 5-18 carrier position	[s]
+# ax in 20-32 carrier position	[m/s2] 
+# ay in 33-45 carrier position	[m/s2]
+# az in 46-58 carrier position	[m/s2]
+# wx in 59-71 carrier position	[rad/s]
+# wy in 72-84 carrier position	[rad/s]
+# wz in 85-97 carrier position	[rad/s]
+# These are the values measured by the imu in body coordinates
+# Observation Data start right after the START OF DATA flag.
+
+START OF DATA
+1956 0.0000   1956 2.0000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.00000000   
+1956 2.0000   1956 3.0000   0.10000  -1.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.00000000  
+1956 3.0000   1956 4.0000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   1.57079632  
+1956 4.0000   1956 5.0000   0.10000   1.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.00000000  
+1956 5.0000   1956 10.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.47120000 
+1956 10.000   1956 15.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.320000  
+1956 15.000   1956 19.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.1850000  
+1956 19.000   1956 20.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.000
+1956 20.000   1956 21.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   1.50 
+1956 21.000   1956 27.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.000 
+1956 27.000   1956 27.500   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000  -3.05
+1956 27.500   1956 28.500   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0
+1956 28.500   1956 29.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000  -2.87
+1956 29.000   1956 39.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.00000000
+1956 39.000   1956 39.500   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   4.71000000
+1956 39.500   1956 57.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.000
+1956 57.000   1956 57.500   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000  -4.71000000
+1956 57.500   1956 82.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.0000
+1956 82.000   1956 83.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   1.400
+1956 83.000   1956 94.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.000
+1956 94.000   1956 95.000   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   1.67
+1956 95.000   1956 128.00   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.00
+1956 128.00   1956 129.00   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   2.7385
+1956 129.00   1956 179.00   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.0
+1956 179.00   1956 180.00   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   2.2
+1956 180.00   1956 245.00   0.10000   0.00000000   0.00000000   0.000000   0.00000000   0.00000000   0.0
