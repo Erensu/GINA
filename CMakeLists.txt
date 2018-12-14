@@ -124,5 +124,7 @@ add_subdirectory (40_GNSS_Competence_Team)
 
 add_subdirectory (69_GINA)
 
+add_subdirectory (70_EGNOS_Project)
+
 
 
