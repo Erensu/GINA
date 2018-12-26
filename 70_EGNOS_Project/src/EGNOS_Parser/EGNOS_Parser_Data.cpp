@@ -1,13 +1,12 @@
 
 #include "EGNOS_ftp_data_Data.hpp"
 
+#define EMS_YEAR_OFFSET 2000
+
 namespace EGNOS_ftp_data_Parser
 {
 	using namespace gpstk::StringUtils;
 	using namespace std;
-
-	const string EGNOS_ftp_data_Data::startofDataTag = "START OF DATA";
-
 
 	void EGNOS_ftp_data_Data::reallyPutRecord(gpstk::FFStream& ffs) const
 		throw(std::exception, gpstk::FFStreamError,
@@ -15,56 +14,47 @@ namespace EGNOS_ftp_data_Parser
 
 		EGNOS_ftp_data_Stream& strm = dynamic_cast<EGNOS_ftp_data_Stream&>(ffs);
 
-		if (!strm.dataStartWritten) {
-			strm << startofDataTag << endl;
-			strm.lineNumber++;
-			strm.dataStartWritten = true;
-		}
+		strm << this->svId << " ";
 
-		if (timeSys == gpstk::TimeSystem::Systems::GPS) {
-			gpstk::GPSWeekSecond timeGPS(time);
-			strm << timeGPS.getWeek() << "  ";
-			strm << fixed << std::setprecision(5) << timeGPS.getSOW() << "  ";
-		}
-		else if (timeSys == gpstk::TimeSystem::Systems::GAL) {
-			gpstk::GALWeekSecond timeGAL(time);
-			strm << timeGAL.getWeek() << "  ";
-			strm << fixed << std::setprecision(5) << timeGAL.getSOW() << "  ";
-		}
-		else {
-			strm << " ??? " << " ??? ";
-		}
+		strm << this->int2string(this->messageTime.year - EMS_YEAR_OFFSET) << " ";
+		strm << this->int2string(this->messageTime.month) << " ";
+		strm << this->int2string(this->messageTime.day) << " ";
+		strm << this->int2string(this->messageTime.hour) << " ";
+		strm << this->int2string(this->messageTime.minute) << " ";
+		strm << this->int2string(this->messageTime.second) << " ";
+		strm << this->messageId << " ";
+		strm << this->bitset2hexstring();
 
-		
-		strm << fixed << std::setprecision(precision) << acceleration[0] << "  ";
-		strm << fixed << std::setprecision(precision) << acceleration[1] << "  ";
-		strm << fixed << std::setprecision(precision) << acceleration[2] << "  ";
-		
-
-		if (angularRate == nullptr) {
-			strm << "0.0" << "  ";
-			strm << "0.0" << "  ";
-			strm << "0.0" << "  ";
-		}
-		else {
-			strm << fixed << std::setprecision(precision) << angularRate[0] << "  ";
-			strm << fixed << std::setprecision(precision) << angularRate[1] << "  ";
-			strm << fixed << std::setprecision(precision) << angularRate[2] << "  ";
-		}
-		
 		strm << endl;
 		strm.lineNumber++;
 	}
 
-	/**
-	* This function retrieves a RINEX NAV record from the given FFStream.
-	* If an error is encountered in reading from the stream, the stream
-	* is returned to its original position and its fail-bit is set.
-	* @throws StringException when a StringUtils function fails
-	* @throws FFStreamError when exceptions(failbit) is set and
-	*  a read or formatting error occurs.  This also resets the
-	*  stream to its pre-read position.
-	*/
+	string EGNOS_ftp_data_Data::bitset2hexstring(void) const {
+
+		string bin = this->reverseStr(this->message.to_string());
+		string hex;
+		for (size_t i = 0; i <= bin.length()-4; i+=4)
+		{
+			hex += this->getHexCharacter(bin.substr(i, 4));
+		}
+
+		return hex;
+	}
+
+	string EGNOS_ftp_data_Data::int2string(unsigned int number) const {
+		std::string s = std::to_string(number);
+
+		if (number < 10) {
+			return "0" + s;
+		}
+		else if (number >= 10 && number < 100 ){
+			return s;
+		}
+		else{
+			throw gpstk::StringUtils::StringException(" The date number had 3 digits. Maximum allowable digit number is 2.");
+		}
+	}
+
 	void EGNOS_ftp_data_Data::reallyGetRecord(gpstk::FFStream& ffs)
 		throw(std::exception, gpstk::FFStreamError,
 			gpstk::StringUtils::StringException) {
@@ -72,33 +62,9 @@ namespace EGNOS_ftp_data_Parser
 		EGNOS_ftp_data_Stream& strm = dynamic_cast<EGNOS_ftp_data_Stream&>(ffs);
 		this->strm = &strm;
 
+		this->reset();
+
 		string line;
-
-		if (!strm.headerRead)
-			strm >> strm.header;
-
-		if (!strm.dataStartRead) {
-			while (true) {
-
-				strm.formattedGetLine(line);
-				gpstk::StringUtils::stripTrailing(line);
-
-				if (line == startofDataTag) {
-					strm.dataStartRead = true;
-					break;
-				}
-			}
-		}
-
-		if (coorSys == gpstk::Position::CoordinateSystem::Unknown) {
-			this->coorSys = strm.header.coorSys;
-		}
-		if (timeSys == gpstk::TimeSystem::Systems::Unknown) {
-			this->timeSys = strm.header.timeSys;
-		}
-
-		
-
 		strm.formattedGetLine(line, true);
 		gpstk::StringUtils::stripTrailing(line);
 		parseLine(line);
@@ -106,80 +72,25 @@ namespace EGNOS_ftp_data_Parser
 		return;
 	}
 
-	bool EGNOS_ftp_data_Data::compare(const EGNOS_ftp_data_Data& other) const{
-
-		bool rtv = true;
-		if (this->acceleration[0]!= other.acceleration[0]) {
-			rtv = false;
-		}
-
-		if (this->acceleration[1] != other.acceleration[1]) {
-			rtv = false;
-		}
-		if (this->acceleration[2] != other.acceleration[2]) {
-			rtv = false;
-		}
-
-		if (this->time != other.time) {
-			rtv = false;
-		}
-
-		if (this->timeSys != other.timeSys) {
-			rtv = false;
-		}
-
-		return rtv;
-	}
-
-	//bool operator== (const Triple& right) const;
-	bool EGNOS_ftp_data_Data::operator==(const EGNOS_ftp_data_Data& other) const{
-		return this->compare(other);
-	}
-
-	bool EGNOS_ftp_data_Data::operator!=(const EGNOS_ftp_data_Data& other) const {
-		return !this->compare(other);
-	}
-
-
-	EGNOS_ftp_data_Data& EGNOS_ftp_data_Data::operator+=(EGNOS_ftp_data_Data& newData) {
-
-		// TODO: This is not quit right here.
-		if (this->time != newData.time) {
-			throw ("Time value is not matching");
-		} 
-
-		this->acceleration[0] += newData.acceleration[0];
-		this->acceleration[1] += newData.acceleration[1];
-		this->acceleration[2] += newData.acceleration[2];
-
-		this->angularRate[0] += newData.angularRate[0];
-		this->angularRate[1] += newData.angularRate[1];
-		this->angularRate[2] += newData.angularRate[2];
-		
-		return *this;
-	}
-
-	EGNOS_ftp_data_Data& EGNOS_ftp_data_Data::operator=(EGNOS_ftp_data_Data& newData) {
-
-		this->acceleration[0] = newData.acceleration[0];
-		this->acceleration[1] = newData.acceleration[1];
-		this->acceleration[2] = newData.acceleration[2];
-
-		this->angularRate[0] = newData.angularRate[0];
-		this->angularRate[1] = newData.angularRate[1];
-		this->angularRate[2] = newData.angularRate[2];
-
-		return *this;
-	}
-
 	double EGNOS_ftp_data_Data::getGPSWeek(void) {
-		gpstk::GPSWeekSecond GPSTime(time);
+		// Set common time
+		gpstk::CommonTime temp(messageTime);
+		gpstk::GPSWeekSecond GPSTime(temp);
 		return GPSTime.getWeek();
 	}
 
 	double EGNOS_ftp_data_Data::getGPSToW(void) {
-		gpstk::GPSWeekSecond GPSTime(time);
+		gpstk::CommonTime temp(messageTime);
+		gpstk::GPSWeekSecond GPSTime(temp);
 		return GPSTime.getSOW();
+	}
+
+	void EGNOS_ftp_data_Data::reset(void) {
+
+		messageTime.reset();
+		message.reset();
+		messageId = 0;
+		svId = 0;
 	}
 	
 	void EGNOS_ftp_data_Data::parseLine(std::string& currentLine)
@@ -189,57 +100,30 @@ namespace EGNOS_ftp_data_Parser
 		{
 			
 			std::stringstream   ss(currentLine);
-			string week, tow, accx, accy, accz, rollRate, pitchRate, yawRate;
-
-			ss >> week >> tow >> accx >> accy >> accz >> rollRate >> pitchRate >> yawRate;
-
-			gpstk::GPSWeekSecond timeGPS;
-			gpstk::GALWeekSecond timeGAL;
-
-			if (timeSys == gpstk::TimeSystem::GPS) {
-				timeGPS.week = stoi(week, nullptr);
-				timeGPS.sow = stod(tow, nullptr);
-
-				gpstk::CommonTime temp(timeGPS);
-				time = temp;
-
-			}
-			else if (timeSys == gpstk::TimeSystem::GAL) {
-				timeGAL.week = stoi(week, nullptr);
-				timeGAL.sow = stod(tow, nullptr);
-
-				gpstk::CommonTime temp(timeGAL);
-				time = temp;
-			}
-
-
-
-			if (accx.empty() || accy.empty() || accz.empty()) {
-				acceleration[0] = 0;
-				acceleration[1] = 0;
-				acceleration[2] = 0;
-				// TODO shall throw error or sys
-			}
-			else {
-				acceleration[0] = stod(accx, nullptr);
-				acceleration[1] = stod(accy, nullptr);
-				acceleration[2] = stod(accz, nullptr);
-			}
+			string satId, year, month, day, hour, minute, second, msgId, hex_message;
 				
-			
+			ss >> satId >> year >> month >> day >> hour >> minute >> second >> msgId >> std::hex >> hex_message;
 
-			if (rollRate.empty() || pitchRate.empty() || yawRate.empty()) {
-				angularRate[0] = 0;
-				angularRate[1] = 0;
-				angularRate[2] = 0;
-			}
-			else{
-				angularRate[0] = stod(rollRate, nullptr);
-				angularRate[1] = stod(pitchRate, nullptr);
-				angularRate[2] = stod(yawRate, nullptr);
-			}
-			
+			// Set raw message in binary form
+			// We have to reverse the binary string before bc of the properties of bitset.
+			string bin = this->HexStrToBin(hex_message);
+			this->reverseStr(bin);
+			std::bitset<256> message_temp(bin);
+			message = message_temp;
 
+			// Set message Id
+			messageId = stoi(msgId, nullptr);
+
+			// Set SvId
+			svId = stoi(satId, nullptr);
+			
+			// Set civil time
+			messageTime.year = EMS_YEAR_OFFSET + stoi(year, nullptr);
+			messageTime.month = stoi(month, nullptr);
+			messageTime.day = stoi(day, nullptr);
+			messageTime.hour = stoi(hour, nullptr);
+			messageTime.minute = stoi(minute, nullptr);
+			messageTime.second = stoi(second, nullptr);
 			
 		}
 		catch (std::exception &e)
@@ -250,4 +134,84 @@ namespace EGNOS_ftp_data_Parser
 		}
 	}
 
+
+
+	string EGNOS_ftp_data_Data::HexCharToBin(char c) {
+		switch (c) {
+		case '0': return "0000";
+		case '1': return "0001";
+		case '2': return "0010";
+		case '3': return "0011";
+		case '4': return "0100";
+		case '5': return "0101";
+		case '6': return "0110";
+		case '7': return "0111";
+		case '8': return "1000";
+		case '9': return "1001";
+		case 'A': return "1010";
+		case 'B': return "1011";
+		case 'C': return "1100";
+		case 'D': return "1101";
+		case 'E': return "1110";
+		case 'F': return "1111";
+		}
+	}
+
+	char EGNOS_ftp_data_Data::getHexCharacter(std::string str) const
+	{
+		if (str.compare("1111") == 0) return 'F';
+		else if (str.compare("1110") == 0) return 'E';
+		else if (str.compare("1101") == 0) return 'D';
+		else if (str.compare("1100") == 0) return 'C';
+		else if (str.compare("1011") == 0) return 'B';
+		else if (str.compare("1010") == 0) return 'A';
+		else if (str.compare("1001") == 0) return '9';
+		else if (str.compare("1000") == 0) return '8';
+		else if (str.compare("0111") == 0) return '7';
+		else if (str.compare("0110") == 0) return '6';
+		else if (str.compare("0101") == 0) return '5';
+		else if (str.compare("0100") == 0) return '4';
+		else if (str.compare("0011") == 0) return '3';
+		else if (str.compare("0010") == 0) return '2';
+		else if (str.compare("0001") == 0) return '1';
+		else if (str.compare("0000") == 0) return '0';
+		else if (str.compare("111") == 0) return '7';
+		else if (str.compare("110") == 0) return '6';
+		else if (str.compare("101") == 0) return '5';
+		else if (str.compare("100") == 0) return '4';
+		else if (str.compare("011") == 0) return '3';
+		else if (str.compare("010") == 0) return '2';
+		else if (str.compare("001") == 0) return '1';
+		else if (str.compare("000") == 0) return '0';
+		else if (str.compare("11") == 0) return '3';
+		else if (str.compare("10") == 0) return '2';
+		else if (str.compare("01") == 0) return '1';
+		else if (str.compare("00") == 0) return '0';
+		else if (str.compare("1") == 0) return '1';
+		else if (str.compare("0") == 0) return '0';
+	}
+
+
+	string EGNOS_ftp_data_Data::HexStrToBin(const std::string & hs) {
+		string bin;
+		for (auto c : hs) {
+			bin += this->HexCharToBin(c);
+		}
+		return bin;
+	}
+
+	string EGNOS_ftp_data_Data::reverseStr(string& str) const
+	{
+		string str_out;
+		int n = str.length();
+
+		// Swap character starting from two 
+		// corners 
+		for (int i = 0; i < n / 2; i++)
+			std::swap(str[i], str[n - i - 1]);
+
+		str_out = str;
+
+		return str_out;
+	}
 }

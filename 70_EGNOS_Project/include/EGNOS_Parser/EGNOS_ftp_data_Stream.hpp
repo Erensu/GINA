@@ -21,11 +21,7 @@ namespace EGNOS_ftp_data_Parser {
 		/// overrides open to reset the header
 		virtual void open(const char* fn, std::ios::openmode mode);
 
-		/// RINEX NAV header for this file.
-		EGNOS_ftp_data_Header header;
-		
 		/// Flag showing whether or not the header has been read.
-		bool headerRead = false;
 		bool dataStartRead= false;
 		bool dataStartWritten = false;
 

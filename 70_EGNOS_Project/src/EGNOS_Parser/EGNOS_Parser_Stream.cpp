@@ -22,8 +22,6 @@ namespace EGNOS_ftp_data_Parser {
 
 	void EGNOS_ftp_data_Stream ::
 		init(){
-		headerRead = false;
-		header = EGNOS_ftp_data_Header();
 	}
 
 }
