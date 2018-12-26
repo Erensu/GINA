@@ -6,8 +6,8 @@
 #include "BasicFramework.hpp"
 #include "PRSolution.hpp"
 
-#include "EGNOS_ftp_data_Data.hpp"
-#include "EGNOS_ftp_data_Stream.hpp"
+#include "EGNOS_EMS_Data.hpp"
+#include "EGNOS_EMS_Stream.hpp"
 
 #include "GINAConfig.h"
 
@@ -18,10 +18,10 @@ int main(int argc, char **argv) {
 	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\h17.ems";
 	std::string EDAS_FileNamewPath_out = ROOT "\\70_EGNOS_Project\\files\\h17_out.ems";
 
-	EGNOS_ftp_data_Parser::EGNOS_ftp_data_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
-	EGNOS_ftp_data_Parser::EGNOS_ftp_data_Stream exampleStreamOut(EDAS_FileNamewPath_out.c_str(), std::ios::out);
+	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
+	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamOut(EDAS_FileNamewPath_out.c_str(), std::ios::out);
 
-	EGNOS_ftp_data_Parser::EGNOS_ftp_data_Data EData;
+	EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
 
 	while (exampleStreamIn >> EData) {
 		exampleStreamOut << EData;

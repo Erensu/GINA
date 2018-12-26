@@ -1,18 +1,18 @@
 
-#include "EGNOS_ftp_data_Data.hpp"
+#include "EGNOS_EMS_Data.hpp"
 
 #define EMS_YEAR_OFFSET 2000
 
-namespace EGNOS_ftp_data_Parser
+namespace EGNOS_EMS_Parser
 {
 	using namespace gpstk::StringUtils;
 	using namespace std;
 
-	void EGNOS_ftp_data_Data::reallyPutRecord(gpstk::FFStream& ffs) const
+	void EGNOS_EMS_Data::reallyPutRecord(gpstk::FFStream& ffs) const
 		throw(std::exception, gpstk::FFStreamError,
 			gpstk::StringUtils::StringException) {
 
-		EGNOS_ftp_data_Stream& strm = dynamic_cast<EGNOS_ftp_data_Stream&>(ffs);
+		EGNOS_EMS_Stream& strm = dynamic_cast<EGNOS_EMS_Stream&>(ffs);
 
 		strm << this->svId << " ";
 
@@ -23,13 +23,13 @@ namespace EGNOS_ftp_data_Parser
 		strm << this->int2string(this->messageTime.minute) << " ";
 		strm << this->int2string(this->messageTime.second) << " ";
 		strm << this->messageId << " ";
-		strm << this->bitset2hexstring();
+		//strm << this->bitset2hexstring();
 
 		strm << endl;
 		strm.lineNumber++;
 	}
 
-	string EGNOS_ftp_data_Data::bitset2hexstring(void) const {
+	std::string EGNOS_EMS_Data::bitset2hexstring(void) const {
 
 		string bin = this->reverseStr(this->message.to_string());
 		string hex;
@@ -41,7 +41,7 @@ namespace EGNOS_ftp_data_Parser
 		return hex;
 	}
 
-	string EGNOS_ftp_data_Data::int2string(unsigned int number) const {
+	std::string EGNOS_EMS_Data::int2string(unsigned int number) const {
 		std::string s = std::to_string(number);
 
 		if (number < 10) {
@@ -55,16 +55,16 @@ namespace EGNOS_ftp_data_Parser
 		}
 	}
 
-	void EGNOS_ftp_data_Data::reallyGetRecord(gpstk::FFStream& ffs)
+	void EGNOS_EMS_Data::reallyGetRecord(gpstk::FFStream& ffs)
 		throw(std::exception, gpstk::FFStreamError,
 			gpstk::StringUtils::StringException) {
 
-		EGNOS_ftp_data_Stream& strm = dynamic_cast<EGNOS_ftp_data_Stream&>(ffs);
+		EGNOS_EMS_Stream& strm = dynamic_cast<EGNOS_EMS_Stream&>(ffs);
 		this->strm = &strm;
 
 		this->reset();
 
-		string line;
+		std::string line;
 		strm.formattedGetLine(line, true);
 		gpstk::StringUtils::stripTrailing(line);
 		parseLine(line);
@@ -72,20 +72,20 @@ namespace EGNOS_ftp_data_Parser
 		return;
 	}
 
-	double EGNOS_ftp_data_Data::getGPSWeek(void) {
+	double EGNOS_EMS_Data::getGPSWeek(void) {
 		// Set common time
 		gpstk::CommonTime temp(messageTime);
 		gpstk::GPSWeekSecond GPSTime(temp);
 		return GPSTime.getWeek();
 	}
 
-	double EGNOS_ftp_data_Data::getGPSToW(void) {
+	double EGNOS_EMS_Data::getGPSToW(void) {
 		gpstk::CommonTime temp(messageTime);
 		gpstk::GPSWeekSecond GPSTime(temp);
 		return GPSTime.getSOW();
 	}
 
-	void EGNOS_ftp_data_Data::reset(void) {
+	void EGNOS_EMS_Data::reset(void) {
 
 		messageTime.reset();
 		message.reset();
@@ -93,7 +93,7 @@ namespace EGNOS_ftp_data_Parser
 		svId = 0;
 	}
 	
-	void EGNOS_ftp_data_Data::parseLine(std::string& currentLine)
+	void EGNOS_EMS_Data::parseLine(std::string& currentLine)
 		throw(gpstk::StringUtils::StringException, gpstk::FFStreamError)
 	{
 		try
@@ -136,7 +136,7 @@ namespace EGNOS_ftp_data_Parser
 
 
 
-	string EGNOS_ftp_data_Data::HexCharToBin(char c) {
+	std::string EGNOS_EMS_Data::HexCharToBin(char c) {
 		switch (c) {
 		case '0': return "0000";
 		case '1': return "0001";
@@ -157,7 +157,7 @@ namespace EGNOS_ftp_data_Parser
 		}
 	}
 
-	char EGNOS_ftp_data_Data::getHexCharacter(std::string str) const
+	char EGNOS_EMS_Data::getHexCharacter(std::string str) const
 	{
 		if (str.compare("1111") == 0) return 'F';
 		else if (str.compare("1110") == 0) return 'E';
@@ -192,17 +192,17 @@ namespace EGNOS_ftp_data_Parser
 	}
 
 
-	string EGNOS_ftp_data_Data::HexStrToBin(const std::string & hs) {
-		string bin;
+	std::string EGNOS_EMS_Data::HexStrToBin(const std::string & hs) {
+		std::string bin;
 		for (auto c : hs) {
 			bin += this->HexCharToBin(c);
 		}
 		return bin;
 	}
 
-	string EGNOS_ftp_data_Data::reverseStr(string& str) const
+	std::string EGNOS_EMS_Data::reverseStr(std::string& str) const
 	{
-		string str_out;
+		std::string str_out;
 		int n = str.length();
 
 		// Swap character starting from two 

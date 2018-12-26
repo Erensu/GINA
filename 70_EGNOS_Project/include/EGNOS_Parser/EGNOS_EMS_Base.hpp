@@ -2,14 +2,14 @@
 
 #include "FFData.hpp"
 
-namespace EGNOS_ftp_data_Parser {
+namespace EGNOS_EMS_Parser {
 		/// @ingroup FileHandling
 		//@{
 
 		/**
 		* This class serves no purpose other than to make readable diagrams.
 		*/
-	class EGNOS_ftp_data_Base : public gpstk::FFData
+	class EGNOS_EMS_Base : public gpstk::FFData
 	{
 	protected:
 		/// Does the actual reading from the stream into this FFData object.
@@ -23,9 +23,9 @@ namespace EGNOS_ftp_data_Parser {
 				gpstk::FFStreamError) = 0;
 
 	public:
-		EGNOS_ftp_data_Base() {}
+		EGNOS_EMS_Base() {}
 		/// in deference to our coding standards, this is declared virtual
-		virtual ~EGNOS_ftp_data_Base() {}
+		virtual ~EGNOS_EMS_Base() {}
 	};
 		//@}
 }

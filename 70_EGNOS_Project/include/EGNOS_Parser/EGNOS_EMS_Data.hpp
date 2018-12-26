@@ -1,22 +1,16 @@
 #pragma once
 
-
-#include <list>
-
 #include <bitset>
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"
 #include "FFStream.hpp"
-#include "RinexNavBase.hpp"
-#include "EGNOS_ftp_data_Base.hpp"
-#include "EGNOS_ftp_data_Stream.hpp"
-#include "Position.hpp"
-#include "EGNOS_ftp_data_Header.hpp"
+#include "EGNOS_EMS_Base.hpp"
+#include "EGNOS_EMS_Stream.hpp"
 
 #include "CivilTime.hpp"
-#include "YDSTime.hpp"
+#include "GPSWeekSecond.hpp"
 
-namespace EGNOS_ftp_data_Parser
+namespace EGNOS_EMS_Parser
 {
 	/// @ingroup FileHandling
 	//@{
@@ -27,7 +21,7 @@ namespace EGNOS_ftp_data_Parser
 	* \sa rinex_nav_test.cpp and rinex_nav_read_write.cpp for examples.
 	* \sa gpstk::RinexNavHeader and gpstk::RinexNavStream classes.
 	*/
-	class EGNOS_ftp_data_Data : public EGNOS_ftp_data_Base
+	class EGNOS_EMS_Data : public EGNOS_EMS_Base
 	{
 	public:
 		/**
@@ -35,10 +29,10 @@ namespace EGNOS_ftp_data_Parser
 		* @warning CHECK THE PRNID TO SEE IF THIS DATA IS
 		*  VALID BEFORE USING!!
 		*/
-		EGNOS_ftp_data_Data() {};
+		EGNOS_EMS_Data() {};
 
 		/// destructor
-		virtual ~EGNOS_ftp_data_Data() {}
+		virtual ~EGNOS_EMS_Data() {}
 
 		// The next four lines is our common interface
 		/// RinexNavData is "data" so this function always returns true.
@@ -75,16 +69,16 @@ namespace EGNOS_ftp_data_Parser
 		void reset(void);
 		
 	private:
-		EGNOS_ftp_data_Stream* strm;
+		EGNOS_EMS_Stream* strm;
 
-		string EGNOS_ftp_data_Data::HexCharToBin(char c);
-		string EGNOS_ftp_data_Data::HexStrToBin(const std::string & hs);
-		string EGNOS_ftp_data_Data::reverseStr(string& str) const;
-		string EGNOS_ftp_data_Data::int2string(unsigned int number) const;
-		char EGNOS_ftp_data_Data::getHexCharacter(std::string str) const;
-		string EGNOS_ftp_data_Data::bitset2hexstring(void) const;
+		std::string EGNOS_EMS_Data::HexCharToBin(char c);
+		std::string EGNOS_EMS_Data::HexStrToBin(const std::string & hs);
+		std::string EGNOS_EMS_Data::reverseStr(std::string& str) const;
+		std::string EGNOS_EMS_Data::int2string(unsigned int number) const;
+		char EGNOS_EMS_Data::getHexCharacter(std::string str) const;
+		std::string EGNOS_EMS_Data::bitset2hexstring(void) const;
 
-		void EGNOS_ftp_data_Data::parseLine(std::string& currentLine)
+		void EGNOS_EMS_Data::parseLine(std::string& currentLine)
 			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);
 
 	};  // class RinexNavData

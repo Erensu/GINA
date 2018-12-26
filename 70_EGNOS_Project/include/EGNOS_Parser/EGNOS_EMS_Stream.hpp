@@ -1,22 +1,21 @@
 #pragma once
 
 #include "FFTextStream.hpp"
-#include "EGNOS_ftp_data_Header.hpp"
 
-namespace EGNOS_ftp_data_Parser {
+namespace EGNOS_EMS_Parser {
 
-	class EGNOS_ftp_data_Stream : public gpstk::FFTextStream
+	class EGNOS_EMS_Stream : public gpstk::FFTextStream
 	{
 	public:
-		EGNOS_ftp_data_Stream();
+		EGNOS_EMS_Stream();
 
 		/** Constructor
 		* Opens a file named \a fn using ios::openmode \a mode.
 		*/
-		EGNOS_ftp_data_Stream(const char* fn, std::ios::openmode mode = std::ios::in);
+		EGNOS_EMS_Stream(const char* fn, std::ios::openmode mode = std::ios::in);
 
 		/// Destructor
-		virtual ~EGNOS_ftp_data_Stream();
+		virtual ~EGNOS_EMS_Stream();
 
 		/// overrides open to reset the header
 		virtual void open(const char* fn, std::ios::openmode mode);
