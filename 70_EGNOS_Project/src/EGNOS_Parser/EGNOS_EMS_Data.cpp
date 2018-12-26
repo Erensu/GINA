@@ -5,7 +5,6 @@
 
 namespace EGNOS_EMS_Parser
 {
-	using namespace gpstk::StringUtils;
 	using namespace std;
 
 	void EGNOS_EMS_Data::reallyPutRecord(gpstk::FFStream& ffs) const
@@ -23,7 +22,7 @@ namespace EGNOS_EMS_Parser
 		strm << this->int2string(this->messageTime.minute) << " ";
 		strm << this->int2string(this->messageTime.second) << " ";
 		strm << this->messageId << " ";
-		//strm << this->bitset2hexstring();
+		strm << this->bitset2hexstring();
 
 		strm << endl;
 		strm.lineNumber++;

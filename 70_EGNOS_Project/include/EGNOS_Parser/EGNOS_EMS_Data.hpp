@@ -81,7 +81,7 @@ namespace EGNOS_EMS_Parser
 		void EGNOS_EMS_Data::parseLine(std::string& currentLine)
 			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);
 
-	};  // class RinexNavData
+	};  // class 
 
 		//@}
 } // namespace
