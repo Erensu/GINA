@@ -123,21 +123,26 @@ namespace EGNOS {
 
 	bool IonosphericMaskBands::getPosition(unsigned char band, unsigned char bitpos, int &lat, int &lon) {
 	
-		if (band <= 0 && band <= 8) {
+		if (bitpos == 0) {
+		
+			throw("Bit position cannot be 0. Minimum value is 1.");
+			return false;
+		}
+		if ( 0 <= band && band <= 8) {
 			for (size_t i = 0; i < 8; i++)
 			{
 				if ((this->vBands[8 * band + i].startBit <= bitpos) && (bitpos <= this->vBands[8 * band + i].startBit + this->vBands[8 * band + i].sizeOfArray - 1)){
 					lon = this->vBands[8 * band + i].longitude;
 					lat = this->vBands[8 * band + i].lattidudeArray[bitpos - this->vBands[8 * band + i].startBit];
 
-					return true;;
+					return true;
 				}
 				else{
 					continue;
-				}
-
-				return false;
+				}	
 			}
+
+			return false;
 		}
 		else{
 			for (size_t i = 0; i < 5; i++)

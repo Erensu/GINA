@@ -9,26 +9,48 @@
 #include "EGNOS_EMS_Data.hpp"
 #include "EGNOS_EMS_Stream.hpp"
 
+#include "IonosphericMaskBand.hpp"
+
 #include "GINAConfig.h"
 
 using namespace std;
 
 int main(int argc, char **argv) {
 
-	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\h17.ems";
-	std::string EDAS_FileNamewPath_out = ROOT "\\70_EGNOS_Project\\files\\h17_out.ems";
+	EGNOS::IonosphericMaskBands example;
 
-	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
-	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamOut(EDAS_FileNamewPath_out.c_str(), std::ios::out);
+	int lat = 0, lon = 0;
+	bool successFlag = false;
 
-	EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
+	for (size_t band = 0; band < 11; band++)
+	{
+		for (size_t bitpos = 0; bitpos < 202; bitpos++)
+		{
 
-	while (exampleStreamIn >> EData) {
-		exampleStreamOut << EData;
+			try {
+				successFlag = example.getPosition((unsigned char)band, (unsigned char)bitpos, lat, lon);
+
+			}
+			catch (const char* msg) {
+				cerr << msg << endl;
+				successFlag = false;
+			}
+			catch (...) {
+				cerr << "Unexpected error" << endl;
+				successFlag = false;
+			}
+
+			if (successFlag) {
+
+				cout << lat << " " << lon << endl;
+			}
+			else {
+				cout << "Error in: band - " << band << " bitpos - " << bitpos << endl;
+			}
+
+		}
 	}
-
-	exampleStreamIn.close();
-	exampleStreamOut.close();
+	
 
 	return 0;
 }
