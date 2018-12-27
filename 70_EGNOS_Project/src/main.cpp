@@ -10,6 +10,7 @@
 #include "EGNOS_EMS_Stream.hpp"
 
 #include "IonosphericMaskBand.hpp"
+#include "IonosphericGridPoint.hpp"
 
 #include "GINAConfig.h"
 
@@ -17,40 +18,17 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-	EGNOS::IonosphericMaskBands example;
+	EGNOS::IonosphericGridPoint example1;
 
-	int lat = 0, lon = 0;
-	bool successFlag = false;
+	EGNOS::IonosphericGridPoint example2;
 
-	for (size_t band = 0; band < 11; band++)
-	{
-		for (size_t bitpos = 0; bitpos < 202; bitpos++)
-		{
+	example1.lat = 15;
+	example1.lon = 30;
 
-			try {
-				successFlag = example.getPosition((unsigned char)band, (unsigned char)bitpos, lat, lon);
+	example2 = example1;
+	//example2.copy(example1);
 
-			}
-			catch (const char* msg) {
-				cerr << msg << endl;
-				successFlag = false;
-			}
-			catch (...) {
-				cerr << "Unexpected error" << endl;
-				successFlag = false;
-			}
-
-			if (successFlag) {
-
-				cout << lat << " " << lon << endl;
-			}
-			else {
-				cout << "Error in: band - " << band << " bitpos - " << bitpos << endl;
-			}
-
-		}
-	}
-	
+	EGNOS::IonosphericGridPoint example3 = example2;
 
 	return 0;
 }
