@@ -16,19 +16,40 @@
 
 using namespace std;
 
+template<std::size_t R, std::size_t L, std::size_t N>
+std::bitset<N> project_range(std::bitset<N> b)
+{
+	static_assert(R <= L && L <= N, "invalid bitrange");
+	b >>= R;            // drop R rightmost bits
+	b <<= (N - L + R);  // drop L-1 leftmost bits
+	b >>= (N - L);      // shift back into place
+	return b;
+}
+
 int main(int argc, char **argv) {
 
-	EGNOS::IonosphericGridPoint example1;
+	
+	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\h17.ems";
 
-	EGNOS::IonosphericGridPoint example2;
+	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
 
-	example1.lat = 15;
-	example1.lon = 30;
+	EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
 
-	example2 = example1;
-	//example2.copy(example1);
+	EGNOS::IonosphericGridPointMasksMessageParser IonoMaskParser;
 
-	EGNOS::IonosphericGridPoint example3 = example2;
+	while (exampleStreamIn >> EData) {
+		
+		if (EData.messageId == 18) {
+			//cout << "Message 18 read" << endl;
+			IonoMaskParser += EData.message;
+			//cout << "Message 18 checked" << endl;
+
+			cout << IonoMaskParser << endl;
+		}
+	}
+
+	exampleStreamIn.close();
+
 
 	return 0;
 }
