@@ -61,9 +61,11 @@ namespace EGNOS {
 		int currentRecievedIODI = NO_IODI_SET;
 
 		std::bitset<256> message;
-		std::list<IGPMaskBlock> blocks;
+		std::vector<IGPMaskBlock> blocks;
 
 		friend std::ostream &operator<<(std::ostream &os, IonosphericGridPointMasksMessageParser const &igpmp);
+
+		void updateIGP(IonosphericGridPoint &igp);
 
 	private:
 

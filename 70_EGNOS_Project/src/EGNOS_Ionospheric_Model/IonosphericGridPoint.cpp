@@ -2,8 +2,6 @@
 #include "IonosphericGridPoint.hpp"
 
 
-
-
 namespace EGNOS {
 
 #define IONO_GRID_MASK_MESSAGE_TYPE 18
@@ -55,7 +53,6 @@ namespace EGNOS {
 
 		return os;
 	}
-
 
 	IonosphericGridPointMasksMessageParser::IonosphericGridPointMasksMessageParser(void) {
 	
@@ -142,7 +139,7 @@ namespace EGNOS {
 
 	bool IonosphericGridPointMasksMessageParser::doWeHaveHisIODIMask(void){
 	
-		for (std::list<IGPMaskBlock>::iterator it = this->blocks.begin(); it != this->blocks.end(); ++it) {
+		for (std::vector<IGPMaskBlock>::iterator it = this->blocks.begin(); it != this->blocks.end(); ++it) {
 			/* std::cout << *it; ... */
 			if (it->bandId == this->currentRecievedBandNumber) {
 				if (it->idodi == this->currentRecievedIODI) {
@@ -209,13 +206,42 @@ namespace EGNOS {
 		currentRecievedIODI = NO_IODI_SET;
 	}
 
+	void IonosphericGridPointMasksMessageParser::updateIGP(IonosphericGridPoint &igp) {
+
+		if (igp.GIVEI == 15) {
+			igp.valid = false;
+			return;
+		}
+		igp.bandNumber;
+		igp.blockId;
+		igp.placeInBlock;
+
+		int bitpos = -1;
+		for (std::vector<IGPMaskBlock>::const_iterator it = this->blocks.begin(); it != this->blocks.end(); ++it) {
+			if (it->bandId == igp.bandNumber && it->idodi == igp.IODI) {
+				bitpos = it->block[igp.blockId * 15 + igp.placeInBlock];
+				break;
+			}
+			
+		}
+		if (bitpos == -1) {
+			igp.valid = false;
+			return;
+		}
+
+		IonosphericMaskBands gridEngine;
+		gridEngine.getPosition(igp.bandNumber, bitpos, igp.lat, igp.lon);
+
+		igp.valid = true;
+	}
+
 	std::ostream &operator<<(std::ostream &os, IonosphericGridPointMasksMessageParser const &igpmp) {
 		os << "numberOfBroadcastedBands " << igpmp.numberOfBroadcastedBands << std::endl;
 		os << "currentRecievedIODI " << igpmp.currentRecievedIODI << std::endl;
 		os << "currentRecievedBandNumber " << igpmp.currentRecievedBandNumber << std::endl;
 		os << "stored number of blocks " << igpmp.blocks.size() << std::endl;
 
-		for (std::list<IGPMaskBlock>::const_iterator it = igpmp.blocks.begin(); it != igpmp.blocks.end(); ++it) {
+		for (std::vector<IGPMaskBlock>::const_iterator it = igpmp.blocks.begin(); it != igpmp.blocks.end(); ++it) {
 			os << "Band Id and IODI: " << it->bandId <<  " " <<  it->idodi << std::endl;
 #ifdef EGNOS_IGPMESSAGEPARSER_OBJECT_LONG_DISPLAY
 			for (size_t i = 0; i < 201; i++)
@@ -231,14 +257,9 @@ namespace EGNOS {
 		return os;
 	}
 
-
-
 	IonosphericDelayCorrectionsMessageParser::IonosphericDelayCorrectionsMessageParser(void) {
 	
-	
 	}
-
-
 
 	bool IonosphericDelayCorrectionsMessageParser::checkMessageType(void) {
 		std::bitset<6> typeBits;
@@ -267,7 +288,6 @@ namespace EGNOS {
 
 		this->processMessage();
 	}
-
 
 	int IonosphericDelayCorrectionsMessageParser::getBandNumber(void) {
 
