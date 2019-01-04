@@ -38,6 +38,24 @@ namespace EGNOS {
 		return *this;
 	}
 
+	std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp) {
+
+		os << "IODI " << igp.IODI << std::endl;
+		os << "bandNumber " << igp.bandNumber << std::endl;
+		os << "blockId " << igp.blockId << std::endl;
+		os << "placeInBlock " << igp.placeInBlock << std::endl;
+		os << "IGPVerticalDelayEstimate " << igp.IGPVerticalDelayEstimate << std::endl;
+		os << "GIVEI " << igp.GIVEI << std::endl;
+
+		if (igp.valid) {
+			os << "Lat " << igp.lat << std::endl;
+			os << "Lon " << igp.lon << std::endl;
+		}
+		
+
+		return os;
+	}
+
 
 	IonosphericGridPointMasksMessageParser::IonosphericGridPointMasksMessageParser(void) {
 	
@@ -376,25 +394,16 @@ namespace EGNOS {
 		os << "currentRecievedIODI " << idcmp.currentRecievedIODI << std::endl;
 		os << "currentRecievedBlockNumber " << idcmp.currentRecievedBlockNumber << std::endl;
 		
-		for (std::vector<IonosphericGridPoint>::const_iterator it = idcmp.ionoPoints.begin(); it != idcmp.ionoPoints.end(); ++it) {
-						
-			#ifdef EGNOS_IGPMESSAGEPARSER_OBJECT_LONG_DISPLAY
-		
-			#else
+		for (std::vector<IonosphericGridPoint>::const_iterator it = idcmp.ionoPoints.begin(); it != idcmp.ionoPoints.end(); ++it) {		
 
-			os << "IODI: " << it->IODI << std::endl;
-			os << "IGPVerticalDelayEstimate: " << it->IGPVerticalDelayEstimate << std::endl;
-			os << "GIVEI: " << it->GIVEI << std::endl;
-
-			os << "bandNumber: " << it->bandNumber << std::endl;
-			os << "blockId: " << it->blockId << std::endl;
-			os << "placeInBlock: " << it->placeInBlock << std::endl;
-
-			#endif
-
+			os << *it;
 		}
 
 		return os;
 	}
+
+
+
+	
 
 }

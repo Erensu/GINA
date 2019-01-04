@@ -40,6 +40,8 @@ namespace EGNOS {
 		int blockId;
 		int bandNumber;
 
+		friend std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp);
+
 	private:
 		void copy(const IonosphericGridPoint &obj);
 	};
