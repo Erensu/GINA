@@ -13,14 +13,9 @@ namespace EGNOS {
 	
 	}
 
-	IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &obj)	{
+	IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &copy)	{
 
-		this->GIVEI = obj.GIVEI;
-		this->IGPVerticalDelayEstimate = obj.IGPVerticalDelayEstimate;
-		this->IODI = obj.IODI;
-		this->lat = obj.lat;
-		this->lon = obj.lon;
-		this->valid = obj.valid;
+		this->copy(copy);	
 	}
 
 	void IonosphericGridPoint::copy(const IonosphericGridPoint &obj){
@@ -31,6 +26,10 @@ namespace EGNOS {
 		this->lat = obj.lat;
 		this->lon = obj.lon;
 		this->valid = obj.valid;
+
+		this->placeInBlock = obj.placeInBlock;
+		this->blockId = obj.blockId;
+		this->bandNumber = obj.bandNumber;
 	}
 
 	IonosphericGridPoint& IonosphericGridPoint::operator=(const IonosphericGridPoint& other) {
@@ -66,6 +65,7 @@ namespace EGNOS {
 
 		if (this->checkMessageType() == false) {
 			this->message.reset();
+			std::cerr << "Wrong message type. It should be type 18." << std::endl;
 			throw("Wrong message type. It should be type 18.");
 		}
 
@@ -144,7 +144,7 @@ namespace EGNOS {
 		std::bitset<2> iodeBits;
 	
 		for (size_t i = 0; i < 2; i++) {
-			iodeBits[i] = this->message[22 + i];
+			iodeBits[1-i] = this->message[22 + i];
 		}
 
 		return iodeBits.to_ulong();
@@ -155,7 +155,7 @@ namespace EGNOS {
 		std::bitset<4> Bits;
 
 		for (size_t i = 0; i < 4; i++) {
-			Bits[i] = this->message[18 + i];
+			Bits[3-i] = this->message[18 + i];
 		}
 
 		return Bits.to_ulong();
@@ -165,7 +165,7 @@ namespace EGNOS {
 		std::bitset<4> Bits;
 
 		for (size_t i = 0; i < 4; i++) {
-			Bits[i] = this->message[14 + i];
+			Bits[3-i] = this->message[14 + i];
 		}
 
 		return Bits.to_ulong();
@@ -176,7 +176,7 @@ namespace EGNOS {
 		std::bitset<6> typeBits;
 
 		for (size_t i = 0; i < 6; i++) {
-			typeBits[i] = this->message[8 + i];
+			typeBits[5-i] = this->message[8 + i];
 		}
 
 		return typeBits.to_ulong() == IONO_GRID_MASK_MESSAGE_TYPE;
@@ -226,7 +226,7 @@ namespace EGNOS {
 		std::bitset<6> typeBits;
 
 		for (size_t i = 0; i < 6; i++) {
-			typeBits[i] = this->message[8 + i];
+			typeBits[5-i] = this->message[8 + i];
 		}
 
 		return typeBits.to_ulong() == IONO_DELAY_CORRECTION_MESSAGE_TYPE;
@@ -236,6 +236,7 @@ namespace EGNOS {
 
 		this->message = message;
 
+		this->processMessage();
 	}
 
 	void IonosphericDelayCorrectionsMessageParser::addMessage(const std::bitset<250> &message) {
@@ -246,6 +247,7 @@ namespace EGNOS {
 			this->message[i] = message[i];
 		}
 
+		this->processMessage();
 	}
 
 
@@ -254,18 +256,7 @@ namespace EGNOS {
 		std::bitset<4> Bits;
 
 		for (size_t i = 0; i < 4; i++) {
-			Bits[i] = this->message[14 + i];
-		}
-
-		return Bits.to_ulong();
-	}
-
-	int IonosphericDelayCorrectionsMessageParser::getBlockId(void) {
-
-		std::bitset<4> Bits;
-
-		for (size_t i = 0; i < 4; i++) {
-			Bits[i] = this->message[18 + i];
+			Bits[3-i] = this->message[14 + i];
 		}
 
 		return Bits.to_ulong();
@@ -275,7 +266,7 @@ namespace EGNOS {
 		std::bitset<2> iodeBits;
 
 		for (size_t i = 0; i < 2; i++) {
-			iodeBits[i] = this->message[217 + i];
+			iodeBits[1-i] = this->message[217 + i];
 		}
 
 		return iodeBits.to_ulong();
@@ -285,9 +276,125 @@ namespace EGNOS {
 	void IonosphericDelayCorrectionsMessageParser::reset(void) {
 
 		message.reset();
+		ionoPoints.clear();
 
 		currentRecievedBandNumber = INVALID_BAND_NUMBER;
 		currentRecievedBlockNumber = INVALID_BLOCK_NUMBER;
 		currentRecievedIODI = NO_IODI_SET;
 	}
+
+	std::vector<IonosphericGridPoint> const & IonosphericDelayCorrectionsMessageParser::getIonosphericGridPoint(void) const {
+	
+		return ionoPoints;
+	}
+
+	void IonosphericDelayCorrectionsMessageParser::processMessage(void) {
+	
+		if (this->checkMessageType() == false) {
+			std::cerr << "Wrong message type. It should be type 26." << std::endl;
+			throw("Wrong message type. It should be type 26.");
+		}
+
+		this->currentRecievedIODI = this->getIODI();
+		this->currentRecievedBandNumber = this->getBandNumber();
+		this->currentRecievedBlockNumber = this->getBlockId();
+
+		this->addAllIGP2Vector();
+	}
+
+	IonosphericDelayCorrectionsMessageParser& IonosphericDelayCorrectionsMessageParser::operator+=(const std::bitset<256> &message) {
+
+		this->reset();
+		this->addMessage(message);
+		return *this;
+	}
+
+	IonosphericDelayCorrectionsMessageParser& IonosphericDelayCorrectionsMessageParser::operator+=(const std::bitset<250> &message) {
+
+		this->reset();
+		this->addMessage(message);
+		return *this;
+	}
+
+	int IonosphericDelayCorrectionsMessageParser::getBlockId(void) {
+
+		std::bitset<4> Bits;
+		for (size_t i = 0; i < 4; i++) {
+			Bits[3-i] = this->message[18 + i];
+		}
+
+		return Bits.to_ulong();
+	}
+
+	int IonosphericDelayCorrectionsMessageParser::getIGPVerticalDelay(int offset) {
+	
+		std::bitset<9> Bits;
+		int offsetinBits = offset * 13;
+		for (size_t i = 0; i < 9; i++) {
+			Bits[8-i] = this->message[offsetinBits + 22 + i];
+		}
+
+		return Bits.to_ulong();
+	}
+
+	int IonosphericDelayCorrectionsMessageParser::getGIVEI(int offset) {
+	
+		std::bitset<4> Bits;
+		int offsetinBits = offset * 13;
+		for (size_t i = 0; i < 4; i++) {
+			Bits[3-i] = this->message[offsetinBits + 31 + i];
+		}
+
+		return Bits.to_ulong();
+	}
+
+	void IonosphericDelayCorrectionsMessageParser::addIonosphericGridPoint2Vector(int offset) {
+	
+		IonosphericGridPoint temp;
+
+		temp.IODI = currentRecievedIODI;
+		temp.bandNumber = currentRecievedBandNumber;
+		temp.blockId = currentRecievedBlockNumber;
+		temp.placeInBlock = offset;
+
+		temp.GIVEI = this->getGIVEI(offset);
+		temp.IGPVerticalDelayEstimate = this->getIGPVerticalDelay(offset);
+
+		ionoPoints.push_back(temp);
+
+	}
+
+	void IonosphericDelayCorrectionsMessageParser::addAllIGP2Vector(void) {
+
+		for (size_t offset = 0; offset < 15; offset++)	{
+			this->addIonosphericGridPoint2Vector(offset);
+		}
+	}
+
+	std::ostream &operator<<(std::ostream &os, IonosphericDelayCorrectionsMessageParser const &idcmp) {
+		os << "currentRecievedBandNumber " << idcmp.currentRecievedBandNumber << std::endl;
+		os << "currentRecievedIODI " << idcmp.currentRecievedIODI << std::endl;
+		os << "currentRecievedBlockNumber " << idcmp.currentRecievedBlockNumber << std::endl;
+		
+		for (std::vector<IonosphericGridPoint>::const_iterator it = idcmp.ionoPoints.begin(); it != idcmp.ionoPoints.end(); ++it) {
+						
+			#ifdef EGNOS_IGPMESSAGEPARSER_OBJECT_LONG_DISPLAY
+		
+			#else
+
+			os << "IODI: " << it->IODI << std::endl;
+			os << "IGPVerticalDelayEstimate: " << it->IGPVerticalDelayEstimate << std::endl;
+			os << "GIVEI: " << it->GIVEI << std::endl;
+
+			os << "bandNumber: " << it->bandNumber << std::endl;
+			os << "blockId: " << it->blockId << std::endl;
+			os << "placeInBlock: " << it->placeInBlock << std::endl;
+
+			#endif
+
+		}
+
+		return os;
+	}
+
 }

@@ -33,8 +33,12 @@ namespace EGNOS {
 		int lon;
 
 		int IGPVerticalDelayEstimate;
-		unsigned char IODI;
-		unsigned char GIVEI;
+		int IODI;
+		int GIVEI;
+
+		int placeInBlock;
+		int blockId;
+		int bandNumber;
 
 	private:
 		void copy(const IonosphericGridPoint &obj);
@@ -82,20 +86,33 @@ namespace EGNOS {
 	public:
 		IonosphericDelayCorrectionsMessageParser();
 
+		IonosphericDelayCorrectionsMessageParser& operator+=(const std::bitset<256> &message);
+		IonosphericDelayCorrectionsMessageParser& operator+=(const std::bitset<250> &message);
+
+		int currentRecievedIODI = NO_IODI_SET;
+		int currentRecievedBandNumber = INVALID_BAND_NUMBER;
+		int currentRecievedBlockNumber = INVALID_BLOCK_NUMBER;
+
+		std::bitset<256> message;
+
+		std::vector<IonosphericGridPoint> const & getIonosphericGridPoint(void) const;
+
+		friend std::ostream &operator<<(std::ostream &os, IonosphericDelayCorrectionsMessageParser const &idcmp);
+
+	private:
+		void processMessage(void);
+		void addIonosphericGridPoint2Vector(int offset);
+		void addAllIGP2Vector(void);
+
+		std::vector<IonosphericGridPoint> ionoPoints;
+
+		void reset(void);
+
 		int getIODI(void);
 		int getBandNumber(void);
 		int getBlockId(void);
-
-		int currentRecievedIODI = NO_IODI_SET;
-
-		int currentRecievedBandNumber = INVALID_BAND_NUMBER;
-		int currentRecievedBlockNumber = INVALID_BLOCK_NUMBER;
-		std::bitset<256> message;
-
-	private:
-
-		
-		void reset(void);
+		int getIGPVerticalDelay(int offset);
+		int getGIVEI(int offset);
 
 		bool checkMessageType(void);
 		void addMessage(const std::bitset<256> &message);

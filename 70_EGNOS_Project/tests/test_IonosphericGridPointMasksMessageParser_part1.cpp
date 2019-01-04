@@ -35,16 +35,16 @@ int main(int argc, char **argv) {
 
 	EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
 
-	EGNOS::IonosphericDelayCorrectionsMessageParser IonoGridPointParser;
+	EGNOS::IonosphericGridPointMasksMessageParser IonoMaskParser;
 
 	while (exampleStreamIn >> EData) {
 		
-		if (EData.messageId == 26) {
-			//cout << "Message 26 read" << endl;
-			IonoGridPointParser += EData.message;
-			//cout << "Message 26 checked" << endl;
+		if (EData.messageId == 18) {
+			//cout << "Message 18 read" << endl;
+			IonoMaskParser += EData.message;
+			//cout << "Message 18 checked" << endl;
 
-			cout << IonoGridPointParser << endl;
+			cout << IonoMaskParser << endl;
 		}
 	}
 
