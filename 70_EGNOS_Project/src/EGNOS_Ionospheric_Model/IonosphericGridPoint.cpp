@@ -2,10 +2,12 @@
 #include "IonosphericGridPoint.hpp"
 
 
-#define IONO_GRID_MASK_MESSAGE_TYPE 18
 
 
 namespace EGNOS {
+
+#define IONO_GRID_MASK_MESSAGE_TYPE 18
+#define IONO_DELAY_CORRECTION_MESSAGE_TYPE 26
 
 	IonosphericGridPoint::IonosphericGridPoint(void) {
 	
@@ -211,4 +213,81 @@ namespace EGNOS {
 		return os;
 	}
 
+
+
+	IonosphericDelayCorrectionsMessageParser::IonosphericDelayCorrectionsMessageParser(void) {
+	
+	
+	}
+
+
+
+	bool IonosphericDelayCorrectionsMessageParser::checkMessageType(void) {
+		std::bitset<6> typeBits;
+
+		for (size_t i = 0; i < 6; i++) {
+			typeBits[i] = this->message[8 + i];
+		}
+
+		return typeBits.to_ulong() == IONO_DELAY_CORRECTION_MESSAGE_TYPE;
+	}
+
+	void IonosphericDelayCorrectionsMessageParser::addMessage(const std::bitset<256> &message) {
+
+		this->message = message;
+
+	}
+
+	void IonosphericDelayCorrectionsMessageParser::addMessage(const std::bitset<250> &message) {
+
+		this->message.reset();
+
+		for (size_t i = 0; i < 250; i++) {
+			this->message[i] = message[i];
+		}
+
+	}
+
+
+	int IonosphericDelayCorrectionsMessageParser::getBandNumber(void) {
+
+		std::bitset<4> Bits;
+
+		for (size_t i = 0; i < 4; i++) {
+			Bits[i] = this->message[14 + i];
+		}
+
+		return Bits.to_ulong();
+	}
+
+	int IonosphericDelayCorrectionsMessageParser::getBlockId(void) {
+
+		std::bitset<4> Bits;
+
+		for (size_t i = 0; i < 4; i++) {
+			Bits[i] = this->message[18 + i];
+		}
+
+		return Bits.to_ulong();
+	}
+
+	int IonosphericDelayCorrectionsMessageParser::getIODI(void) {
+		std::bitset<2> iodeBits;
+
+		for (size_t i = 0; i < 2; i++) {
+			iodeBits[i] = this->message[217 + i];
+		}
+
+		return iodeBits.to_ulong();
+	
+	}
+
+	void IonosphericDelayCorrectionsMessageParser::reset(void) {
+
+		message.reset();
+
+		currentRecievedBandNumber = INVALID_BAND_NUMBER;
+		currentRecievedBlockNumber = INVALID_BLOCK_NUMBER;
+		currentRecievedIODI = NO_IODI_SET;
+	}
 }

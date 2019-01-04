@@ -11,7 +11,8 @@ namespace EGNOS {
 //#define	EGNOS_IGPMESSAGEPARSER_OBJECT_LONG_DISPLAY
 #define NO_IODI_SET -1
 #define INVALID_BAND_NUMBER -1
-
+#define INVALID_BLOCK_NUMBER -1
+	
 	typedef struct {
 		int idodi = NO_IODI_SET;
 		int bandId = INVALID_BAND_NUMBER;
@@ -76,4 +77,28 @@ namespace EGNOS {
 		void addMessage(const std::bitset<250> &message);
 	};
 
+	class IonosphericDelayCorrectionsMessageParser
+	{
+	public:
+		IonosphericDelayCorrectionsMessageParser();
+
+		int getIODI(void);
+		int getBandNumber(void);
+		int getBlockId(void);
+
+		int currentRecievedIODI = NO_IODI_SET;
+
+		int currentRecievedBandNumber = INVALID_BAND_NUMBER;
+		int currentRecievedBlockNumber = INVALID_BLOCK_NUMBER;
+		std::bitset<256> message;
+
+	private:
+
+		
+		void reset(void);
+
+		bool checkMessageType(void);
+		void addMessage(const std::bitset<256> &message);
+		void addMessage(const std::bitset<250> &message);
+	};
 }
