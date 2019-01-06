@@ -50,7 +50,6 @@ namespace EGNOS {
 			os << "Lon " << igp.lon << std::endl;
 		}
 		
-
 		return os;
 	}
 
@@ -84,18 +83,17 @@ namespace EGNOS {
 			throw("Wrong message type. It should be type 18.");
 		}
 
-		int iodi = this->getIODI();
+		int newIodi = this->getIODI();
 
-		if (this->currentRecievedIODI != iodi && this->currentRecievedIODI != NO_IODI_SET) {
+		if (this->currentRecievedIODI != newIodi && this->currentRecievedIODI != NO_IODI_SET) {
 			this->reset();
 		}
-		this->currentRecievedIODI = iodi;
+		this->currentRecievedIODI = newIodi;
 
 		this->currentRecievedBandNumber = this->getBandNumber();
 		this->numberOfBroadcastedBands = this->getNumberOfBroadcastedBands();
 
 		this->setIODIMAsk();
-
 	}
 
 	IonosphericGridPointMasksMessageParser& IonosphericGridPointMasksMessageParser::operator+=(const std::bitset<256> &message) {
@@ -111,8 +109,7 @@ namespace EGNOS {
 	}
 
 	void IonosphericGridPointMasksMessageParser::setIODIMAsk(void) {
-		std::bitset<201> iodeBits;
-
+		
 		IGPMaskBlock temp;
 
 		if (this->doWeHaveHisIODIMask()==true) {
@@ -125,8 +122,6 @@ namespace EGNOS {
 		int a = 0;
 
 		for (size_t i = 0; i < 201; i++) {
-			iodeBits[i] = this->message[24 + i];
-			
 
 			if (this->message[24 + i] > 0) {
 				temp.block[a] = i;
@@ -140,9 +135,30 @@ namespace EGNOS {
 	bool IonosphericGridPointMasksMessageParser::doWeHaveHisIODIMask(void){
 	
 		for (std::vector<IGPMaskBlock>::iterator it = this->blocks.begin(); it != this->blocks.end(); ++it) {
-			/* std::cout << *it; ... */
+
 			if (it->bandId == this->currentRecievedBandNumber) {
 				if (it->idodi == this->currentRecievedIODI) {
+				
+					// Double check. Let's see if the IGP masks are really the same
+					// First. Create the new blocks from the new mask
+					IGPMaskBlock temp;
+					int a = 0;
+					for (size_t i = 0; i < 201; i++) {
+
+						if (this->message[24 + i] > 0) {
+							temp.block[a] = i;
+							a++;
+						}
+					}
+					// Second. Compare the old and new blocks
+					for (size_t i = 0; i < 201; i++)
+					{
+						if (it->block[i] != temp.block[i]) {
+							it = this->blocks.erase(it);
+							return false;
+						}
+					}
+					
 					return true;
 				}
 				else {
@@ -206,17 +222,14 @@ namespace EGNOS {
 		currentRecievedIODI = NO_IODI_SET;
 	}
 
-	void IonosphericGridPointMasksMessageParser::updateIGP(IonosphericGridPoint &igp) {
+	void const IonosphericGridPointMasksMessageParser::updateIGP(IonosphericGridPoint & const igp) const{
 
 		if (igp.GIVEI == 15) {
 			igp.valid = false;
 			return;
 		}
-		igp.bandNumber;
-		igp.blockId;
-		igp.placeInBlock;
 
-		int bitpos = -1;
+		int bitpos = 0;
 		for (std::vector<IGPMaskBlock>::const_iterator it = this->blocks.begin(); it != this->blocks.end(); ++it) {
 			if (it->bandId == igp.bandNumber && it->idodi == igp.IODI) {
 				bitpos = it->block[igp.blockId * 15 + igp.placeInBlock];
@@ -224,7 +237,7 @@ namespace EGNOS {
 			}
 			
 		}
-		if (bitpos == -1) {
+		if (bitpos == 0) {
 			igp.valid = false;
 			return;
 		}
@@ -243,16 +256,16 @@ namespace EGNOS {
 
 		for (std::vector<IGPMaskBlock>::const_iterator it = igpmp.blocks.begin(); it != igpmp.blocks.end(); ++it) {
 			os << "Band Id and IODI: " << it->bandId <<  " " <<  it->idodi << std::endl;
-#ifdef EGNOS_IGPMESSAGEPARSER_OBJECT_LONG_DISPLAY
-			for (size_t i = 0; i < 201; i++)
-			{
-				if (int(it->block[i]) > 0) {
-					os << " " << int(it->block[i]);
-				}
-			}
-			os << std::endl;
-#endif
 
+			#ifdef EGNOS_IGPMESSAGEPARSER_OBJECT_LONG_DISPLAY
+				for (size_t i = 0; i < 201; i++)
+				{
+					if (int(it->block[i]) > 0) {
+						os << " " << int(it->block[i]);
+					}
+				}
+				os << std::endl;
+			#endif
 		}
 		return os;
 	}
@@ -321,7 +334,7 @@ namespace EGNOS {
 		currentRecievedIODI = NO_IODI_SET;
 	}
 
-	std::vector<IonosphericGridPoint> const & IonosphericDelayCorrectionsMessageParser::getIonosphericGridPoint(void) const {
+	const std::vector<IonosphericGridPoint> const & IonosphericDelayCorrectionsMessageParser::getIonosphericGridPoint(void) const {
 	
 		return ionoPoints;
 	}

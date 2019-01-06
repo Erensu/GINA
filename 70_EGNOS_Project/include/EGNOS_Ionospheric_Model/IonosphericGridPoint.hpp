@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "Position.hpp"
 #include "IonosphericMaskBand.hpp"
 #include <bitset>
@@ -41,12 +40,11 @@ namespace EGNOS {
 		int bandNumber;
 
 		friend std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp);
-
+		
 	private:
 		void copy(const IonosphericGridPoint &obj);
 	};
 	
-
 	class IonosphericGridPointMasksMessageParser
 	{
 	public:
@@ -65,7 +63,7 @@ namespace EGNOS {
 
 		friend std::ostream &operator<<(std::ostream &os, IonosphericGridPointMasksMessageParser const &igpmp);
 
-		void updateIGP(IonosphericGridPoint &igp);
+		void const updateIGP(IonosphericGridPoint &igp) const;
 
 	private:
 
