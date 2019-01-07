@@ -39,4 +39,5 @@ namespace EGNOS {
 			std::map<IGPCoordinate, IonosphericGridPoint>  Map;
 	};
 
+	
 };
