@@ -24,17 +24,20 @@ namespace EGNOS {
 	{
 		public:
 
+			friend class VerticalIonoDelayInterpolator;
+
 			IGPMap(void);
 			~IGPMap(void);
 
 			void setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs);
 			void updateIGPCandidate( const IonosphericGridPointMasksMessageParser  & const IGPMessageParser);
 			void updateMap(void);
+			
 
 			friend std::ostream &operator<<(std::ostream &os, IGPMap const &imap);
-
+			 
 		private:
-
+			IonosphericGridPoint getIGP(double lat, double lon) const;
 			std::vector<IonosphericGridPoint> candidateIGPs;
 			std::map<IGPCoordinate, IonosphericGridPoint>  Map;
 	};

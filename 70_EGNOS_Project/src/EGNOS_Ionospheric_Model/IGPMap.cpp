@@ -64,4 +64,30 @@ namespace EGNOS {
 		return os;
 	}
 
+	IonosphericGridPoint IGPMap::getIGP(double lat, double lon) const {
+
+		IGPCoordinate  keyword;
+		keyword.lat = lat;
+		keyword.lon = lon;
+
+		std::map<IGPCoordinate, IonosphericGridPoint>::const_iterator it;
+
+		it = this->Map.find(keyword);
+
+		if (it != this->Map.end()) {
+			if (it->second.valid == true) {
+				return it->second;
+			}
+			else {
+				throw std::exception("IGP is not valid \n");
+			}
+
+		}
+		else {
+			throw std::exception("IGP is not found");
+		}
+
+
+	}
+
 }
