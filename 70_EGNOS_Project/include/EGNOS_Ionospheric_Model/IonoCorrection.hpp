@@ -39,7 +39,10 @@ namespace EGNOS {
 		VerticalIonoDelayInterpolator(IGPMap * const linkedMap);
 
 		void VerticalIonoDelayInterpolator::gridPointSelectionCriteria(void);
-		void interpolation4point(void);
+		void interpolation4point(double xpp, double ypp);
+		void interpolation3point(double xpp, double ypp);
+		void getIGPwhenPPbetweenS55N55(void);
+
 		void setPP(IonosphericGridPoint newPP);
 		IonosphericGridPoint getIGP(double lat, double lon);
 
@@ -54,7 +57,10 @@ namespace EGNOS {
 	private:
 		IGPMap * Map;
 		void registerIGPMap(IGPMap * const link2Map);
-		void calculate_xpp_and_ypp(double &xpp, double &ypp);
+		void calculate_xpp_and_ypp(	double &xpp,	double &ypp,
+									double &lat1,	double &lat2,
+									double &lon1,	double &lon2);
+		void modulo180(double &indegree);
 		
 	};
 };

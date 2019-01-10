@@ -55,13 +55,10 @@ namespace EGNOS {
 		}
 	}
 
-	void VerticalIonoDelayInterpolator::interpolation4point(void) {
+	void VerticalIonoDelayInterpolator::interpolation4point(double xpp, double ypp) {
 	
 		double ionoDelay1, ionoDelay2, ionoDelay3, ionoDelay4;
 		double ionoDelayPP;
-		double xpp, ypp;
-
-		calculate_xpp_and_ypp(xpp, ypp);
 
 		ionoDelayPP =	xpp			* ypp		* ionoDelay1 +
 						(1 - xpp)	* ypp		* ionoDelay2 +
@@ -69,26 +66,31 @@ namespace EGNOS {
 						xpp			* (1 - ypp)	* ionoDelay4;
 	}
 
-	void VerticalIonoDelayInterpolator::calculate_xpp_and_ypp(double &xpp, double &ypp) {
+	void VerticalIonoDelayInterpolator::interpolation3point(double xpp, double ypp) {
 
-		double LongWest; // TODO
-		double LongEast; // TODO
-		double LongPP; // TODO
-		double LatPP; // TODO
-		double LatWest; // TODO
-		double LatEast; // TODO
+		double ionoDelay2, ionoDelay3, ionoDelay4;
+		double ionoDelayPP;
 
-		double deltaLongPP = LongPP - LongWest;
-		double deltaLatPP = LatPP - LatWest;
-		if (LatPP >= 85.0 || LatPP <= -85.0) {
-			ypp = (abs(LatPP) - 85.0) / 10.0;
-			xpp = ( (LongPP - LongWest) / 90.0 ) * (1 - 2*ypp) + ypp;
+		ionoDelayPP =	ypp				* ionoDelay2 +
+						1 - xpp - ypp	* ionoDelay3 +
+						xpp				* ionoDelay4;
+	}
+
+	void VerticalIonoDelayInterpolator::calculate_xpp_and_ypp(	double &xpp,	double &ypp, 
+																double &lat1,	double &lat2, 
+																double &lon1,	double &lon2) {
+
+		double deltaLongPP = ionoPP.lon - lon1;
+		double deltaLatPP = ionoPP.lat - lat1;
+
+		if (ionoPP.lat >= 85.0 || ionoPP.lat <= -85.0) {
+			ypp = (abs(ionoPP.lat) - 85.0) / 10.0;
+			xpp = ( (ionoPP.lon - lon1) / 90.0 ) * (1 - 2*ypp) + ypp;
 		}
 		else {
-			xpp = deltaLongPP / (LongEast - LongWest);
-			ypp = deltaLatPP / (LatEast - LatWest);
+			xpp = deltaLongPP / (lon2 - lon1);
+			ypp = deltaLatPP / (lat2 - lat1);
 		}
-		
 	}
 
 	void VerticalIonoDelayInterpolator::setPP(IonosphericGridPoint newPP) {
@@ -99,7 +101,7 @@ namespace EGNOS {
 	void VerticalIonoDelayInterpolator::gridPointSelectionCriteria(void) {
 	
 		if (abs(this->ionoPP.lat) <= 55.0 ) {
-		
+			this->getIGPwhenPPbetweenS55N55();
 		}
 	
 	}
@@ -202,4 +204,47 @@ namespace EGNOS {
 
 	}
 
+	void VerticalIonoDelayInterpolator::getIGPwhenPPbetweenS55N55(void) {
+	
+		double lat1, lat2, lon1, lon2;
+		// try with 5x5 grid
+		if (ionoPP.lat >= 0.0) {
+			lat1 = closestNumberFromLow(ionoPP.lat, 5);
+			lat2 = closestNumberFromHigh(ionoPP.lat, 5);
+		}
+		else {
+			lat2 = closestNumberFromLow(ionoPP.lat, 5);
+			lat1 = closestNumberFromHigh(ionoPP.lat, 5);
+		}
+		
+		if (ionoPP.lon >= 0.0) {
+			lon1 = closestNumberFromLow(ionoPP.lon, 5);
+			lon2 = closestNumberFromHigh(ionoPP.lon, 5);
+		}
+		else {
+			lon2 = closestNumberFromLow(ionoPP.lon, 5);
+			lon1 = closestNumberFromHigh(ionoPP.lon, 5);
+		}
+
+		modulo180(lon1);
+		modulo180(lon2);
+	
+		
+		
+		
+		//Map->getIGP
+	}
+
+	void VerticalIonoDelayInterpolator::modulo180(double &indegree) {
+	
+		if (indegree > 180) {
+			indegree = fmod(indegree, 180);
+			return;
+		}
+
+		if (indegree > -180) {
+			indegree = fmod(indegree, 180);
+			return;
+		}
+	}
 };

@@ -18,220 +18,64 @@
 
 using namespace std;
 
+template<std::size_t R, std::size_t L, std::size_t N>
+std::bitset<N> project_range(std::bitset<N> b)
+{
+	static_assert(R <= L && L <= N, "invalid bitrange");
+	b >>= R;            // drop R rightmost bits
+	b <<= (N - L + R);  // drop L-1 leftmost bits
+	b >>= (N - L);      // shift back into place
+	return b;
+}
+
 int main(int argc, char **argv) {
 
-	int n, m;
-	
+
+	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\h17.ems";
+
+	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
+
+	EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
+
+	EGNOS::IonosphericDelayCorrectionsMessageParser IonoGridPointParser;
+	EGNOS::IonosphericGridPointMasksMessageParser IonoMaskParser;
 	EGNOS::IGPMap IonoMap;
-	EGNOS::IGPMap  * const link2Map = &IonoMap;
 
-	EGNOS::VerticalIonoDelayInterpolator interPol(link2Map);
+	bool weHad18 = false;
+	bool weHad26 = false;
 
-	n = 76;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
+	while (exampleStreamIn >> EData) {
 
-	n = -76;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
+		if (EData.messageId == 18) {
 
-	n = 75;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
+			IonoMaskParser += EData.message;
+			//cout << IonoMaskParser << endl;
+			weHad18 = true;
+		}
 
-	n = 76;
-	m = 5;
+		if (EData.messageId == 26) {
 
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
+			IonoGridPointParser += EData.message;
+			//cout << IonoGridPointParser << endl;
+			weHad26 = true;
+		}
 
-	n = -76;
-	m = 5;
+		if (weHad18 || weHad26) {
+			IonoMap.setIGPCandidates(IonoGridPointParser.getIonosphericGridPoint());
+			IonoMap.updateIGPCandidate(IonoMaskParser);
+			IonoMap.updateMap();
 
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
+			//cout << IonoMap;
 
-	n = 75;
-	m = 5;
+			weHad26 = false;
+			weHad18 = false;
+		}
+	}
 
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
+	EGNOS::VerticalIonoDelayInterpolator interPol(&IonoMap);
+	//cout << IonoMap;
 
-	n = -75;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = 6;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = 2;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = -2;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = 2;
-	m = 10;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = -2;
-	m = 10;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-
-	n = 82;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = 78;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = 80;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = -82;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = -78;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = -80;
-	m = 5;
-
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "second closest Number From High: " << interPol.secondclosestNumberFromHigh(n, m) << endl;
-	cout << "second closest Number From Low: " << interPol.secondclosestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = 76;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n =-76;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = 82;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = -82;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-
-	n = 80;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = -80;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = 0;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = 2;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
-
-	n = -2;
-	m = 5;
-	cout << "number: " << n << " divisible " << m << endl;
-	cout << "closest Number From High: " << interPol.closestNumberFromHigh(n, m) << endl;
-	cout << "closest Number From Low: " << interPol.closestNumberFromLow(n, m) << endl;
-	cout << endl;
+	exampleStreamIn.close();
 
 	return 0;
 }
