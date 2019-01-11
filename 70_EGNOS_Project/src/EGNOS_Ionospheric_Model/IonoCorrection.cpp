@@ -293,7 +293,7 @@ namespace EGNOS {
 		if (igp1.valid && igp2.valid && igp3.valid && igp4.valid) {
 
 			double xpp = absDistanceOfLongitude(ionoPP.lon, igp3.lon) / 5;
-			double ypp = ionoPP.lat - igp3.lat / 5;
+			double ypp = abs(ionoPP.lat - igp3.lat) / 5;
 
 			double corr =  interpolation4point(xpp, ypp, igp1.getIonoCorr(), igp2.getIonoCorr(), igp3.getIonoCorr(), igp4.getIonoCorr());
 			return corr;
