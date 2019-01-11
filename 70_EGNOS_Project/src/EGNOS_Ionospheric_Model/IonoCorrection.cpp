@@ -71,7 +71,7 @@ namespace EGNOS {
 																double ionoDelay2, 
 																double ionoDelay3) {
 		return			ypp				* ionoDelay1 +
-						1 - xpp - ypp	* ionoDelay2 +
+						(1 - xpp - ypp)	* ionoDelay2 +
 						xpp				* ionoDelay3;
 	}
 
