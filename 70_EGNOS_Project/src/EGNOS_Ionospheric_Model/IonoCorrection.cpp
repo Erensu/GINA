@@ -343,7 +343,7 @@ namespace EGNOS {
 			}
 		}
 		else if (igp4.valid == false) {
-			if (abs(ionoPP.lat - igp3.lat) >= this->ionoPP.lon) {
+			if (abs(ionoPP.lat - igp3.lat) >= absDistanceOfLongitude(igp3.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, igp2.lon) / 5;
 				double ypp = abs(ionoPP.lat - igp2.lat) / 5;
