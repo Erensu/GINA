@@ -238,8 +238,8 @@ namespace EGNOS {
 			lon1 = closestNumberFromHigh(ionoPP.lon, 5);
 		}
 
-		modulo180(lon1);
-		modulo180(lon2);
+		restrictLong(lon1);
+		restrictLong(lon2);
 	
 		
 		IonosphericGridPoint igp1, igp2, igp3, igp4;
@@ -360,14 +360,16 @@ namespace EGNOS {
 		
 	}
 
-	void VerticalIonoDelayInterpolator::modulo180(double &indegree) {
+	void VerticalIonoDelayInterpolator::restrictLong(double &indegree) {
 	
-		if (indegree > 180) {
+
+		if (indegree >= 180) {
 			indegree = fmod(indegree, 180);
+			indegree -= 180;
 			return;
 		}
 
-		if (indegree > -180) {
+		if (indegree < -180) {
 			indegree = fmod(indegree, 180);
 			return;
 		}

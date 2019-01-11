@@ -71,7 +71,7 @@ namespace EGNOS {
 		void calculate_xpp_and_ypp(	double &xpp,	double &ypp,
 									double &lat1,	double &lat2,
 									double &lon1,	double &lon2);
-		void modulo180(double &indegree);
+		void restrictLong(double &indegree);
 		double absDistanceOfLongitude(double lon1, double lon2);
 	};
 };

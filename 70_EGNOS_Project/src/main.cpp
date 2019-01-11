@@ -32,31 +32,45 @@ int main(int argc, char **argv) {
 
 	EGNOS::IonosphericGridPoint pp;
 
-	igp1.lat = -50;
-	igp1.lon = -15;
+	igp1.lat = 5;
+	igp1.lon = 175;
 	igp1.IGPVerticalDelayEstimate = 100;
 	igp1.valid = true;
 
-	igp2.lat = -50;
-	igp2.lon = -20;
+	igp2.lat = 5;
+	igp2.lon = -180;
 	igp2.IGPVerticalDelayEstimate = 100;
 	igp2.valid = true;
 
-	igp3.lat = -55;
-	igp3.lon = -20;
+	igp3.lat = 0;
+	igp3.lon = -180;
 	igp3.IGPVerticalDelayEstimate = 100;
 	igp3.valid = true;
 
-	igp4.lat = -55;
-	igp4.lon = -15;
+	igp4.lat = 0;
+	igp4.lon = 175;
 	igp4.IGPVerticalDelayEstimate = 100;
 	igp4.valid = true;
 #pragma endregion
 
+#pragma region Four grid interpolation quarter
+	pp.lat = 2;
+	pp.lon = 177;
+	interPol.setPP(pp);
+
+	IonoMap.addIGPforDebugging(igp1);
+	IonoMap.addIGPforDebugging(igp2);
+	IonoMap.addIGPforDebugging(igp3);
+	IonoMap.addIGPforDebugging(igp4);
+
+	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
+
+#pragma endregion
+
 #pragma region 1st quarter
 	/*pp  1st quarter*/
-	pp.lat = -51;
-	pp.lon = -16;
+	pp.lat = 4;
+	pp.lon = 176;
 	interPol.setPP(pp);
 
 	/*Test 1 */
@@ -114,8 +128,8 @@ int main(int argc, char **argv) {
 
 #pragma region 2nd quarter
 	/*pp  2nd quarter*/
-	pp.lat = -51;
-	pp.lon = -19;
+	pp.lat = 4;
+	pp.lon = 179;
 	interPol.setPP(pp);
 
 	/*Test 1 */
@@ -173,8 +187,8 @@ int main(int argc, char **argv) {
 
 #pragma region 3rd quarter
 	/*pp  3rd quarter*/
-	pp.lat = -54;
-	pp.lon = -19;
+	pp.lat = 1;
+	pp.lon = 179;
 	interPol.setPP(pp);
 
 	/*Test 1 */
@@ -233,8 +247,8 @@ int main(int argc, char **argv) {
 
 #pragma region 4th quarter
 	/*pp  4th quarter*/
-	pp.lat = -54;
-	pp.lon = -16;
+	pp.lat = 1;
+	pp.lon = 176;
 	interPol.setPP(pp);
 
 	/*Test 1 */
