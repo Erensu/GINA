@@ -33,6 +33,8 @@ namespace EGNOS {
 			void updateIGPCandidate( const IonosphericGridPointMasksMessageParser  & const IGPMessageParser);
 			void updateMap(void);
 			
+			void addIGPforDebugging(IonosphericGridPoint newIGP);
+			void reset(void);
 
 			friend std::ostream &operator<<(std::ostream &os, IGPMap const &imap);
 			 

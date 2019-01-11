@@ -36,6 +36,10 @@ namespace EGNOS {
 		return *this;
 	}
 
+	double IonosphericGridPoint::getIonoCorr(void) {
+		return this->IGPVerticalDelayEstimate * 0.125;
+	}
+
 	std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp) {
 
 		os << "IODI " << igp.IODI << std::endl;
@@ -243,7 +247,10 @@ namespace EGNOS {
 		}
 
 		IonosphericMaskBands gridEngine;
-		gridEngine.getPosition(igp.bandNumber, bitpos, igp.lat, igp.lon);
+		int temp_lat, temp_lon;
+		gridEngine.getPosition(igp.bandNumber, bitpos, temp_lat, temp_lon);
+		igp.lat = (double)temp_lat;
+		igp.lon = (double)temp_lon;
 
 		igp.valid = true;
 	}

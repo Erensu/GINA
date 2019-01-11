@@ -26,10 +26,11 @@ namespace EGNOS {
 		IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &obj);
 
 		IonosphericGridPoint& operator=(const IonosphericGridPoint& other);
+		double getIonoCorr(void);
 
 		bool valid = false;
-		int lat;
-		int lon;
+		double lat;
+		double lon;
 
 		int IGPVerticalDelayEstimate;
 		int IODI;

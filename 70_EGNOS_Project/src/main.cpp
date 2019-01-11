@@ -18,64 +18,49 @@
 
 using namespace std;
 
-template<std::size_t R, std::size_t L, std::size_t N>
-std::bitset<N> project_range(std::bitset<N> b)
-{
-	static_assert(R <= L && L <= N, "invalid bitrange");
-	b >>= R;            // drop R rightmost bits
-	b <<= (N - L + R);  // drop L-1 leftmost bits
-	b >>= (N - L);      // shift back into place
-	return b;
-}
-
 int main(int argc, char **argv) {
 
-
-	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\h17.ems";
-
-	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
-
-	EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
-
-	EGNOS::IonosphericDelayCorrectionsMessageParser IonoGridPointParser;
-	EGNOS::IonosphericGridPointMasksMessageParser IonoMaskParser;
 	EGNOS::IGPMap IonoMap;
 
-	bool weHad18 = false;
-	bool weHad26 = false;
+	EGNOS::IonosphericGridPoint igp1;
+	igp1.lat = 55;
+	igp1.lon = 20;
+	igp1.IGPVerticalDelayEstimate = 100;
+	igp1.valid = true;
 
-	while (exampleStreamIn >> EData) {
+	EGNOS::IonosphericGridPoint igp2;
+	igp2.lat = 55;
+	igp2.lon = 15;
+	igp2.IGPVerticalDelayEstimate = 100;
+	igp2.valid = true;
 
-		if (EData.messageId == 18) {
+	EGNOS::IonosphericGridPoint igp3;
+	igp3.lat = 50;
+	igp3.lon = 15;
+	igp3.IGPVerticalDelayEstimate = 100;
+	igp3.valid = true;
 
-			IonoMaskParser += EData.message;
-			//cout << IonoMaskParser << endl;
-			weHad18 = true;
-		}
+	EGNOS::IonosphericGridPoint igp4;
+	igp4.lat = 50;
+	igp4.lon = 20;
+	igp4.IGPVerticalDelayEstimate = 100;
+	igp4.valid = true;
 
-		if (EData.messageId == 26) {
-
-			IonoGridPointParser += EData.message;
-			//cout << IonoGridPointParser << endl;
-			weHad26 = true;
-		}
-
-		if (weHad18 || weHad26) {
-			IonoMap.setIGPCandidates(IonoGridPointParser.getIonosphericGridPoint());
-			IonoMap.updateIGPCandidate(IonoMaskParser);
-			IonoMap.updateMap();
-
-			//cout << IonoMap;
-
-			weHad26 = false;
-			weHad18 = false;
-		}
-	}
+	IonoMap.addIGPforDebugging(igp1);
+	IonoMap.addIGPforDebugging(igp2);
+	IonoMap.addIGPforDebugging(igp3);
+	IonoMap.addIGPforDebugging(igp4);
 
 	EGNOS::VerticalIonoDelayInterpolator interPol(&IonoMap);
 	//cout << IonoMap;
 
-	exampleStreamIn.close();
+	EGNOS::IonosphericGridPoint pp;
+	pp.lat = 52;
+	pp.lon = 17;
+
+	interPol.setPP(pp);
+	std::cout << interPol.gridPointSelectionCriteria() << std::endl;;
+	
 
 	return 0;
 }

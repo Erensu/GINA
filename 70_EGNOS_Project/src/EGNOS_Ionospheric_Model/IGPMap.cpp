@@ -41,6 +41,18 @@ namespace EGNOS {
 		}
 	}
 
+	void IGPMap::addIGPforDebugging(IonosphericGridPoint newIGP) {
+
+		IGPCoordinate coor = { newIGP.lat , newIGP.lon };
+		this->Map[coor] = newIGP;
+	}
+
+	void IGPMap::reset(void) {
+
+		this->Map.clear();
+		this->candidateIGPs.clear();
+	}
+
 	std::ostream &operator<<(std::ostream &os, IGPMap const &imap) {
 	
 		// Old display
