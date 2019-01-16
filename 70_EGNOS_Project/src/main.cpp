@@ -12,297 +12,82 @@
 #include "IGPMap.hpp"
 #include "IonosphericMaskBand.hpp"
 #include "IonosphericGridPoint.hpp"
-#include "IonoCorrection.hpp"
 
 #include "GINAConfig.h"
 
 using namespace std;
 
+// Class to solve the equation system using Least Mean Squares
+#include "SolverLMS.hpp"
+
+// Class to solve the equation system using Weighted-Least Mean Squares
+#include "SolverWMS.hpp"
+#include "ComputeIonoModel.hpp"
+
 int main(int argc, char **argv) {
 
-#pragma region Initailaze Test
-
-	EGNOS::IGPMap IonoMap;
-	EGNOS::VerticalIonoDelayInterpolator interPol(&IonoMap);
-
-	EGNOS::IonosphericGridPoint igp1;
-	EGNOS::IonosphericGridPoint igp2;
-	EGNOS::IonosphericGridPoint igp3;
-	EGNOS::IonosphericGridPoint igp4;
-
-	EGNOS::IonosphericGridPoint pp;
-
-	igp1.lat = 5;
-	igp1.lon = 175;
-	igp1.IGPVerticalDelayEstimate = 100;
-	igp1.valid = true;
-
-	igp2.lat = 5;
-	igp2.lon = -180;
-	igp2.IGPVerticalDelayEstimate = 100;
-	igp2.valid = true;
-
-	igp3.lat = 0;
-	igp3.lon = -180;
-	igp3.IGPVerticalDelayEstimate = 100;
-	igp3.valid = true;
-
-	igp4.lat = 0;
-	igp4.lon = 175;
-	igp4.IGPVerticalDelayEstimate = 100;
-	igp4.valid = true;
-#pragma endregion
-
-#pragma region Four grid interpolation quarter
-	pp.lat = 2;
-	pp.lon = 177;
-	interPol.setPP(pp);
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-#pragma endregion
-
-#pragma region 1st quarter
-	/*pp  1st quarter*/
-	pp.lat = 4;
-	pp.lon = 176;
-	interPol.setPP(pp);
-
-	/*Test 1 */
-	igp1.valid = false;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 2 */
-	igp1.valid = true;
-	igp2.valid = false;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 3 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = false;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 4 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = false;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-#pragma endregion
-
-#pragma region 2nd quarter
-	/*pp  2nd quarter*/
-	pp.lat = 4;
-	pp.lon = 179;
-	interPol.setPP(pp);
-
-	/*Test 1 */
-	igp1.valid = false;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 2 */
-	igp1.valid = true;
-	igp2.valid = false;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 3 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = false;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 4 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = false;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-#pragma endregion
-
-#pragma region 3rd quarter
-	/*pp  3rd quarter*/
-	pp.lat = 1;
-	pp.lon = 179;
-	interPol.setPP(pp);
-
-	/*Test 1 */
-
-	igp1.valid = false;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 2 */
-	igp1.valid = true;
-	igp2.valid = false;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 3 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = false;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 4 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = false;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-#pragma endregion
-
-#pragma region 4th quarter
-	/*pp  4th quarter*/
-	pp.lat = 1;
-	pp.lon = 176;
-	interPol.setPP(pp);
-
-	/*Test 1 */
-	igp1.valid = false;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 2 */
-	igp1.valid = true;
-	igp2.valid = false;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 3 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = false;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-
-	/*Test 4 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = false;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	std::cout << interPol.gridPointSelectionCriteria() << std::endl;
-#pragma endregion
+	gpstk::IonexStore ionoStore;
+	
+	gpstk::Position nominalPosition;
+	nominalPosition.setGeodetic(44, 19, 100, new gpstk::WGS84Ellipsoid());
 
+	std::string ionexFile_In = ROOT "\\70_EGNOS_Project\\files\\carg0310.18i";
+	std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\carg0310_out.18i";
+	
+
+	ionoStore.loadFile(ionexFile_In.c_str());
+
+	gpstk::IonexStream strm_in(ionexFile_In.c_str(), std::ios::in);
+	gpstk::IonexStream strm_out(ionexFile_Out.c_str(), std::ios::out);
+
+	gpstk::IonexHeader header;
+	header = ionoStore.getHeader(ionexFile_In);
+
+	
+	//ionoStore.dump(strm,1);
+
+	//ionoStore.dump(std::cout, 1);
+	
+
+	gpstk::IonexData iod_in;
+	gpstk::IonexData iod_out;
+	
+	strm_out << header;
+	while (strm_in >> iod_in && iod_in.isValid())
+	{
+		iod_out.data = iod_in.data;
+
+		iod_out.dim[0] = iod_in.dim[0];
+		iod_out.dim[1] = iod_in.dim[1];
+		iod_out.dim[2] = iod_in.dim[2];
+
+		iod_out.exponent = iod_in.exponent;
+		iod_out.lat[0] = iod_in.lat[0];
+		iod_out.lat[1] = iod_in.lat[1];
+		iod_out.lat[2] = iod_in.lat[2];
+
+		iod_out.lon[0] = iod_in.lon[0];
+		iod_out.lon[1] = iod_in.lon[1];
+		iod_out.lon[2] = iod_in.lon[2];
+
+		iod_out.hgt[0] = iod_in.hgt[0];
+		iod_out.hgt[1] = iod_in.hgt[1];
+		iod_out.hgt[2] = iod_in.hgt[2];
+
+		iod_out.valid = iod_in.valid;
+
+		iod_out.type = iod_in.type;
+
+		iod_out.time = iod_in.time;
+		
+		strm_out << iod_out;
+	}
+	
+	
+
+	strm_in.close();
+	strm_out.close();
+
+	
 	return 0;
 }

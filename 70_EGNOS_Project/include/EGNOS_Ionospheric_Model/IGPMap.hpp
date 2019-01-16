@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include "IonosphericGridPoint.hpp"
+#include "IonoCorrection.hpp"
 #include <iterator> 
 #include <map> 
 
@@ -35,13 +36,21 @@ namespace EGNOS {
 			
 			void addIGPforDebugging(IonosphericGridPoint newIGP);
 			void reset(void);
+			IonosphericGridPoint getIGP(double lat, double lon) const;
 
 			friend std::ostream &operator<<(std::ostream &os, IGPMap const &imap);
 			 
+			
 		private:
-			IonosphericGridPoint getIGP(double lat, double lon) const;
+			
+			std::vector<VerticalIonoDelayInterpolator*> interPolList;
+			
 			std::vector<IonosphericGridPoint> candidateIGPs;
 			std::map<IGPCoordinate, IonosphericGridPoint>  Map;
+			void ereaseInterPolElementLink(VerticalIonoDelayInterpolator* obsoleteElement);
+			void deleteAllInterPolElementLink(void);
+			void deleteInterPolElementLink(VerticalIonoDelayInterpolator* obsolateElement);
+			
 	};
 
 	

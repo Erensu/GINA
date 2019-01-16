@@ -3,6 +3,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include "IGPMap.hpp"
 
 namespace EGNOS {
 
@@ -36,7 +37,11 @@ namespace EGNOS {
 	class VerticalIonoDelayInterpolator
 	{
 	public:
+		
+		friend class IGPMap;
+
 		VerticalIonoDelayInterpolator(IGPMap * const linkedMap);
+		~VerticalIonoDelayInterpolator(void);
 
 		double VerticalIonoDelayInterpolator::gridPointSelectionCriteria(void);
 
@@ -63,15 +68,19 @@ namespace EGNOS {
 		int secondclosestNumberFromLow(int n, int m);
 		int secondclosestNumberFromHigh(int n, int m);
 
+		
 	private:
-		IGPMap * Map;
+
+		IGPMap * Map;							// TODO - undefined behavior when Map object is out of scope - This is a very simple strategy pattern.
+
 		double getIGPwhenPPbetweenS55N55(void);
 
-		void registerIGPMap(IGPMap * const link2Map);
+		void registerIGPMap(IGPMap * link2Map);
 		void calculate_xpp_and_ypp(	double &xpp,	double &ypp,
 									double &lat1,	double &lat2,
 									double &lon1,	double &lon2);
 		void restrictLong(double &indegree);
 		double absDistanceOfLongitude(double lon1, double lon2);
+		void deleteLink2Map(void) {	Map = NULL;	}
 	};
 };

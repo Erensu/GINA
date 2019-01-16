@@ -20,6 +20,10 @@ namespace EGNOS {
 		
 	}
 
+	VerticalIonoDelayInterpolator::~VerticalIonoDelayInterpolator(void) {
+		Map->deleteInterPolElementLink(this);
+	}
+
 	void SlantIonoDelay::setRoverPosition(double lat, double lon, double height) {
 	
 		this->rlat = lat;
@@ -96,7 +100,15 @@ namespace EGNOS {
 	double VerticalIonoDelayInterpolator::gridPointSelectionCriteria(void) {
 		double rtv = -255;
 		if (abs(this->ionoPP.lat) <= 55.0 ) {
-			rtv = this->getIGPwhenPPbetweenS55N55();
+			try
+			{
+				rtv = this->getIGPwhenPPbetweenS55N55();
+			}
+			catch (const std::exception&)
+			{
+				rtv = -255;
+			}
+			
 		}
 		else {
 		
@@ -118,10 +130,12 @@ namespace EGNOS {
 		
 	}
 
-	void VerticalIonoDelayInterpolator::registerIGPMap(IGPMap * const link2Map) {
+	void VerticalIonoDelayInterpolator::registerIGPMap(IGPMap * link2Map) {
 		if (link2Map == NULL) {
 			throw(std::exception("Invalid IGPMap \n"));
 		}
+		link2Map->interPolList.push_back(this);
+		
 		this->Map = link2Map;
 	}
 
@@ -218,6 +232,10 @@ namespace EGNOS {
 
 	double VerticalIonoDelayInterpolator::getIGPwhenPPbetweenS55N55(void) {
 	
+		if (this->Map == NULL) {
+			throw("Iono Map is not exist.");
+		}
+
 		double lat1, lat2, lon1, lon2;
 		// try with 5x5 grid
 		if (ionoPP.lat >= 0.0) {

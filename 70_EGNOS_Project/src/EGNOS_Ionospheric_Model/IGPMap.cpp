@@ -3,6 +3,7 @@
 
 #include "IGPMap.hpp"
 #include "IonosphericMaskBand.hpp"
+#include <algorithm>
 
 namespace EGNOS {
 
@@ -11,8 +12,10 @@ namespace EGNOS {
 	}
 
 	IGPMap::~IGPMap(void) {
+
 		this->Map.clear();
 		this->candidateIGPs.clear();
+		deleteAllInterPolElementLink();
 	}
 
 	void IGPMap::setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs) {
@@ -101,5 +104,33 @@ namespace EGNOS {
 
 
 	}
+
+	void IGPMap::ereaseInterPolElementLink(VerticalIonoDelayInterpolator* obsoleteElement) {
+	
+		interPolList.erase(std::remove(interPolList.begin(), interPolList.end(), obsoleteElement), interPolList.end());
+	}
+
+	void IGPMap::deleteAllInterPolElementLink(void) {
+
+		//interPolList->Map = NULL;
+		for (size_t i = 0; i < interPolList.size(); ++i)
+		{
+			interPolList[i]->deleteLink2Map();
+		}
+	}
+
+	void IGPMap::deleteInterPolElementLink(VerticalIonoDelayInterpolator* obsolateElement) {
+
+		//interPolList->Map = NULL;
+		for (size_t i = 0; i < interPolList.size(); ++i)
+		{
+			if (interPolList[i] == obsolateElement) {
+				interPolList[i]->deleteLink2Map();
+			}
+			
+		}
+	}
+
+
 
 }
