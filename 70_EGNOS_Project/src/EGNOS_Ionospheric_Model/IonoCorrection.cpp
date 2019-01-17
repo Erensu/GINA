@@ -13,9 +13,9 @@ namespace EGNOS {
 		{
 			this->registerIGPMap(linkedMap);
 		}
-		catch (const std::exception&)
+		catch (std::exception& e)
 		{
-			throw(std::exception("Invalid input IGPMap pointer during the instance creation \n"));
+			throw e;
 		}
 		
 	}
@@ -98,20 +98,21 @@ namespace EGNOS {
 	}
 
 	double VerticalIonoDelayInterpolator::gridPointSelectionCriteria(void) {
-		double rtv = -255;
+
+		double rtv;
 		if (abs(this->ionoPP.lat) <= 55.0 ) {
 			try
 			{
 				rtv = this->getIGPwhenPPbetweenS55N55();
 			}
-			catch (const std::exception&)
+			catch (exception &e)
 			{
-				rtv = -255;
+				throw std::domain_error("Interppolation in 5x5 grid is not possible");
 			}
 			
 		}
 		else {
-		
+			throw std::domain_error("Unfinished code");
 		}
 
 		return rtv;
@@ -123,16 +124,16 @@ namespace EGNOS {
 		{
 			return this->Map->getIGP(lat, lon);
 		}
-		catch (const std::exception& e)
+		catch (std::exception& e)
 		{
-			throw std::exception("IGP is not found \n");
+			throw std::domain_error("Interppolation in 5x5 grid is not possible");
 		}
 		
 	}
 
 	void VerticalIonoDelayInterpolator::registerIGPMap(IGPMap * link2Map) {
 		if (link2Map == NULL) {
-			throw(std::exception("Invalid IGPMap \n"));
+			throw std::bad_alloc();
 		}
 		link2Map->interPolList.push_back(this);
 		
@@ -233,7 +234,7 @@ namespace EGNOS {
 	double VerticalIonoDelayInterpolator::getIGPwhenPPbetweenS55N55(void) {
 	
 		if (this->Map == NULL) {
-			throw("Iono Map is not exist.");
+			throw std::domain_error("Interppolation in 5x5 grid is not possible");
 		}
 
 		double lat1, lat2, lon1, lon2;
@@ -304,8 +305,7 @@ namespace EGNOS {
 		}
 
 		if (numberOfValidIGP < 3) {
-			double corr = -255;
-			return corr;
+			throw std::domain_error("Interppolation in 5x5 grid is not possible");
 		}
 		
 		if (igp1.valid && igp2.valid && igp3.valid && igp4.valid) {
@@ -328,8 +328,7 @@ namespace EGNOS {
 				return corr;
 			}
 			else {
-				double corr = -255;
-				return corr; // TODO - here we switch to 10 x 10 grids
+				throw std::domain_error("Interppolation in 5x5 grid is not possible");
 			}
 		}
 		else if (igp2.valid == false) {
@@ -342,8 +341,7 @@ namespace EGNOS {
 				return corr;
 			}
 			else {
-				double corr = -255;
-				return corr; // TODO - here we switch to 10 x 10 grids
+				throw std::domain_error("Interppolation in 5x5 grid is not possible");
 			}
 		}
 		else if (igp3.valid == false) {
@@ -356,8 +354,7 @@ namespace EGNOS {
 				return corr;
 			}
 			else {
-				double corr = -255;
-				return corr; // TODO - here we switch to 10 x 10 grids
+				throw std::domain_error("Interppolation in 5x5 grid is not possible");
 			}
 		}
 		else if (igp4.valid == false) {
@@ -370,8 +367,7 @@ namespace EGNOS {
 				return corr;
 			}
 			else {
-				double corr = -255;
-				return corr; // TODO - here we switch to 10 x 10 grids
+				throw std::domain_error("Interppolation in 5x5 grid is not possible");
 			}
 		}
 		
