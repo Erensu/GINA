@@ -71,7 +71,7 @@ namespace EGNOS {
 		
 	private:
 
-		IGPMap * Map;							// TODO - undefined behavior when Map object is out of scope - This is a very simple strategy pattern.
+		IGPMap * Map;							
 
 		double getIGPwhenPPbetweenS55N55(void);
 
