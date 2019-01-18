@@ -27,6 +27,7 @@ namespace EGNOS {
 
 		IonosphericGridPoint& operator=(const IonosphericGridPoint& other);
 		double getIonoCorr(void);
+		void setIonoDelayinMeter(double delay) { IGPVerticalDelayEstimate = delay * 8; };
 
 		bool valid = false;
 		double lat;
