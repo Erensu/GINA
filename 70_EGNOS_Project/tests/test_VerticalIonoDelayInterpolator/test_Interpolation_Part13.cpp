@@ -50,7 +50,7 @@ void Test(EGNOS::VerticalIonoDelayInterpolator &interPol, testCaseDescriptor tes
 	}
 	catch (exception &e)
 	{
-		
+
 
 		if (testCase.expectedResult == testStatus::Passed) {
 			testCase.givenResult = testStatus::Failed;
@@ -63,7 +63,7 @@ void Test(EGNOS::VerticalIonoDelayInterpolator &interPol, testCaseDescriptor tes
 		}
 	}
 
-	
+
 
 	FailedTestCases.push_back(testCase);
 
@@ -76,7 +76,7 @@ void WriteOutTotalTestResults(bool withExtraInfo) {
 		std::cout << std::endl << "Number of failed test cases are: " << numberOfFailedTests << std::endl;
 		for (size_t i = 0; i < FailedTestCases.size(); i++)
 		{
-			if(withExtraInfo == true){
+			if (withExtraInfo == true) {
 				switch (FailedTestCases[i].givenResult)
 				{
 				case testStatus::Failed:
@@ -90,14 +90,14 @@ void WriteOutTotalTestResults(bool withExtraInfo) {
 					break;
 				}
 			}
-			
+
 		}
 	}
 	else {
 		std::cout << std::endl << "All the Tests are PASSED" << std::endl;
-	
+
 	}
-	
+
 
 }
 
@@ -119,29 +119,29 @@ int main(int argc, char **argv) {
 	EGNOS::IonosphericGridPoint pp;
 
 	igp1.lat = 15;
-	igp1.lon = 175;
+	igp1.lon = -180;
 	igp1.setIonoDelayinMeter(10);
 	igp1.valid = true;
 
 	igp2.lat = 15;
-	igp2.lon = -180;
+	igp2.lon = 175;
 	igp2.setIonoDelayinMeter(20);
 	igp2.valid = true;
 
 	igp3.lat = 10;
-	igp3.lon = -180;
+	igp3.lon = 175;
 	igp3.setIonoDelayinMeter(30);
 	igp3.valid = true;
 
 	igp4.lat = 10;
-	igp4.lon = 175;
+	igp4.lon = -180;
 	igp4.setIonoDelayinMeter(40);
 	igp4.valid = true;
 #pragma endregion
 
 #pragma region All 4 is fine
 
-	
+
 	/*  All 4 is fine*/
 	pp.lat = 12.5;
 	pp.lon = 177.5;
@@ -162,9 +162,9 @@ int main(int argc, char **argv) {
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in the middle'";
 	Test(interPol, testCase);
-	
+
 	pp.lat = 13.75;
-	pp.lon = 176.25;
+	pp.lon = 178.75;
 	interPol.setPP(pp);
 
 	testCase.interPolationExpectedResult = 18.75;
@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
 	Test(interPol, testCase);
 
 	pp.lat = 13.75;
-	pp.lon = 178.75;
+	pp.lon = 176.25;
 	interPol.setPP(pp);
 
 	testCase.interPolationExpectedResult = 21.25;
@@ -182,7 +182,7 @@ int main(int argc, char **argv) {
 	Test(interPol, testCase);
 
 	pp.lat = 11.25;
-	pp.lon = 178.75;
+	pp.lon = 176.25;
 	interPol.setPP(pp);
 
 	testCase.interPolationExpectedResult = 28.75;
@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
 	Test(interPol, testCase);
 
 	pp.lat = 11.25;
-	pp.lon = 176.25;
+	pp.lon = 178.75;
 	interPol.setPP(pp);
 
 	testCase.interPolationExpectedResult = 31.25;
@@ -204,7 +204,7 @@ int main(int argc, char **argv) {
 #pragma region 1st quarter
 	/*pp  1st quarter*/
 	pp.lat = 13.75;
-	pp.lon = 176.25;
+	pp.lon = 178.75;
 	interPol.setPP(pp);
 
 	/*Test 1 */
@@ -274,7 +274,7 @@ int main(int argc, char **argv) {
 #pragma region 2nd quarter
 	/*pp  2nd quarter*/
 	pp.lat = 13.75;
-	pp.lon = 178.75;
+	pp.lon = 176.25;
 	interPol.setPP(pp);
 
 	/*Test 1 */
@@ -345,7 +345,7 @@ int main(int argc, char **argv) {
 #pragma region 3rd quarter
 	/*pp  3rd quarter*/
 	pp.lat = 11.25;
-	pp.lon = 178.75;
+	pp.lon = 176.25;
 	interPol.setPP(pp);
 
 	/*Test 1 */
@@ -417,7 +417,7 @@ int main(int argc, char **argv) {
 #pragma region 4th quarter
 	/*pp  4th quarter*/
 	pp.lat = 11.25;
-	pp.lon = 176.25;
+	pp.lon = 178.75;
 	interPol.setPP(pp);
 
 	/*Test 1 */
