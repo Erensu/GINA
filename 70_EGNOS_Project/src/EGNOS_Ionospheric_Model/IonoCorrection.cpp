@@ -108,15 +108,13 @@ namespace EGNOS {
 			catch (exception &e)
 			{
 				//throw std::domain_error("Interppolation in 5x5 grid is not possible");
-				rtv = this->grid10x10Interpolator();
 				try
 				{
-					rtv = this->grid5x5Interpolator();
+					rtv = this->grid10x10Interpolator();
 				}
 				catch (exception &e)
 				{
-					throw std::domain_error("Interppolation in 10x10 grid is not possible");
-					
+					throw std::domain_error("Interppolation is not possible");
 				}
 			}
 			
@@ -315,11 +313,11 @@ namespace EGNOS {
 				return corr;
 			}
 			else {
-				throw std::domain_error("Interppolation in 5x5 grid is not possible");
+				throw std::domain_error("Interppolation is not possible");
 			}
 		}
 		else if (table.second.valid == false) {
-			if (abs(ionoPP.lat - table.fourth.lat) <= 5.0 - absDistanceOfLongitude(table.fourth.lon, this->ionoPP.lon)) {
+			if (abs(ionoPP.lat - table.fourth.lat) <= gridDistance - absDistanceOfLongitude(table.fourth.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.fourth.lon) / gridDistance;
 				double ypp = abs(ionoPP.lat - table.fourth.lat) / gridDistance;
@@ -328,7 +326,7 @@ namespace EGNOS {
 				return corr;
 			}
 			else {
-				throw std::domain_error("Interppolation in 5x5 grid is not possible");
+				throw std::domain_error("Interppolation is not possible");
 			}
 		}
 		else if (table.third.valid == false) {
@@ -341,7 +339,7 @@ namespace EGNOS {
 				return corr;
 			}
 			else {
-				throw std::domain_error("Interppolation in 5x5 grid is not possible");
+				throw std::domain_error("Interppolation is not possible");
 			}
 		}
 		else if (table.fourth.valid == false) {
@@ -354,7 +352,7 @@ namespace EGNOS {
 				return corr;
 			}
 			else {
-				throw std::domain_error("Interppolation in 5x5 grid is not possible");
+				throw std::domain_error("Interppolation is not possible");
 			}
 		}
 
@@ -674,7 +672,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp23 = Map->getIGP(lat2 + 5, lon1 + 5 );
+				igp23 = Map->getIGP(lat2 + 5, lon1 - 5 );
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
