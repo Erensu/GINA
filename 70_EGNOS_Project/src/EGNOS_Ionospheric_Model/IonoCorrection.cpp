@@ -736,25 +736,13 @@ namespace EGNOS {
 	}
 	
 	void VerticalIonoDelayInterpolator::getNearestLatLot(double &lat1, double &lat2, double &lon1, double &lon2) {
-
-		if (ionoPP.lat >= 0.0) {
-			lat1 = closestNumberFromLow(ionoPP.lat, 5);
-			lat2 = closestNumberFromHigh(ionoPP.lat, 5);
-		}
-		else {
-			lat2 = closestNumberFromLow(ionoPP.lat, 5);
-			lat1 = closestNumberFromHigh(ionoPP.lat, 5);
-		}
-
-		if (ionoPP.lon >= 0.0) {
-			lon1 = closestNumberFromLow(ionoPP.lon, 5);
-			lon2 = closestNumberFromHigh(ionoPP.lon, 5);
-		}
-		else {
-			lon2 = closestNumberFromLow(ionoPP.lon, 5);
-			lon1 = closestNumberFromHigh(ionoPP.lon, 5);
-		}
-
+	
+		lat1 = closestNumberFromLow(ionoPP.lat, 5);
+		lat2 = closestNumberFromHigh(ionoPP.lat, 5);
+	
+		lon1 = closestNumberFromLow(ionoPP.lon, 5);
+		lon2 = closestNumberFromHigh(ionoPP.lon, 5);
+		
 		restrictLong(&lon1);
 		restrictLong(&lon2);
 	}
