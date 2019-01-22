@@ -115,22 +115,22 @@ int main(int argc, char **argv) {
 
 	EGNOS::IonosphericGridPoint pp;
 
-	igp1.lat = 5;
+	igp1.lat = 20;
 	igp1.lon = -175;
 	igp1.setIonoDelayinMeter(10);
 	igp1.valid = true;
 
-	igp2.lat = 5;
+	igp2.lat = 20;
 	igp2.lon = 175;
 	igp2.setIonoDelayinMeter(20);
 	igp2.valid = true;
 
-	igp3.lat = -5;
+	igp3.lat = 10;
 	igp3.lon = 175;
 	igp3.setIonoDelayinMeter(30);
 	igp3.valid = true;
 
-	igp4.lat = -5;
+	igp4.lat = 10;
 	igp4.lon = -175;
 	igp4.setIonoDelayinMeter(40);
 	igp4.valid = true;
@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
 
 
 	/*  All 4 is fine*/
-	pp.lat = 0;
+	pp.lat = 15;
 	pp.lon = -180;
 	interPol.setPP(pp);
 
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
 	testCase.nameOfTestCase = "'All 4 is fine in the middle'";
 	Test(interPol, testCase);
 
-	pp.lat = 2.5;
+	pp.lat = 17.5;
 	pp.lon = -177.5;
 	interPol.setPP(pp);
 
@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
 	testCase.nameOfTestCase = "'All 4 is fine in 1st corner symmetric'";
 	Test(interPol, testCase);
 
-	pp.lat = 2.5;
+	pp.lat = 17.5;
 	pp.lon = 177.5;
 	interPol.setPP(pp);
 
@@ -178,7 +178,7 @@ int main(int argc, char **argv) {
 	testCase.nameOfTestCase = "'All 4 is fine in 2nd corner symmetric'";
 	Test(interPol, testCase);
 
-	pp.lat = -2.5;
+	pp.lat = 12.5;
 	pp.lon = 177.5;
 	interPol.setPP(pp);
 
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
 	testCase.nameOfTestCase = "'All 4 is fine in 3rd corner symmetric'";
 	Test(interPol, testCase);
 
-	pp.lat = -2.5;
+	pp.lat = 12.5;
 	pp.lon = -177.5;
 	interPol.setPP(pp);
 
@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
 
 #pragma region 1st quarter
 	/*pp  1st quarter*/
-	pp.lat = 2.5;
+	pp.lat = 17.5;
 	pp.lon = -177.5;
 	interPol.setPP(pp);
 
@@ -270,7 +270,7 @@ int main(int argc, char **argv) {
 
 #pragma region 2nd quarter
 	/*pp  2nd quarter*/
-	pp.lat = 2.5;
+	pp.lat = 17.5;
 	pp.lon = 177.5;
 	interPol.setPP(pp);
 
@@ -341,7 +341,7 @@ int main(int argc, char **argv) {
 
 #pragma region 3rd quarter
 	/*pp  3rd quarter*/
-	pp.lat = -2.5;
+	pp.lat = 12.5;
 	pp.lon = 177.5;
 	interPol.setPP(pp);
 
@@ -413,7 +413,7 @@ int main(int argc, char **argv) {
 
 #pragma region 4th quarter
 	/*pp  4th quarter*/
-	pp.lat = -2.5;
+	pp.lat = 12.5;
 	pp.lon = -177.5;
 	interPol.setPP(pp);
 

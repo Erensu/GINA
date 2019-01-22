@@ -672,7 +672,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp23 = Map->getIGP(lat2 + 5, lon1 - 5 );
+				igp23 = Map->getIGP(lat2 + 5, restrictLong(lon1 - 5) );
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -682,7 +682,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp31 = Map->getIGP(lat1, lon1 - 5);
+				igp31 = Map->getIGP(lat1, restrictLong(lon1 - 5));
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -768,6 +768,7 @@ namespace EGNOS {
 
 		if (indegree < -180) {
 			indegree = fmod(indegree, 180);
+			indegree = 180 - fabs(indegree);
 			return;
 		}
 	}
