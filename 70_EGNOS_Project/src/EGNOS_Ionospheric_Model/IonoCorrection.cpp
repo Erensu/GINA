@@ -793,14 +793,6 @@ namespace EGNOS {
 #pragma endregion
 
 #pragma region IonexCreator
-	
-	IonexCreator::IonexCreator(void) {
-
-	}
-
-	IonexCreator::~IonexCreator(void) {
-		delete ionoData;
-	}
 
 	bool IonexCreator::write2file(std::string newIonexFile) {
 
@@ -836,7 +828,7 @@ namespace EGNOS {
 
 	void IonexCreator::setIonexData(IonexCompatible &Ionex) {
 
-		Ionex.copy(ionoData);
+		ionoData = Ionex.clone();
 	}
 
 	void IonexCreator::openFile(void) {
