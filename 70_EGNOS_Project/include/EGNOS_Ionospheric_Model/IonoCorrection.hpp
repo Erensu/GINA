@@ -18,7 +18,6 @@ namespace EGNOS {
 		virtual double getRMS(gpstk::CivilTime epoch, double lat, double lon) = 0;
 		virtual std::vector<gpstk::CivilTime> getEpochTimes(void) = 0;
 		virtual void copy(IonexCompatible *target) = 0;
-		
 	};
 
 	class SlantIonoDelay
@@ -50,9 +49,8 @@ namespace EGNOS {
 
 	class VerticalIonoDelayInterpolator	
 	{
-		friend class IGPMap;
-	public:
 
+	public:
 		typedef struct VerticesOfSquare {
 			IonosphericGridPoint first;
 			IonosphericGridPoint second;
@@ -63,10 +61,17 @@ namespace EGNOS {
 		VerticalIonoDelayInterpolator(void);
 		~VerticalIonoDelayInterpolator(void);
 
-		double VerticalIonoDelayInterpolator::interpolate(IGPMap &Map, IonosphericGridPoint &newPP);
-		
+		double VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint& newPP);
+
 	private:
 		IonosphericGridPoint ionoPP;
+
+		IonosphericGridPoint getIGP(IGPMapBase &Map, double lat, double lon);
+
+		double grid5x5Interpolator(IGPMapBase& Map);
+		double grid10x10Interpolator(IGPMapBase& Map);
+		void getVerticesOf5x5Square(VerticesOfSquare& table, IGPMapBase& Map);
+		void getVerticesOf10x10Square(VerticesOfSquare& table, IGPMapBase& Map);
 
 		void setPP(IonosphericGridPoint newPP);
 		double interpolation4point(double xpp, double ypp,
@@ -78,13 +83,7 @@ namespace EGNOS {
 			double ionoDelay2,
 			double ionoDelay3,
 			double ionoDelay4);
-		IonosphericGridPoint getIGP(IGPMap &Map, double lat, double lon);
-
-		double grid5x5Interpolator(IGPMap &Map);
-		double grid10x10Interpolator(IGPMap &Map);
-
-		void getVerticesOf5x5Square(VerticesOfSquare& table,  IGPMap &Map);
-		void getVerticesOf10x10Square(VerticesOfSquare& table, IGPMap &Map);
+		
 		double symmetricInterpolator(double gridDistance, VerticesOfSquare table);	// Symmetric means that the grid distance is constant. It can be square and triangle as well.
 
 		void calculate_xpp_and_ypp(	double &xpp,	double &ypp,

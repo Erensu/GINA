@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "IGPMap.hpp"
 #include "IonosphericMaskBand.hpp"
 #include <algorithm>
@@ -77,8 +76,7 @@ namespace EGNOS {
 
 		return os;
 	}
-
-	IonosphericGridPoint IGPMap::getIGP(double lat, double lon) const {
+	IonosphericGridPoint IGPMap::getIGP(double lat, double lon){
 
 		IGPCoordinate  keyword;
 		keyword.lat = lat;
