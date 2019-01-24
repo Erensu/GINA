@@ -9,6 +9,12 @@ namespace EGNOS {
 
 	}
 
+	IGPMap::IGPMap(IGPMap* original) {
+
+		this->candidateIGPs = original->candidateIGPs;
+		this->Map = original->Map;
+	}
+
 	IGPMap::~IGPMap(void) {
 
 		this->Map.clear();
@@ -67,7 +73,8 @@ namespace EGNOS {
 
 		return os;
 	}
-	IonosphericGridPoint IGPMap::getIGP(double lat, double lon){
+
+	IonosphericGridPoint IGPMap::getIGP(double lat, double lon) const{
 
 		IGPCoordinate  keyword;
 		keyword.lat = lat;
@@ -89,10 +96,26 @@ namespace EGNOS {
 		else {
 			throw std::domain_error("IGP is not found");
 		}
+	}
 
+	double IGPMap::getTEC(gpstk::CivilTime epoch, double lat, double lon) const {
+
+		IonosphericGridPoint igp = getIGP(lat, lon);
+		return igp.IGPVerticalDelayEstimate;
 
 	}
 
+	double IGPMap::getRMS(gpstk::CivilTime epoch, double lat, double lon) const {
+		IonosphericGridPoint igp = getIGP(lat, lon);
+		return igp.GIVEI;	// TODO write a function which can transform GIVEI to meter format.
+	}
+
+	// TODO - unfinished
+	std::vector<gpstk::CivilTime> IGPMap::getEpochTimes(void) const {
+
+		std::vector<gpstk::CivilTime> epochs;
+		return epochs;
+	}
 
 
 }

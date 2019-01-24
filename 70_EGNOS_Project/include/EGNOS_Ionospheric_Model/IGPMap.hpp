@@ -22,10 +22,10 @@ namespace EGNOS {
 	class IonexCompatible {
 	public:
 
-		virtual double getTEC(gpstk::CivilTime epoch, double lat, double lon) = 0;
-		virtual double getRMS(gpstk::CivilTime epoch, double lat, double lon) = 0;
-		virtual std::vector<gpstk::CivilTime> getEpochTimes(void) = 0;
-		virtual void copy(IonexCompatible *target) = 0;
+		virtual double getTEC(gpstk::CivilTime epoch, double lat, double lon) const = 0;
+		virtual double getRMS(gpstk::CivilTime epoch, double lat, double lon) const = 0;
+		virtual std::vector<gpstk::CivilTime> getEpochTimes(void) const = 0;
+		virtual IonexCompatible* clone() const = 0;
 	};
 
 	class IGPMapBase {
@@ -34,12 +34,18 @@ namespace EGNOS {
 		virtual IonosphericGridPoint getIGP(double lat, double lon) const = 0;
 	};
 
-	class IGPMap:public IGPMapBase, IonexCompatible
+	class IGPMap:public IGPMapBase, public IonexCompatible
 	{
 		public:
 
 			IGPMap(void);
+			IGPMap(IGPMap* original);
 			~IGPMap(void);
+
+			double getTEC(gpstk::CivilTime epoch, double lat, double lon) const;
+			double getRMS(gpstk::CivilTime epoch, double lat, double lon) const;
+			std::vector<gpstk::CivilTime> getEpochTimes(void) const;
+			IonexCompatible* clone() const { return new IGPMap(*this); }
 
 			void setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs);
 			void updateIGPCandidate( const IonosphericGridPointMasksMessageParser  & const IGPMessageParser);
@@ -47,7 +53,7 @@ namespace EGNOS {
 			
 			void addIGPforDebugging(IonosphericGridPoint newIGP);
 			void reset(void);
-			IonosphericGridPoint getIGP(double lat, double lon);
+			IonosphericGridPoint getIGP(double lat, double lon) const;
 
 			friend std::ostream &operator<<(std::ostream &os, IGPMap const &imap);
 			 

@@ -40,6 +40,7 @@ double dummyTECRMSProvider(double lat, double lon) {
 
 int main(int argc, char **argv) {
 
+	EGNOS::IGPMap temp;
 	gpstk::IonexStore ionoStore;
 
 	gpstk::Position nominalPosition;
