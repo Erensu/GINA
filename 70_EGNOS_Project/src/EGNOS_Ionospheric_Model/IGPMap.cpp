@@ -94,12 +94,12 @@ namespace EGNOS {
 				return it->second;
 			}
 			else {
-				throw std::exception("IGP is not valid \n");
+				throw std::domain_error("IGP is not valid");
 			}
 
 		}
 		else {
-			throw std::exception("IGP is not found");
+			throw std::domain_error("IGP is not found");
 		}
 
 

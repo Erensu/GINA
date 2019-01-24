@@ -5,7 +5,21 @@
 #include <math.h>
 #include "IGPMap.hpp"
 
+#include "IonexStream.hpp"
+#include "IonexHeader.hpp"
+#include "CivilTime.hpp"
+
 namespace EGNOS {
+
+	class IonexCompatible {
+	public:
+
+		virtual double getTEC(gpstk::CivilTime epoch, double lat, double lon) = 0;
+		virtual double getRMS(gpstk::CivilTime epoch, double lat, double lon) = 0;
+		virtual std::vector<gpstk::CivilTime> getEpochTimes(void) = 0;
+		virtual void copy(IonexCompatible *target) = 0;
+		
+	};
 
 	class SlantIonoDelay
 	{
@@ -34,7 +48,7 @@ namespace EGNOS {
 
 	};
 
-	class VerticalIonoDelayInterpolator
+	class VerticalIonoDelayInterpolator	
 	{
 	public:
 
@@ -61,8 +75,6 @@ namespace EGNOS {
 									double ionoDelay2,
 									double ionoDelay3,
 									double ionoDelay4);
-
-		
 
 		void setPP(IonosphericGridPoint newPP);
 		IonosphericGridPoint getIGP(double lat, double lon);
@@ -98,5 +110,44 @@ namespace EGNOS {
 
 		double absDistanceOfLongitude(double lon1, double lon2);
 		void deleteLink2Map(void) {	Map = NULL;	}
+	};
+
+	class IonnexCreator 
+	{
+		typedef enum{
+			TEC,
+			RMS
+		}dataType;
+
+		public:
+			IonnexCreator(void);
+			~IonnexCreator(void);
+
+			void setIonexData(IonexCompatible &Ionex);
+			bool write2file(std::string newIonexFile);
+
+		private:
+
+			std::string ionexFile;
+			gpstk::IonexHeader header;
+			gpstk::IonexStream strm;
+			std::vector<gpstk::CivilTime> epochs;
+			IonexCompatible *ionoData;
+
+			bool getMapEpochs(void);
+			void createHeader(void);
+			gpstk::IonexData IonnexCreator::createDataBlock(gpstk::CivilTime currentEpoch, int mapID, dataType type);
+			double getData(gpstk::CivilTime currentEpoch, double currLat, double currLon, dataType type);
+
+			void writeHeader(gpstk::IonexHeader &header);
+			void writeData(gpstk::IonexData &data);
+
+			std::string getCurrentTimeinStr(void);
+			void openFile(void);
+			void closeFile(void);
+
+			int calcDim(int lat1, int lat2, double dlat);
+			double calculateIntervalinSec(gpstk::CivilTime firstEpoch, gpstk::CivilTime secondEpoch);
+			std::string typeString(dataType type);
 	};
 };

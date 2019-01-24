@@ -1,12 +1,77 @@
 #include "IGPMap.hpp"
 #include "IonoCorrection.hpp"
 
+#include "IonexData.hpp"
+
+
+#define MAX_VALUE 9999
+#define INVALID_VALUE MAX_VALUE
+
+#define MAX_HEIGHT_OF_IONO_LAYER 300
+#define MIN_HEIGHT_OF_IONO_LAYER 300
+#define HEIGHT_DISTANCE 0
+#define MAX_LAT 85
+#define MIN_LAT -85
+#define MAX_LON 180
+#define MIN_LON -180
+#define LAT_DISTANCE 5
+#define LON_DISTANCE 5
+#define	BASE_RADIUS 6371.4
+#define	MAPDIMS 2
+#define	EXPONENT -1
+#define	VERSION 1.0
+#define FILETYPE "IONOSPHERE MAPS"
+#define	SYTEM "GPS" // TODO What shall be there instead of 'MIX'?
+#define	FILEPROGRAM "GINA 1.0"
+#define	FILEAGENCY "GINA Project"
+#define DESCRIPTION_PART1 "Infrastructure: Robert Bosch Kft., Budapest"
+#define DESCRIPTION_PART2 "Creator: Balazs Lupsic"
+#define DESCRIPTION_PART3 "Contact adress: balazs.lupsic@hu.bosch.com"
+#define DESCRIPTION_PART4 "Contact adress: balazs.lupsic@gmail.com"
+#define	COMMENT_PART1 "TEC values in 0.1 [m] units;  9999, if no value available"
+#define	MAPPINGFUNCTION "TBD" // TODO - to be discussed
+#define	ELEVATION 0
+#define	OBSERVABLEUSED "TEC is obtained from EGNOS"
+#define NUMSTATIONS 0
+#define NUMSVS 0
+
 using namespace std;
 
 namespace EGNOS {
 
 	const double SlantIonoDelay::Re = 6378136.3;
 	const double SlantIonoDelay::hI = 350000;
+
+#pragma region SlantIonoDelay
+
+	void SlantIonoDelay::setazimuthOfSatId(double az, double el) {
+
+		this->azimuthOfSatId = az;
+		this->elevationOfSatId = el;
+	}
+
+	void SlantIonoDelay::calculatePP(void) {
+
+		double centralAngle;
+
+		centralAngle = M_PI - this->elevationOfSatId - asin(((Re + this->rheight) / (Re + hI)) * cos(this->elevationOfSatId));
+
+		this->ppLat = asin(sin(this->rlat) * cos(centralAngle) + cos(this->rlat) * sin(centralAngle) * cos(this->azimuthOfSatId));
+
+
+		if (
+			(this->rlat > 70 * M_PI / 360 && tan(centralAngle) * cos(this->azimuthOfSatId) > tan(M_PI / 2 - this->rlat)) ||
+			(this->rlat > -70 * M_PI / 360 && -tan(centralAngle) * cos(this->azimuthOfSatId) > tan(M_PI / 2 - this->rlat))
+			) {
+			ppLon = this->rlon + M_PI - asin(sin(centralAngle) * sin(this->azimuthOfSatId) / cos(this->ppLat));
+		}
+		else {
+			ppLon = this->rlon + asin(sin(centralAngle) * sin(this->azimuthOfSatId) / cos(this->ppLat));
+		}
+	}
+#pragma endregion
+
+#pragma region VerticalIonoDelayInterpolator
 
 	VerticalIonoDelayInterpolator::VerticalIonoDelayInterpolator(IGPMap * const linkedMap) {
 		try
@@ -33,32 +98,7 @@ namespace EGNOS {
 		validRoverPosotion = true;
 	}
 
-	void SlantIonoDelay::setazimuthOfSatId(double az, double el) {
-
-		this->azimuthOfSatId = az;
-		this->elevationOfSatId = el;
-	}
-
-	void SlantIonoDelay::calculatePP(void) {
 	
-		double centralAngle;
-		
-		centralAngle = M_PI - this->elevationOfSatId - asin(((Re + this->rheight) / (Re + hI)) * cos(this->elevationOfSatId));
-
-		this->ppLat = asin(sin(this->rlat) * cos(centralAngle) + cos(this->rlat) * sin(centralAngle) * cos(this->azimuthOfSatId));
-
-
-		if (
-			(this->rlat > 70 * M_PI/360 && tan(centralAngle) * cos(this->azimuthOfSatId) > tan(M_PI/2 - this->rlat)) ||
-			(this->rlat > -70 * M_PI / 360 && -tan(centralAngle) * cos(this->azimuthOfSatId) > tan(M_PI / 2 - this->rlat))
-			) {
-			ppLon = this->rlon + M_PI - asin(sin(centralAngle) * sin(this->azimuthOfSatId) / cos(this->ppLat));
-		}
-		else {
-			ppLon = this->rlon + asin(sin(centralAngle) * sin(this->azimuthOfSatId) / cos(this->ppLat));
-		}
-	}
-
 	double VerticalIonoDelayInterpolator::interpolation4point(	double xpp, double ypp,
 																double ionoDelay1,
 																double ionoDelay2,
@@ -772,5 +812,327 @@ namespace EGNOS {
 			return;
 		}
 	}
+
+#pragma endregion
+
+#pragma region IonnexCreator
+	
+	IonnexCreator::IonnexCreator(void) {
+
+	}
+
+	IonnexCreator::~IonnexCreator(void) {
+		delete ionoData;
+	}
+
+	bool IonnexCreator::write2file(std::string newIonexFile) {
+
+		bool validityFlag = false;
+		ionexFile = newIonexFile;
+		validityFlag = getMapEpochs();
+
+		if (validityFlag == false) {
+			return false;
+		}
+
+		openFile();
+
+		createHeader();
+		writeHeader(header);
+
+		gpstk::IonexData tecData;
+		gpstk::IonexData rmsData;
+		int mapId = 0;
+		for (size_t i = 0; i < epochs.size(); i++)
+		{
+			mapId = i;
+			tecData = createDataBlock(epochs[i], mapId, TEC);
+			writeData(tecData);
+
+			rmsData = createDataBlock(epochs[i], mapId, RMS);
+			writeData(rmsData);
+		}
+
+		closeFile();
+
+	}
+
+	void IonnexCreator::setIonexData(IonexCompatible &Ionex) {
+
+		Ionex.copy(ionoData);
+	}
+
+	void IonnexCreator::openFile(void) {
+
+		strm.open(ionexFile.c_str(), std::ios::out);
+	}
+
+	void IonnexCreator::closeFile(void) {
+
+		strm.close();
+	}
+
+	int IonnexCreator::calcDim(int lat1, int lat2, double dlat) {
+
+		if (dlat == 0) {
+			return 1;
+		}
+		else {
+			return int(abs((int(lat2) - int(lat1)) / dlat) + 1);
+		}
+	}
+
+	void IonnexCreator::createHeader(void) {
+
+		gpstk::CivilTime firstEpoch= epochs[0];
+		gpstk::CivilTime lastEpoch = epochs[epochs.size()-1];
+		
+		double intervalBetweenEpochinSec;
+		try
+		{
+			intervalBetweenEpochinSec = calculateIntervalinSec(firstEpoch, lastEpoch);
+		}
+		catch (const std::exception&)
+		{
+			intervalBetweenEpochinSec = 0;
+		}
+		
+		header.version = VERSION;
+		header.fileType = FILETYPE;
+		header.system = SYTEM; 
+		header.fileProgram = FILEPROGRAM;
+		header.fileAgency = FILEAGENCY;
+		header.date = getCurrentTimeinStr();
+
+		header.descriptionList.clear();
+		header.descriptionList.push_back(DESCRIPTION_PART1);
+		header.descriptionList.push_back(DESCRIPTION_PART2);
+		header.descriptionList.push_back(DESCRIPTION_PART3);
+		header.descriptionList.push_back(DESCRIPTION_PART4);
+
+		header.commentList.push_back(COMMENT_PART1);
+
+		header.firstEpoch = firstEpoch;
+		header.lastEpoch = lastEpoch;
+		header.interval = intervalBetweenEpochinSec;
+		header.numMaps = epochs.size(); // TODO - if the recieved maps are fewer than the epoch number, the number of maps won't match with the declared number in header.
+		header.mappingFunction = MAPPINGFUNCTION; // TODO - to be discussed
+		header.elevation = ELEVATION;
+		header.observablesUsed = OBSERVABLEUSED;
+		header.numStations = NUMSTATIONS;
+		header.numSVs = NUMSVS;
+		header.baseRadius = BASE_RADIUS;
+		header.mapDims = MAPDIMS;
+
+		header.hgt[0] = MIN_HEIGHT_OF_IONO_LAYER;
+		header.hgt[1] = MAX_HEIGHT_OF_IONO_LAYER;
+		header.hgt[2] = HEIGHT_DISTANCE;
+
+		header.lat[0] = MAX_LAT;
+		header.lat[1] = MIN_LAT;
+		header.lat[2] = LAT_DISTANCE;
+
+		header.lon[0] = MIN_LON;
+		header.lon[1] = MAX_LON;
+		header.lon[2] = LON_DISTANCE;
+
+		header.exponent = EXPONENT;
+		header.auxData = "";
+
+		header.svsmap.clear();
+		header.auxDataFlag = false;
+
+		header.valid = true;
+	}
+
+	std::string IonnexCreator::getCurrentTimeinStr(void) {
+	
+		auto t = std::time(nullptr);
+		auto tm = *std::localtime(&t);
+
+		time_t rawtime;
+		struct tm * timeinfo;
+		char buffer[80];
+
+		time(&rawtime);
+		timeinfo = localtime(&rawtime);
+
+		strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+		 std::string date(buffer);
+		 return date;
+	}
+
+	gpstk::IonexData IonnexCreator::createDataBlock(gpstk::CivilTime currentEpoch, int mapID, dataType type) {
+
+		gpstk::IonexData iod;
+		double lat1, lat2, dlat;
+		double lon1, lon2, dlon;
+		double hgt1, hgt2, dhgt;
+		int dimlat, dimlon, dimhgt;
+
+		lat1 = header.lat[0];
+		lat2 = header.lat[1];
+		dlat = header.lat[2];
+
+		lon1 = header.lon[0];
+		lon2 = header.lon[1];
+		dlon = header.lon[2];
+
+		hgt1 = header.hgt[0];
+		hgt2 = header.hgt[1];
+		dhgt = header.hgt[2];
+
+		dimlat = calcDim(lat1, lat2, dlat);
+		dimlon = calcDim(lon1, lon2, dlon);
+		dimhgt = calcDim(hgt1, hgt2, dhgt);
+
+		double numberOfValues = dimlat * dimlon;
+
+		gpstk::Vector<double> values(numberOfValues);
+		int counter = 0;
+
+		double currLat = lat1;
+		double currLon = lon1;
+
+		while (counter < numberOfValues)
+		{
+			cout << currLat << " " << currLon << endl;
+			
+			values[counter] = getData(currentEpoch, currLat, currLon, type);
+
+			if (abs(currLon - lon2) < dlon) {
+				currLon = lon1 - dlon;
+				currLat += dlat;
+			}
+			currLon += dlon;
+			counter++;
+		}
+
+		iod.data = values;
+		iod.mapID = mapID;
+
+		iod.dim[0] = dimlat;
+		iod.dim[1] = dimlon;
+		iod.dim[2] = dimhgt;
+
+		iod.exponent = header.exponent;
+		iod.lat[0] = lat1;
+		iod.lat[1] = lat2;
+		iod.lat[2] = dlat;
+
+		iod.lon[0] = lon1;
+		iod.lon[1] = lon2;
+		iod.lon[2] = dlon;
+
+		iod.hgt[0] = hgt1;
+		iod.hgt[1] = hgt2;
+		iod.hgt[2] = dhgt;
+
+		iod.valid = true;
+
+		try
+		{
+			iod.type.type = typeString(type);
+		}
+		catch (const std::exception&)
+		{
+			iod.type.type = "UN";
+		}
+		
+		iod.type.units = "10e" + std::to_string(header.exponent) + " meter";
+		iod.type.description = "Total Electron Content map";
+
+		iod.time = currentEpoch;
+
+		return iod;
+	}
+
+	double IonnexCreator::getData(gpstk::CivilTime currentEpoch, double currLat, double currLon, dataType type) {
+
+		double rtv;
+		switch (type)
+		{
+			case TEC:
+				rtv = ionoData->getTEC(currentEpoch, currLat, currLon) * std::pow(10, header.exponent);
+				break;
+
+			case RMS:
+				rtv = ionoData->getRMS(currentEpoch, currLat, currLon) * std::pow(10, header.exponent);
+				break;
+
+			default:
+				rtv = INVALID_VALUE;
+				break;
+		}
+		return rtv;
+	}
+	void IonnexCreator::writeHeader(gpstk::IonexHeader &header) {
+		strm << header;
+	}
+
+	void IonnexCreator::writeData(gpstk::IonexData &data) {
+		strm << data;
+	}
+
+	bool IonnexCreator::getMapEpochs(void) {
+
+		bool validEpochs = false;
+		try
+		{
+			epochs = ionoData->getEpochTimes();
+			validEpochs = true;
+		}
+		catch (const std::exception&)
+		{
+			validEpochs = false;
+		}
+
+		return validEpochs;
+	}
+
+	double IonnexCreator::calculateIntervalinSec(gpstk::CivilTime firstEpoch, gpstk::CivilTime secondEpoch) {
+
+		double intervalBetweenEpochinSec;
+		if (epochs.size() > 1) {
+			if ((epochs[1].year == epochs[0].year) && (epochs[1].month == epochs[0].month) && (epochs[1].day == epochs[0].day)) {
+
+				intervalBetweenEpochinSec = (epochs[1].hour - epochs[0].hour) * 3600 +
+					(epochs[1].minute - epochs[0].minute) * 60 +
+					(epochs[1].second - epochs[0].second);
+			}
+			else {
+				intervalBetweenEpochinSec = 0;
+			}
+		}
+		else {
+			intervalBetweenEpochinSec = 0;
+		}
+
+		if (intervalBetweenEpochinSec == 0) {
+			throw std::domain_error("Interval is 0 or noncalculable!");
+		}
+
+		return intervalBetweenEpochinSec;
+	}
+
+	std::string IonnexCreator::typeString(dataType type) {
+
+		std::string typestr;
+		switch (type)
+		{
+			case TEC:
+				typestr = "TEC";
+				break;
+			case RMS:
+				typestr = "RMS";
+				break;
+			default:
+				throw std::domain_error("OuT of dataType domain");
+				break;
+		}
+
+		return typestr;
+	}
+#pragma endregion
 
 };
