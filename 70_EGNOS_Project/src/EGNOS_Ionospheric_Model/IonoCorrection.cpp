@@ -815,17 +815,17 @@ namespace EGNOS {
 
 #pragma endregion
 
-#pragma region IonnexCreator
+#pragma region IonexCreator
 	
-	IonnexCreator::IonnexCreator(void) {
+	IonexCreator::IonexCreator(void) {
 
 	}
 
-	IonnexCreator::~IonnexCreator(void) {
+	IonexCreator::~IonexCreator(void) {
 		delete ionoData;
 	}
 
-	bool IonnexCreator::write2file(std::string newIonexFile) {
+	bool IonexCreator::write2file(std::string newIonexFile) {
 
 		bool validityFlag = false;
 		ionexFile = newIonexFile;
@@ -857,22 +857,22 @@ namespace EGNOS {
 
 	}
 
-	void IonnexCreator::setIonexData(IonexCompatible &Ionex) {
+	void IonexCreator::setIonexData(IonexCompatible &Ionex) {
 
 		Ionex.copy(ionoData);
 	}
 
-	void IonnexCreator::openFile(void) {
+	void IonexCreator::openFile(void) {
 
 		strm.open(ionexFile.c_str(), std::ios::out);
 	}
 
-	void IonnexCreator::closeFile(void) {
+	void IonexCreator::closeFile(void) {
 
 		strm.close();
 	}
 
-	int IonnexCreator::calcDim(int lat1, int lat2, double dlat) {
+	int IonexCreator::calcDim(int lat1, int lat2, double dlat) {
 
 		if (dlat == 0) {
 			return 1;
@@ -882,7 +882,7 @@ namespace EGNOS {
 		}
 	}
 
-	void IonnexCreator::createHeader(void) {
+	void IonexCreator::createHeader(void) {
 
 		gpstk::CivilTime firstEpoch= epochs[0];
 		gpstk::CivilTime lastEpoch = epochs[epochs.size()-1];
@@ -945,7 +945,7 @@ namespace EGNOS {
 		header.valid = true;
 	}
 
-	std::string IonnexCreator::getCurrentTimeinStr(void) {
+	std::string IonexCreator::getCurrentTimeinStr(void) {
 	
 		auto t = std::time(nullptr);
 		auto tm = *std::localtime(&t);
@@ -962,7 +962,7 @@ namespace EGNOS {
 		 return date;
 	}
 
-	gpstk::IonexData IonnexCreator::createDataBlock(gpstk::CivilTime currentEpoch, int mapID, dataType type) {
+	gpstk::IonexData IonexCreator::createDataBlock(gpstk::CivilTime currentEpoch, int mapID, dataType type) {
 
 		gpstk::IonexData iod;
 		double lat1, lat2, dlat;
@@ -1047,7 +1047,7 @@ namespace EGNOS {
 		return iod;
 	}
 
-	double IonnexCreator::getData(gpstk::CivilTime currentEpoch, double currLat, double currLon, dataType type) {
+	double IonexCreator::getData(gpstk::CivilTime currentEpoch, double currLat, double currLon, dataType type) {
 
 		double rtv;
 		switch (type)
@@ -1066,15 +1066,15 @@ namespace EGNOS {
 		}
 		return rtv;
 	}
-	void IonnexCreator::writeHeader(gpstk::IonexHeader &header) {
+	void IonexCreator::writeHeader(gpstk::IonexHeader &header) {
 		strm << header;
 	}
 
-	void IonnexCreator::writeData(gpstk::IonexData &data) {
+	void IonexCreator::writeData(gpstk::IonexData &data) {
 		strm << data;
 	}
 
-	bool IonnexCreator::getMapEpochs(void) {
+	bool IonexCreator::getMapEpochs(void) {
 
 		bool validEpochs = false;
 		try
@@ -1090,7 +1090,7 @@ namespace EGNOS {
 		return validEpochs;
 	}
 
-	double IonnexCreator::calculateIntervalinSec(gpstk::CivilTime firstEpoch, gpstk::CivilTime secondEpoch) {
+	double IonexCreator::calculateIntervalinSec(gpstk::CivilTime firstEpoch, gpstk::CivilTime secondEpoch) {
 
 		double intervalBetweenEpochinSec;
 		if (epochs.size() > 1) {
@@ -1115,7 +1115,7 @@ namespace EGNOS {
 		return intervalBetweenEpochinSec;
 	}
 
-	std::string IonnexCreator::typeString(dataType type) {
+	std::string IonexCreator::typeString(dataType type) {
 
 		std::string typestr;
 		switch (type)

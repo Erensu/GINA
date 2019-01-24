@@ -112,7 +112,7 @@ namespace EGNOS {
 		void deleteLink2Map(void) {	Map = NULL;	}
 	};
 
-	class IonnexCreator 
+	class IonexCreator
 	{
 		typedef enum{
 			TEC,
@@ -120,8 +120,8 @@ namespace EGNOS {
 		}dataType;
 
 		public:
-			IonnexCreator(void);
-			~IonnexCreator(void);
+			IonexCreator(void);
+			~IonexCreator(void);
 
 			void setIonexData(IonexCompatible &Ionex);
 			bool write2file(std::string newIonexFile);
@@ -136,7 +136,7 @@ namespace EGNOS {
 
 			bool getMapEpochs(void);
 			void createHeader(void);
-			gpstk::IonexData IonnexCreator::createDataBlock(gpstk::CivilTime currentEpoch, int mapID, dataType type);
+			gpstk::IonexData createDataBlock(gpstk::CivilTime currentEpoch, int mapID, dataType type);
 			double getData(gpstk::CivilTime currentEpoch, double currLat, double currLon, dataType type);
 
 			void writeHeader(gpstk::IonexHeader &header);
