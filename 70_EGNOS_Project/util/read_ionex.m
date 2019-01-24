@@ -1,12 +1,13 @@
 #octave script to read ionex file and draw Total Electron Content map(s)
+#mely állományokon teszteltem eddig
 
 clear all; close all; clc; page_screen_output(0)
 
 #ionex file name
-fin = fopen('corg0140.19i');
+fin = fopen('corg0140.19i');  #files alkönyvtár!, első argumentum
 
 #map of the world
-world_map = load('coastline.txt');
+world_map = load('coastline.txt');  #itt is
 
 n_maps=0;
 while ~feof(fin)
@@ -34,13 +35,13 @@ while ~feof(fin)
         month = str2num(tline(7:12));
         day = str2num(tline(13:18));
         hour = str2num(tline(19:24));
-        min = str2num(tline(25:30));
+        minute = str2num(tline(25:30));
         sec = str2num(tline(31:36));
         tec_map = [];                 #init block
         for i=1:size(lat, 2)
           tline = fgetl(fin);
           if ~ strfind(tline, 'LAT/LON1/LON2/DLON/H') 
-            break;
+            break; #inkább kilép a porgramból
           endif
           l = 0;
           for j=1:n
@@ -48,27 +49,42 @@ while ~feof(fin)
             m = length(tline) / 5;     #number of data in a row
             for k=1:m
               l++;
-              tec_map(i,l) = str2num(tline((k-1)*5+1:k*5)) * 0.1;  #todo: dimension of data, now 0.1 TECU
+              tec_map(i,l) = str2num(tline((k-1)*5+1:k*5)) * 0.1;  #dimension of data is 0.1 TECU
             endfor
           endfor    
         endfor
+  #short output of current map
+        printf ("%d TEC MAP read %d %02d %02d %02d:%02d:%02d\n", n_maps, year, month, day, hour, minute, sec);
+        printf ("number of data %d %d\n", size(tec_map, 1), size(tec_map, 2));
+        printf ("max %.1f min %.1f in TECU\n", max(tec_map(:)), min(tec_map(:)));
   #plot TEC MAP
         map = figure();
-        imagesc([-180 180],[90 -90], tec_map);
+        imagesc([lon1 lon2],[lat1 lat2], tec_map);
         hold on;
         plot(world_map(:,1),world_map(:,2),'w');
         colormap(jet); 
         c=colorbar; 
         title(c,'TEC [TECU]')
+        ylabel('Latitude [deg]')
+        xlabel('Longitude [deg]')
         axis xy;
-        set(gca,'XTick',-180:45:180);
-        set(gca,'YTick',-90:30:90);
+        if abs(dlon) >= 5 
+          dlon_tick = 45;
+        else
+          dlon_tick = 5;
+        endif
+        if abs(dlat) >= 2.0 
+          dlat_tick = 30;
+        else
+          dlat_tick = 2;
+        endif
+        set(gca,'XTick',lon1:dlon_tick:lon2);
+        set(gca,'YTick',lat1:dlat_tick:lat2);
         caxis([0 60]);
-        title (sprintf('Total Electron Content Map %d %02d %02d %02d:%02d%02d', year, month, day, hour, min, sec));
+        title (sprintf('Total Electron Content Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec)); #angol dátum formátum legyen
         print(map, sprintf('iono%02d.jpg', n_maps), "-S840,480");
         close(map);
       endif
     endif  
 end
 fclose(fin);
-printf ("%d TEC MAP read\n", n_maps);
