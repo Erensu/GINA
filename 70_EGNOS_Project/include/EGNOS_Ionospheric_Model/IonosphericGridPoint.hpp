@@ -1,9 +1,12 @@
 #pragma once
 
-#include "Position.hpp"
-#include "IonosphericMaskBand.hpp"
 #include <bitset>
 #include <vector> 
+
+#include "Position.hpp"
+
+#include "IonosphericMaskBand.hpp"
+
 
 namespace EGNOS {
 

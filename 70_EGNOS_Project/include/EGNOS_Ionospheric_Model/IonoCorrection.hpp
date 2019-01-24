@@ -7,18 +7,12 @@
 
 #include "IonexStream.hpp"
 #include "IonexHeader.hpp"
+#include "IonexData.hpp"
 #include "CivilTime.hpp"
 
 namespace EGNOS {
 
-	class IonexCompatible {
-	public:
-
-		virtual double getTEC(gpstk::CivilTime epoch, double lat, double lon) = 0;
-		virtual double getRMS(gpstk::CivilTime epoch, double lat, double lon) = 0;
-		virtual std::vector<gpstk::CivilTime> getEpochTimes(void) = 0;
-		virtual void copy(IonexCompatible *target) = 0;
-	};
+	
 
 	class SlantIonoDelay
 	{

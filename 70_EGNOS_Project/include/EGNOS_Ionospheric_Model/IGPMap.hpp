@@ -1,9 +1,12 @@
 #pragma once
 
 #include <stdlib.h>
-#include "IonosphericGridPoint.hpp"
 #include <iterator> 
 #include <map> 
+
+#include "CivilTime.hpp"
+
+#include "IonosphericGridPoint.hpp"
 
 namespace EGNOS {
 	
@@ -16,15 +19,23 @@ namespace EGNOS {
 		}
 	}IGPCoordinate;
 
+	class IonexCompatible {
+	public:
+
+		virtual double getTEC(gpstk::CivilTime epoch, double lat, double lon) = 0;
+		virtual double getRMS(gpstk::CivilTime epoch, double lat, double lon) = 0;
+		virtual std::vector<gpstk::CivilTime> getEpochTimes(void) = 0;
+		virtual void copy(IonexCompatible *target) = 0;
+	};
+
 	class IGPMapBase {
 	public:
 
 		virtual IonosphericGridPoint getIGP(double lat, double lon) const = 0;
 	};
 
-	class IGPMap:public IGPMapBase //, IonexCompatible
+	class IGPMap:public IGPMapBase, IonexCompatible
 	{
-
 		public:
 
 			IGPMap(void);
@@ -44,8 +55,5 @@ namespace EGNOS {
 			
 			std::vector<IonosphericGridPoint> candidateIGPs;
 			std::map<IGPCoordinate, IonosphericGridPoint>  Map;
-			
 	};
-
-	
 };

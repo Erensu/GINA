@@ -1,7 +1,6 @@
 #pragma once
 
 #include "IGPMap.hpp"
-#include "IonosphericMaskBand.hpp"
 #include <algorithm>
 
 namespace EGNOS {
@@ -55,15 +54,7 @@ namespace EGNOS {
 	}
 
 	std::ostream &operator<<(std::ostream &os, IGPMap const &imap) {
-	
-		// Old display
-		/*os << "Element of IGPs candidates" << std::endl;
 
-		for (std::vector<IonosphericGridPoint>::const_iterator it = imap.candidateIGPs.begin(); it != imap.candidateIGPs.end(); ++it) {
-			os << *it;
-		}*/
-
-		// New display
 		os << "Size of the Iono Map is " << imap.Map.size() << std::endl;
 		os << "Element of IGPs candidates" << std::endl;
 

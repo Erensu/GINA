@@ -1,6 +1,5 @@
 
 #include "IonoCorrection.hpp"
-#include "IonexData.hpp"
 
 
 #define MAX_VALUE 9999
