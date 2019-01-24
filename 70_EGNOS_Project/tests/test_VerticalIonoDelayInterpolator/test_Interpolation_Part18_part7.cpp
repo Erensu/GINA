@@ -33,13 +33,13 @@ typedef struct {
 int numberOfFailedTests = 0;
 std::vector<testCaseDescriptor> FailedTestCases;
 
-void Test(EGNOS::VerticalIonoDelayInterpolator &interPol, testCaseDescriptor testCase) {
+void Test(EGNOS::VerticalIonoDelayInterpolator &interPol, EGNOS::IGPMap &IonoMap, EGNOS::IonosphericGridPoint pp, testCaseDescriptor testCase) {
 
 	double interPolationTestResult = -999;
 	testCase.givenResult = testStatus::Passed;
 	try
 	{
-		interPolationTestResult = interPol.gridPointSelectionCriteria();
+		interPolationTestResult = interPol.interpolate(IonoMap, pp);
 
 		if (interPolationTestResult != testCase.interPolationExpectedResult) {
 			testCase.givenResult = testStatus::Failed;
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
 	testCaseDescriptor testCase;
 
 	EGNOS::IGPMap IonoMap;
-	EGNOS::VerticalIonoDelayInterpolator interPol(&IonoMap);
+	EGNOS::VerticalIonoDelayInterpolator interPol;
 
 	EGNOS::IonosphericGridPoint igp1;
 	EGNOS::IonosphericGridPoint igp2;
@@ -142,7 +142,6 @@ int main(int argc, char **argv) {
 	/*  All 4 is fine*/
 	pp.lat = 0;
 	pp.lon = -180;
-	interPol.setPP(pp);
 
 	/*Test 1 */
 	igp1.valid = true;
@@ -158,43 +157,40 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in the middle'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	pp.lat = 2.5;
 	pp.lon = -177.5;
-	interPol.setPP(pp);
+
 
 	testCase.interPolationExpectedResult = 18.75;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 1st corner symmetric'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	pp.lat = 2.5;
 	pp.lon = 177.5;
-	interPol.setPP(pp);
 
 	testCase.interPolationExpectedResult = 21.25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 2nd corner symmetric'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	pp.lat = -2.5;
 	pp.lon = 177.5;
-	interPol.setPP(pp);
 
 	testCase.interPolationExpectedResult = 28.75;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 3rd corner symmetric'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	pp.lat = -2.5;
 	pp.lon = -177.5;
-	interPol.setPP(pp);
 
 	testCase.interPolationExpectedResult = 31.25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 4th corner symmetric'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 #pragma endregion
 
@@ -202,7 +198,6 @@ int main(int argc, char **argv) {
 	/*pp  1st quarter*/
 	pp.lat = 2.5;
 	pp.lon = -177.5;
-	interPol.setPP(pp);
 
 	/*Test 1 */
 	igp1.valid = false;
@@ -217,7 +212,7 @@ int main(int argc, char **argv) {
 
 	testCase.expectedResult = testStatus::Failed;
 	testCase.nameOfTestCase = "'PP is in 1st quarter. 1st grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 2 */
 	igp1.valid = true;
@@ -233,7 +228,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 15;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 1st quarter. 2nd grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 3 */
 	igp1.valid = true;
@@ -249,7 +244,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 20;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 1st quarter. 3rd grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 4 */
 	igp1.valid = true;
@@ -265,14 +260,13 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 15;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 1st quarter. 4th grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 #pragma endregion
 
 #pragma region 2nd quarter
 	/*pp  2nd quarter*/
 	pp.lat = 2.5;
 	pp.lon = 177.5;
-	interPol.setPP(pp);
 
 	/*Test 1 */
 	igp1.valid = false;
@@ -288,7 +282,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 2nd quarter. 1st grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 2 */
 	igp1.valid = true;
@@ -303,7 +297,7 @@ int main(int argc, char **argv) {
 
 	testCase.expectedResult = testStatus::Failed;
 	testCase.nameOfTestCase = "'PP is in 2nd quarter. 2nd grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 3 */
 	igp1.valid = true;
@@ -319,7 +313,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 2nd quarter. 3rd grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 4 */
 	igp1.valid = true;
@@ -335,7 +329,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 20;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 2nd quarter. 4th grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 #pragma endregion
 
@@ -343,7 +337,6 @@ int main(int argc, char **argv) {
 	/*pp  3rd quarter*/
 	pp.lat = -2.5;
 	pp.lon = 177.5;
-	interPol.setPP(pp);
 
 	/*Test 1 */
 
@@ -360,7 +353,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 30;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 3rd quarter. 1st grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 2 */
 	igp1.valid = true;
@@ -376,7 +369,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 3rd quarter. 2nd grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 3 */
 	igp1.valid = true;
@@ -391,7 +384,7 @@ int main(int argc, char **argv) {
 
 	testCase.expectedResult = testStatus::Failed;
 	testCase.nameOfTestCase = "'PP is in 3rd quarter. 3rd grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 4 */
 	igp1.valid = true;
@@ -407,7 +400,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 3rd quarter. 4th grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 #pragma endregion
 
@@ -415,7 +408,6 @@ int main(int argc, char **argv) {
 	/*pp  4th quarter*/
 	pp.lat = -2.5;
 	pp.lon = -177.5;
-	interPol.setPP(pp);
 
 	/*Test 1 */
 	igp1.valid = false;
@@ -431,7 +423,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 35;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 4th quarter. 1st grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 2 */
 	igp1.valid = true;
@@ -447,7 +439,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 30;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 4th quarter. 2nd grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 3 */
 	igp1.valid = true;
@@ -463,7 +455,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 35;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'PP is in 4th quarter. 3rd grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 
 	/*Test 4 */
 	igp1.valid = true;
@@ -478,7 +470,7 @@ int main(int argc, char **argv) {
 
 	testCase.expectedResult = testStatus::Failed;
 	testCase.nameOfTestCase = "'PP is in 4th quarter. 4th grid is out'";
-	Test(interPol, testCase);
+	Test(interPol, IonoMap, pp, testCase);
 #pragma endregion
 
 	WriteOutTotalTestResults(true);
