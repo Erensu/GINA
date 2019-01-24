@@ -7,25 +7,20 @@
 #include <map> 
 
 namespace EGNOS {
-
 	
 	typedef struct IGPCoordinate_s;
 	typedef struct IGPCoordinate_s{
 		int lat;
 		int lon;
-
-			
-
 		bool const operator<(const IGPCoordinate_s &o) const {
 			return lat < o.lat || (lat == o.lat && lon < o.lon);
 		}
 	}IGPCoordinate;
 
-	class IGPMap
+	class IGPMap//:IonexCompatible
 	{
-		public:
 
-			friend class VerticalIonoDelayInterpolator;
+		public:
 
 			IGPMap(void);
 			~IGPMap(void);
@@ -43,13 +38,10 @@ namespace EGNOS {
 			
 		private:
 			
-			std::vector<VerticalIonoDelayInterpolator*> interPolList;
+			VerticalIonoDelayInterpolator interPol;
 			
 			std::vector<IonosphericGridPoint> candidateIGPs;
 			std::map<IGPCoordinate, IonosphericGridPoint>  Map;
-			void ereaseInterPolElementLink(VerticalIonoDelayInterpolator* obsoleteElement);
-			void deleteAllInterPolElementLink(void);
-			void deleteInterPolElementLink(VerticalIonoDelayInterpolator* obsolateElement);
 			
 	};
 

@@ -73,20 +73,12 @@ namespace EGNOS {
 
 #pragma region VerticalIonoDelayInterpolator
 
-	VerticalIonoDelayInterpolator::VerticalIonoDelayInterpolator(IGPMap * const linkedMap) {
-		try
-		{
-			this->registerIGPMap(linkedMap);
-		}
-		catch (std::exception& e)
-		{
-			throw e;
-		}
-		
+	VerticalIonoDelayInterpolator::VerticalIonoDelayInterpolator(void) {
+	
 	}
 
 	VerticalIonoDelayInterpolator::~VerticalIonoDelayInterpolator(void) {
-		Map->deleteInterPolElementLink(this);
+	
 	}
 
 	void SlantIonoDelay::setRoverPosition(double lat, double lon, double height) {
@@ -137,20 +129,22 @@ namespace EGNOS {
 		this->ionoPP = newPP;
 	}
 
-	double VerticalIonoDelayInterpolator::gridPointSelectionCriteria(void) {
+	double VerticalIonoDelayInterpolator::interpolate(IGPMap &Map, IonosphericGridPoint &newPP) {
+
+		setPP(newPP);
 
 		double rtv;
 		if (abs(this->ionoPP.lat) <= 55.0 ) {
 			try
 			{
-				rtv = this->grid5x5Interpolator();
+				rtv = this->grid5x5Interpolator(Map);
 			}
 			catch (exception &e)
 			{
 				//throw std::domain_error("Interppolation in 5x5 grid is not possible");
 				try
 				{
-					rtv = this->grid10x10Interpolator();
+					rtv = this->grid10x10Interpolator(Map);
 				}
 				catch (exception &e)
 				{
@@ -166,26 +160,17 @@ namespace EGNOS {
 		return rtv;
 	}
 	
-	IonosphericGridPoint VerticalIonoDelayInterpolator::getIGP(double lat, double lon) {
+	IonosphericGridPoint VerticalIonoDelayInterpolator::getIGP(IGPMap &Map, double lat, double lon) {
 
 		try
 		{
-			return this->Map->getIGP(lat, lon);
+			return Map.getIGP(lat, lon);
 		}
 		catch (std::exception& e)
 		{
 			throw std::domain_error("Interppolation in 5x5 grid is not possible");
 		}
 		
-	}
-
-	void VerticalIonoDelayInterpolator::registerIGPMap(IGPMap * link2Map) {
-		if (link2Map == NULL) {
-			throw std::bad_alloc();
-		}
-		link2Map->interPolList.push_back(this);
-		
-		this->Map = link2Map;
 	}
 
 	int VerticalIonoDelayInterpolator::closestNumberFromLow(int n, int m)
@@ -279,16 +264,13 @@ namespace EGNOS {
 
 	}
 
-	double VerticalIonoDelayInterpolator::grid5x5Interpolator(void) {
+	double VerticalIonoDelayInterpolator::grid5x5Interpolator(IGPMap &Map) {
 	
-		if (this->Map == NULL) {
-			throw std::domain_error("Interppolation in 5x5 grid is not possible");
-		}
-
+		
 		double corr;
 		double gridDistance = 5;
 		VerticesOfSquare table;
-		getVerticesOf5x5Square(table);
+		getVerticesOf5x5Square(table, Map);
 
 		try
 		{
@@ -298,19 +280,17 @@ namespace EGNOS {
 		{
 			throw std::domain_error("Interppolation in 5x5 grid is not possible");
 		}
+
+		return corr;
 	}
 
-	double VerticalIonoDelayInterpolator::grid10x10Interpolator(void) {
-
-		if (this->Map == NULL) {
-			throw std::domain_error("Interppolation in 10x10 grid is not possible");
-		}
+	double VerticalIonoDelayInterpolator::grid10x10Interpolator(IGPMap &Map) {
 
 		double corr;
 		double gridDistance = 10;
 		VerticesOfSquare table;
 
-		getVerticesOf10x10Square(table);
+		getVerticesOf10x10Square(table, Map);
 
 		try
 		{
@@ -321,8 +301,7 @@ namespace EGNOS {
 			throw std::domain_error("Interppolation in 10x10 grid is not possible");
 		}
 
-
-
+		return corr;
 	}
 
 	double VerticalIonoDelayInterpolator::symmetricInterpolator(double gridDistance, VerticesOfSquare table) {
@@ -400,7 +379,7 @@ namespace EGNOS {
 		return 0;
 	}
 
-	void VerticalIonoDelayInterpolator::getVerticesOf5x5Square(VerticesOfSquare& table) {
+	void VerticalIonoDelayInterpolator::getVerticesOf5x5Square(VerticesOfSquare& table, IGPMap &Map) {
 	
 		double lat1, lat2, lon1, lon2;
 		getNearestLatLot(lat1, lat2, lon1, lon2);
@@ -411,7 +390,7 @@ namespace EGNOS {
 
 		try
 		{
-			igp1 = Map->getIGP(lat2, lon2);
+			igp1 = Map.getIGP(lat2, lon2);
 			numberOfValidIGP++;
 		}
 		catch (const std::exception&)
@@ -421,7 +400,7 @@ namespace EGNOS {
 
 		try
 		{
-			igp2 = Map->getIGP(lat2, lon1);
+			igp2 = Map.getIGP(lat2, lon1);
 			numberOfValidIGP++;
 		}
 		catch (const std::exception&)
@@ -431,7 +410,7 @@ namespace EGNOS {
 
 		try
 		{
-			igp3 = Map->getIGP(lat1, lon1);
+			igp3 = Map.getIGP(lat1, lon1);
 			numberOfValidIGP++;
 		}
 		catch (const std::exception&)
@@ -441,7 +420,7 @@ namespace EGNOS {
 		table.first = igp1;
 		try
 		{
-			igp4 = Map->getIGP(lat1, lon2);
+			igp4 = Map.getIGP(lat1, lon2);
 			numberOfValidIGP++;
 		}
 		catch (const std::exception&)
@@ -456,7 +435,7 @@ namespace EGNOS {
 		table.fourth = igp4;
 	}
 
-	void VerticalIonoDelayInterpolator::getVerticesOf10x10Square(VerticesOfSquare& table) {
+	void VerticalIonoDelayInterpolator::getVerticesOf10x10Square(VerticesOfSquare& table, IGPMap &Map) {
 
 		double gridDistance = 10;
 		double numberOfValidIGP = 0;
@@ -470,7 +449,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp1 = Map->getIGP(lat2, lon2);
+				igp1 = Map.getIGP(lat2, lon2);
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -480,7 +459,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp21 = Map->getIGP(lat2, restrictLong(lon1 - 5));
+				igp21 = Map.getIGP(lat2, restrictLong(lon1 - 5));
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -490,7 +469,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp33 = Map->getIGP(lat1 - 5, restrictLong(lon1 - 5));
+				igp33 = Map.getIGP(lat1 - 5, restrictLong(lon1 - 5));
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -500,7 +479,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp42 = Map->getIGP(lat1 - 5, lon2);
+				igp42 = Map.getIGP(lat1 - 5, lon2);
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -548,7 +527,7 @@ namespace EGNOS {
 		
 			try
 			{
-				igp11 = Map->getIGP(lat2, restrictLong(lon2 + 5));
+				igp11 = Map.getIGP(lat2, restrictLong(lon2 + 5));
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -558,7 +537,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp2 = Map->getIGP(lat2, lon1);
+				igp2 = Map.getIGP(lat2, lon1);
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -568,7 +547,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp32 = Map->getIGP(lat1 - 5, lon1);
+				igp32 = Map.getIGP(lat1 - 5, lon1);
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -578,7 +557,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp43 = Map->getIGP(lat1 - 5, restrictLong(lon2 + 5));
+				igp43 = Map.getIGP(lat1 - 5, restrictLong(lon2 + 5));
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -625,7 +604,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp13 = Map->getIGP(lat2 + 5, restrictLong(lon2 + 5));
+				igp13 = Map.getIGP(lat2 + 5, restrictLong(lon2 + 5));
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -635,7 +614,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp22 = Map->getIGP(lat2 + 5, lon1);
+				igp22 = Map.getIGP(lat2 + 5, lon1);
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -645,7 +624,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp3 = Map->getIGP(lat1, lon1);
+				igp3 = Map.getIGP(lat1, lon1);
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -655,7 +634,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp41 = Map->getIGP(lat1, restrictLong(lon2 + 5));
+				igp41 = Map.getIGP(lat1, restrictLong(lon2 + 5));
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -702,7 +681,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp12 = Map->getIGP(lat2 + 5, lon2);
+				igp12 = Map.getIGP(lat2 + 5, lon2);
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -712,7 +691,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp23 = Map->getIGP(lat2 + 5, restrictLong(lon1 - 5) );
+				igp23 = Map.getIGP(lat2 + 5, restrictLong(lon1 - 5) );
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -722,7 +701,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp31 = Map->getIGP(lat1, restrictLong(lon1 - 5));
+				igp31 = Map.getIGP(lat1, restrictLong(lon1 - 5));
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -732,7 +711,7 @@ namespace EGNOS {
 
 			try
 			{
-				igp4 = Map->getIGP(lat1, lon2);
+				igp4 = Map.getIGP(lat1, lon2);
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)

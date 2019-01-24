@@ -50,6 +50,7 @@ namespace EGNOS {
 
 	class VerticalIonoDelayInterpolator	
 	{
+		friend class IGPMap;
 	public:
 
 		typedef struct VerticesOfSquare {
@@ -58,58 +59,47 @@ namespace EGNOS {
 			IonosphericGridPoint third;
 			IonosphericGridPoint fourth;
 		};
-		
-		friend class IGPMap;
 
-		VerticalIonoDelayInterpolator(IGPMap * const linkedMap);
+		VerticalIonoDelayInterpolator(void);
 		~VerticalIonoDelayInterpolator(void);
 
-		double VerticalIonoDelayInterpolator::gridPointSelectionCriteria(void);
-
-		double interpolation4point(	double xpp, double ypp,
-									double ionoDelay1,
-									double ionoDelay2,
-									double ionoDelay3,
-									double ionoDelay4);
-		double interpolation3point(	double xpp, double ypp,
-									double ionoDelay2,
-									double ionoDelay3,
-									double ionoDelay4);
-
-		void setPP(IonosphericGridPoint newPP);
-		IonosphericGridPoint getIGP(double lat, double lon);
-
-		std::vector<IonosphericGridPoint> IGPs;
+		double VerticalIonoDelayInterpolator::interpolate(IGPMap &Map, IonosphericGridPoint &newPP);
+		
+	private:
 		IonosphericGridPoint ionoPP;
 
+		void setPP(IonosphericGridPoint newPP);
+		double interpolation4point(double xpp, double ypp,
+			double ionoDelay1,
+			double ionoDelay2,
+			double ionoDelay3,
+			double ionoDelay4);
+		double interpolation3point(double xpp, double ypp,
+			double ionoDelay2,
+			double ionoDelay3,
+			double ionoDelay4);
+		IonosphericGridPoint getIGP(IGPMap &Map, double lat, double lon);
+
+		double grid5x5Interpolator(IGPMap &Map);
+		double grid10x10Interpolator(IGPMap &Map);
+
+		void getVerticesOf5x5Square(VerticesOfSquare& table,  IGPMap &Map);
+		void getVerticesOf10x10Square(VerticesOfSquare& table, IGPMap &Map);
+		double symmetricInterpolator(double gridDistance, VerticesOfSquare table);	// Symmetric means that the grid distance is constant. It can be square and triangle as well.
+
+		void calculate_xpp_and_ypp(	double &xpp,	double &ypp,
+									double &lat1,	double &lat2,
+									double &lon1,	double &lon2);
+
+		void getNearestLatLot(double &lat1, double &lat2, double &lon1, double &lon2);
+		void restrictLong(double *indegree);
+		double restrictLong(double indegree);
+		void restrictLonginDegree(double &indegree);
+		double absDistanceOfLongitude(double lon1, double lon2);
 		int closestNumberFromLow(int n, int m);
 		int closestNumberFromHigh(int n, int m);
 		int secondClosestNumberFromLow(int n, int m);
 		int secondClosestNumberFromHigh(int n, int m);
-
-		
-	private:
-
-		IGPMap * Map;							
-
-		double grid5x5Interpolator(void);
-		double grid10x10Interpolator(void);
-
-		void getVerticesOf5x5Square(VerticesOfSquare& table);
-		void getVerticesOf10x10Square(VerticesOfSquare& table);
-		double symmetricInterpolator(double gridDistance, VerticesOfSquare table);
-
-		void getNearestLatLot(double &lat1, double &lat2, double &lon1, double &lon2);
-		void registerIGPMap(IGPMap * link2Map);
-		void calculate_xpp_and_ypp(	double &xpp,	double &ypp,
-									double &lat1,	double &lat2,
-									double &lon1,	double &lon2);
-		void restrictLong(double *indegree);
-		double restrictLong(double indegree);
-		void restrictLonginDegree(double &indegree);
-
-		double absDistanceOfLongitude(double lon1, double lon2);
-		void deleteLink2Map(void) {	Map = NULL;	}
 	};
 
 	class IonexCreator
