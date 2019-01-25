@@ -1,6 +1,10 @@
 #!/bin/bash
 #shell script to download code ionex file, draw tec maps and create animate gif
 
+#local path
+lpath="/home/bence/kutat/ems/"
+cd $lpath
+
 #the number of days back in time, since ionex files may have some latency
 n=5
 
@@ -27,3 +31,4 @@ rm "CODG"$doy"0."$year2"I"
 
 #upload to the server
 scp iono.gif 152.66.5.8:public_html/ems/.
+cd
