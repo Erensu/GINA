@@ -1,13 +1,22 @@
 #octave script to read ionex file and draw Total Electron Content map(s)
-#mely állományokon teszteltem eddig
 
 clear all; close all; clc; page_screen_output(0)
 
-#ionex file name
-fin = fopen('corg0140.19i');  #files alkönyvtár!, első argumentum
+#ionex file name as the first argument
+if nargin == 1
+  arg_list = argv ();
+  ionex_file = arg_list{1};
+else  
+  ionex_file = 'ROBR014K15.19I';  #just for testing
+endif
+[fin, errormsg] = fopen(ionex_file, 'r');
+if errormsg
+  error('%s file open error\n', ionex_file);
+  exit
+endif  
 
 #map of the world
-world_map = load('coastline.txt');  #itt is
+world_map = load('coastline.txt');
 
 n_maps=0;
 while ~feof(fin)
@@ -41,7 +50,8 @@ while ~feof(fin)
         for i=1:size(lat, 2)
           tline = fgetl(fin);
           if ~ strfind(tline, 'LAT/LON1/LON2/DLON/H') 
-            break; #inkább kilép a porgramból
+            error('file error at line %s\n', tline);
+            exit
           endif
           l = 0;
           for j=1:n
@@ -79,9 +89,9 @@ while ~feof(fin)
           dlat_tick = 2;
         endif
         set(gca,'XTick',lon1:dlon_tick:lon2);
-        set(gca,'YTick',lat1:dlat_tick:lat2);
+        set(gca,'YTick',lat1:sign(dlat)*dlat_tick:lat2);
         caxis([0 60]);
-        title (sprintf('Total Electron Content Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec)); #angol dátum formátum legyen
+        title (sprintf('Total Electron Content Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec));
         print(map, sprintf('iono%02d.jpg', n_maps), "-S840,480");
         close(map);
       endif
