@@ -104,7 +104,7 @@ namespace EGNOS {
 
 		public:
 			IonexCreator(void) {};
-			~IonexCreator(void) { delete ionoData; };
+			~IonexCreator(void);
 
 			void setIonexData(IonexCompatible &Ionex);
 			bool write2file(std::string newIonexFile);

@@ -21,7 +21,7 @@ namespace EGNOS {
 
 	class IonexCompatible {
 	public:
-
+		virtual ~IonexCompatible() {};
 		virtual double getTEC(gpstk::CivilTime epoch, double lat, double lon) const = 0;
 		virtual double getRMS(gpstk::CivilTime epoch, double lat, double lon) const = 0;
 		virtual std::vector<gpstk::CivilTime> getEpochTimes(void) const = 0;

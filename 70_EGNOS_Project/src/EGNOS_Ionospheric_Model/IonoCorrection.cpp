@@ -794,6 +794,10 @@ namespace EGNOS {
 
 #pragma region IonexCreator
 
+	IonexCreator::~IonexCreator(void){
+		delete ionoData; 
+	};
+
 	bool IonexCreator::write2file(std::string newIonexFile) {
 
 		bool validityFlag = false;
@@ -965,7 +969,7 @@ namespace EGNOS {
 
 		while (counter < numberOfValues)
 		{
-			cout << currLat << " " << currLon << endl;
+			//cout << currLat << " " << currLon << endl;
 			
 			values[counter] = getData(currentEpoch, currLat, currLon, type);
 
@@ -1022,11 +1026,21 @@ namespace EGNOS {
 		switch (type)
 		{
 			case TEC:
-				rtv = ionoData->getTEC(currentEpoch, currLat, currLon) * std::pow(10, header.exponent);
+				try	{
+					rtv = ionoData->getTEC(currentEpoch, currLat, currLon) * std::pow(10, -header.exponent);
+				}
+				catch (const std::exception&){
+					rtv = INVALID_VALUE* std::pow(10, header.exponent);
+				}
 				break;
 
 			case RMS:
-				rtv = ionoData->getRMS(currentEpoch, currLat, currLon) * std::pow(10, header.exponent);
+				try	{
+					rtv = ionoData->getRMS(currentEpoch, currLat, currLon) * std::pow(10, -header.exponent);
+				}
+				catch (const std::exception&){
+					rtv = INVALID_VALUE * std::pow(10, header.exponent);
+				}
 				break;
 
 			default:

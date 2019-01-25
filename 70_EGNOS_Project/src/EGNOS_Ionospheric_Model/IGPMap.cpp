@@ -100,9 +100,19 @@ namespace EGNOS {
 
 	double IGPMap::getTEC(gpstk::CivilTime epoch, double lat, double lon) const {
 
-		IonosphericGridPoint igp = getIGP(lat, lon);
-		return igp.IGPVerticalDelayEstimate;
+		double tec;
 
+		try	{
+
+			IonosphericGridPoint igp = getIGP(lat, lon);
+			tec = igp.IGPVerticalDelayEstimate;
+		}
+		catch (const std::exception& e)	{
+
+			throw(e);
+		}
+		
+		return tec;
 	}
 
 	double IGPMap::getRMS(gpstk::CivilTime epoch, double lat, double lon) const {
@@ -114,6 +124,16 @@ namespace EGNOS {
 	std::vector<gpstk::CivilTime> IGPMap::getEpochTimes(void) const {
 
 		std::vector<gpstk::CivilTime> epochs;
+
+		gpstk::CivilTime firstAndOnly;
+		firstAndOnly.year = 2019;
+		firstAndOnly.month = 1;
+		firstAndOnly.day = 24;
+		firstAndOnly.hour = 17;
+		firstAndOnly.minute = 29;
+		firstAndOnly.second = 42;
+
+		epochs.push_back(firstAndOnly);
 		return epochs;
 	}
 
