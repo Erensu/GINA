@@ -12,7 +12,7 @@
 #define MIN_LAT -85
 #define MAX_LON 180
 #define MIN_LON -180
-#define LAT_DISTANCE 5
+#define LAT_DISTANCE -5
 #define LON_DISTANCE 5
 #define	BASE_RADIUS 6371.4
 #define	MAPDIMS 2
@@ -968,10 +968,8 @@ namespace EGNOS {
 		double currLon = lon1;
 
 		while (counter < numberOfValues)
-		{
-			//cout << currLat << " " << currLon << endl;
-			
-			values[counter] = getData(currentEpoch, currLat, currLon, type);
+		{	
+			values(counter) = getData(currentEpoch, currLat, currLon, type);
 
 			if (abs(currLon - lon2) < dlon) {
 				currLon = lon1 - dlon;
@@ -1027,16 +1025,16 @@ namespace EGNOS {
 		{
 			case TEC:
 				try	{
-					rtv = ionoData->getTEC(currentEpoch, currLat, currLon) * std::pow(10, -header.exponent);
+					rtv = ionoData->getTEC(currentEpoch, currLat, currLon);
 				}
 				catch (const std::exception&){
-					rtv = INVALID_VALUE* std::pow(10, header.exponent);
+					rtv = INVALID_VALUE * std::pow(10, header.exponent);
 				}
 				break;
 
 			case RMS:
 				try	{
-					rtv = ionoData->getRMS(currentEpoch, currLat, currLon) * std::pow(10, -header.exponent);
+					rtv = ionoData->getRMS(currentEpoch, currLat, currLon);
 				}
 				catch (const std::exception&){
 					rtv = INVALID_VALUE * std::pow(10, header.exponent);
@@ -1044,7 +1042,7 @@ namespace EGNOS {
 				break;
 
 			default:
-				rtv = INVALID_VALUE;
+				rtv = INVALID_VALUE * std::pow(10, header.exponent);
 				break;
 		}
 		return rtv;
