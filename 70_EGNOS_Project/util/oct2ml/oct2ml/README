@@ -1,0 +1,203 @@
+README file for oct2ml.m
+
+CONTENTS:
+ 0. DISCLAIMER
+ 1. OBJECTIVE
+ 2. MOTIVATION
+ 3. BUG REPORTS and WISH LIST
+ 4. OCT2ML CAPABILITIES
+ 5. OCT2ML LIMITATIONS
+ 6. INSTALLATION
+ 7. HOW TO USE OCT2ML
+ 8. EXAMPLES
+
+0. DISCLAIMER: Matlab is a trademark of the Mathworks company and is
+   owned by them. The author makes no guarantee express or implied of
+   any kind as to the applicability, usefulness, efficacy,
+   bug-freeness, or the accuracy of the ensuing results from using
+   oct2ml.
+
+   The author bears no responsibility for any unwanted effect
+   resulting from the use of this program. The author is not
+   affiliated with the Mathworks.  The source code is given in full in
+   the hopes that it will prove useful. 
+
+1. OBJECTIVE: oct2ml.m is a small translator which aims to
+   convert octave m-files to Matlab m-files.
+
+2. MOTIVATION: 
+   octave (http://www.octave.org/) is a viable alternative to Matlab for
+   many poeple. octave (and cotave-forge) includes many useful functions 
+   not included in Matlab except in toolboxes. Yet some would like to use 
+   octave's m-files in Matlab (e.g. statistics and signal processing 
+   m-files).
+
+   oct2ml was written in an attemp to automate the conversion of octave 
+   m-files to matlab m-files for use in Matlab.
+
+3. BUG REPORTS and WISH LIST:
+   For all bug reports, a wish list for oct2ml, and suggestions, email 
+   barrowes@users.sourceforge.net
+
+4. OCT2ML CAPABILITIES: oct2ml is aimed at converting octave m-files to 
+   Matlab compatible m-files. The conversion is rather straightforward, 
+   implementing obvious issues such as # => %, endfunction => end, etc. 
+   as well as rewriting some function calls to be matlab compatible 
+   (e.g. columns). 
+
+   Here is a complete list of oct2ml's covnersions:
+   # => %   But only the first one on any given line.
+   ! => ~
+   __var names are changed to var only.
+   \ continuations are replaced by ellipses
+   non ellipsed continuations have ... added to the end of the line
+   ' in double quotes are replaced by ''
+   " => '
+   some functions are substituted with a ML equivalent:
+       endif endfor endfunction endwhile => end
+       is_vector => isvector
+       is_scalar => isscalar
+       rows => size(,1)
+       columns => size(,2)
+       printf => fprintf
+
+5. OCT2ML LIMITATIONS: oct2ml does not try to convert the plotting 
+   functions of octave to Matlab.
+
+6. INSTALLATION
+   Unzip the oct2ml*.tar.gz file into some directory on the matlab path. 
+   Perhaps your home matlab directory. Then untar/unzip it. On linux:
+   tar zxvf oct2ml*.tar.gz
+
+   This will create 3 files under an oct2ml directory:
+   oct2ml.m             -- the main conversion function
+   o2mDir.m             -- function to convert all the *.m files in a 
+                           directory
+   README               -- this README file
+
+   octave m-files may be converted as needed or 
+   octave script directories may be converted with:
+   o2mDir('directory_name')
+
+   The converted directories may then be addes to the *end* of the 
+   matlab path (so Matlab picks out native m-files first in cases of
+   function  duplication) with something like:
+   addpath('directory_path,'-end')
+
+7. HOW TO USE OCT2ML: oct2ml expects a string containing an octave m-file 
+   name to convert. Simply call oct2ml by using the full filename:
+   oct2ml('filename.m');
+   The output will overwrite filename.m in the same directory. The 
+   original filename will be renamed to filename.m.PREo2m.
+   
+   o2mDir will run oct2ml on all the m-files in a directory (see above).
+
+8. EXAMPLES:
+   See the octavescripts and octaveforgescripts for many examples.
+
+   One from the octavescripts directory is hanning.m
+   The original octave style hanning.m is:
+
+## Copyright (C) 1995, 1996, 1997  Andreas Weingessel
+##
+## This file is part of Octave.
+##
+## Octave is free software; you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2, or (at your option)
+## any later version.
+##
+## Octave is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with Octave; see the file COPYING.  If not, write to the Free
+## Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+## 02110-1301, USA.
+
+## -*- texinfo -*-
+## @deftypefn {Function File} {} hanning (@var{m})
+## Return the filter coefficients of a Hanning window of length @var{m}.
+##
+## For a definition of this window type, see e.g. A. V. Oppenheim &
+## R. W. Schafer, "Discrete-Time Signal Processing".
+## @end deftypefn
+
+## Author: AW <Andreas.Weingessel@ci.tuwien.ac.at>
+## Description: Coefficients of the Hanning window
+
+function c = hanning (m)
+
+  if (nargin != 1)
+    usage ("hanning (m)");
+  endif
+
+  if (! (isscalar (m) && (m == round (m)) && (m > 0)))
+    error ("hanning: m has to be an integer > 0");
+  endif
+
+  if (m == 1)
+    c = 1;
+  else
+    m = m - 1;
+    c = 0.5 - 0.5 * cos (2 * pi * (0 : m)' / m);
+  endif
+
+endfunction
+
+
+After conversion via
+oct2ml('hanning.m');
+
+the Matlab style m-file is:
+
+%# Copyright (C) 1995, 1996, 1997  Andreas Weingessel
+%#
+%# This file is part of Octave.
+%#
+%# Octave is free software; you can redistribute it and/or modify it
+%# under the terms of the GNU General Public License as published by
+%# the Free Software Foundation; either version 2, or (at your option)
+%# any later version.
+%#
+%# Octave is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with Octave; see the file COPYING.  If not, write to the Free
+%# Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301, USA.
+
+%# -*- texinfo -*-
+%# @deftypefn {Function File} {} hanning (@var{m})
+%# Return the filter coefficients of a Hanning window of length @var{m}.
+%#
+%# For a definition of this window type, see e.g. A. V. Oppenheim &
+%# R. W. Schafer, 'Discrete-Time Signal Processing'.
+%# @end deftypefn
+
+%# Author: AW <Andreas.Weingessel@ci.tuwien.ac.at>
+%# Description: Coefficients of the Hanning window
+
+function c = hanning (m)
+
+  if (nargin ~= 1)
+    usage ('hanning (m)');
+  end
+
+  if (~ (isscalar (m) && (m == round (m)) && (m > 0)))
+    error ('hanning: m has to be an integer > 0');
+  end
+
+  if (m == 1)
+    c = 1;
+  else
+    m = m - 1;
+    c = 0.5 - 0.5 * cos (2 * pi * (0 : m)' / m);
+  end
+
+end
