@@ -64,6 +64,10 @@ namespace EGNOS {
 
 		double grid5x5Interpolator(IGPMapBase& Map);
 		double grid10x10Interpolator(IGPMapBase& Map);
+		double grid5x10Interpolator(IGPMapBase& Map);
+
+		
+		void getVerticesOf5x10Square(VerticesOfSquare& table, IGPMapBase& Map);
 		void getVerticesOf5x5Square(VerticesOfSquare& table, IGPMapBase& Map);
 		void getVerticesOf10x10Square(VerticesOfSquare& table, IGPMapBase& Map);
 
@@ -78,7 +82,7 @@ namespace EGNOS {
 			double ionoDelay3,
 			double ionoDelay4);
 		
-		double symmetricInterpolator(double gridDistance, VerticesOfSquare table);	// Symmetric means that the grid distance is constant. It can be square and triangle as well.
+		double symmetricInterpolator(double latDistance, double lonDistance, VerticesOfSquare table);	// Symmetric means that the grid distance is constant. It can be square and triangle as well.
 
 		void calculate_xpp_and_ypp(	double &xpp,	double &ypp,
 									double &lat1,	double &lat2,
