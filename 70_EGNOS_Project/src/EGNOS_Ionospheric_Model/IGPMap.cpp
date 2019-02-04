@@ -49,8 +49,25 @@ namespace EGNOS {
 
 	void IGPMap::addIGPforDebugging(IonosphericGridPoint newIGP) {
 
+		restrictLonginDegree(newIGP.lon);
+
 		IGPCoordinate coor = { newIGP.lat , newIGP.lon };
 		this->Map[coor] = newIGP;
+	}
+
+	void IGPMap::restrictLonginDegree(double &indegree) const {
+
+		if (indegree >= 180) {
+			indegree = fmod(indegree, 180);
+			indegree -= 180;
+			return;
+		}
+
+		if (indegree < -180) {
+			indegree = fmod(indegree, 180);
+			indegree = 180 - fabs(indegree);
+			return;
+		}
 	}
 
 	void IGPMap::reset(void) {
@@ -76,9 +93,11 @@ namespace EGNOS {
 
 	IonosphericGridPoint IGPMap::getIGP(double lat, double lon) const{
 
-		IGPCoordinate  keyword;
+		IGPCoordinate keyword;
 		keyword.lat = lat;
 		keyword.lon = lon;
+
+		restrictLonginDegree(keyword.lon);
 
 		std::map<IGPCoordinate, IonosphericGridPoint>::const_iterator it;
 

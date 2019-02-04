@@ -12,8 +12,8 @@ namespace EGNOS {
 	
 	typedef struct IGPCoordinate_s;
 	typedef struct IGPCoordinate_s{
-		int lat;
-		int lon;
+		double lat;
+		double lon;
 		bool const operator<(const IGPCoordinate_s &o) const {
 			return lat < o.lat || (lat == o.lat && lon < o.lon);
 		}
@@ -52,6 +52,7 @@ namespace EGNOS {
 			void updateMap(void);
 			
 			void addIGPforDebugging(IonosphericGridPoint newIGP);
+			void restrictLonginDegree(double &indegree) const;
 			void reset(void);
 			IonosphericGridPoint getIGP(double lat, double lon) const;
 
