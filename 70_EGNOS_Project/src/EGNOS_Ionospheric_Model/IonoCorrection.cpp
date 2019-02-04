@@ -132,27 +132,30 @@ namespace EGNOS {
 		setPP(newPP);
 
 		double rtv;
-		if (abs(this->ionoPP.lat) < 55.0 ) {
+		if (abs(this->ionoPP.lat) < 85.0 ) {
 			try
 			{
 				rtv = this->grid5x5Interpolator(Map);
 			}
 			catch (exception &e)
 			{
-				//throw std::domain_error("Interppolation in 5x5 grid is not possible");
 				try
 				{
-					rtv = this->grid10x10Interpolator(Map);
+					rtv = this->grid5x10Interpolator(Map);
 				}
 				catch (exception &e)
 				{
-					throw std::domain_error("Interppolation is not possible");
+					try
+					{
+						rtv = this->grid10x10Interpolator(Map);
+					}
+					catch (exception &e)
+					{
+						throw std::domain_error("Interppolation is not possible");
+					}
 				}
 			}
 			
-		}
-		else if ( 55 <= abs(this->ionoPP.lat) && abs(this->ionoPP.lat) < 75.0 ) {
-		
 		}
 		else {
 			throw std::domain_error("Unfinished code");
@@ -345,7 +348,7 @@ namespace EGNOS {
 
 
 		if (table.first.valid == false) {
-			if (abs(ionoPP.lat - table.third.lat) <= latDistance - absDistanceOfLongitude(table.third.lon, this->ionoPP.lon)) {
+			if (abs(ionoPP.lat - table.third.lat) <= latDistance - 0.5 * absDistanceOfLongitude(table.third.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.third.lat) / latDistance;
@@ -358,7 +361,7 @@ namespace EGNOS {
 			}
 		}
 		else if (table.second.valid == false) {
-			if (abs(ionoPP.lat - table.fourth.lat) <= latDistance - absDistanceOfLongitude(table.fourth.lon, this->ionoPP.lon)) {
+			if (abs(ionoPP.lat - table.fourth.lat) <= latDistance - 0.5 * absDistanceOfLongitude(table.fourth.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.fourth.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.fourth.lat) / latDistance;
@@ -371,7 +374,7 @@ namespace EGNOS {
 			}
 		}
 		else if (table.third.valid == false) {
-			if (abs(ionoPP.lat - table.fourth.lat) >= latDistance - absDistanceOfLongitude(table.second.lon, this->ionoPP.lon)) {
+			if (abs(ionoPP.lat - table.fourth.lat) >= latDistance - 0.5 * absDistanceOfLongitude(table.second.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.first.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.first.lat) / latDistance;
@@ -384,7 +387,7 @@ namespace EGNOS {
 			}
 		}
 		else if (table.fourth.valid == false) {
-			if (abs(ionoPP.lat - table.third.lat) >= absDistanceOfLongitude(table.third.lon, this->ionoPP.lon)) {
+			if (abs(ionoPP.lat - table.third.lat) >= 0.5 * absDistanceOfLongitude(table.third.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.second.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.second.lat) / latDistance;
@@ -521,22 +524,22 @@ namespace EGNOS {
 
 			if (numberOfValidIGP == 3) {
 				if (igp1.valid == false) {
-					if (abs(ionoPP.lat - igp31.lat) <= latDistance - absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp31.lat) <= latDistance - 0.5 * absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
 						return;
 					}
 				}
 				else if (igp21.valid == false) {
-					if (abs(ionoPP.lat - igp4.lat) <= latDistance - absDistanceOfLongitude(igp4.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp4.lat) <= latDistance - 0.5 * absDistanceOfLongitude(igp4.lon, ionoPP.lon)) {
 						return;
 					}
 				}
 				else if (igp31.valid == false) {
-					if (abs(ionoPP.lat - igp4.lat) >= latDistance - absDistanceOfLongitude(igp21.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp4.lat) >= latDistance - 0.5 * absDistanceOfLongitude(igp21.lon, ionoPP.lon)) {
 						return;
 					}
 				}
 				else if (igp4.valid == false) {
-					if (abs(ionoPP.lat - igp31.lat) >= absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp31.lat) >= 0.5 * absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
 						return;
 					}
 				}
