@@ -132,62 +132,62 @@ int main(int argc, char **argv) {
 
 
 	igp1.lat = 85;
-	igp1.lon = -180;
+	igp1.lon = -170;
 	igp1.setIonoDelayinMeter(10);
 	igp1.valid = true;
 
 	igp2.lat = 85;
-	igp2.lon = -150;
+	igp2.lon = -140;
 	igp2.setIonoDelayinMeter(20);
 	igp2.valid = true;
 
 	igp3.lat = 85;
-	igp3.lon = -120;
+	igp3.lon = -110;
 	igp3.setIonoDelayinMeter(30);
 	igp3.valid = true;
 
 	igp4.lat = 85;
-	igp4.lon = -90;
+	igp4.lon = -80;
 	igp4.setIonoDelayinMeter(40);
 	igp4.valid = true;
 
 	igp5.lat = 85;
-	igp5.lon = -60;
+	igp5.lon = -50;
 	igp5.setIonoDelayinMeter(50);
 	igp5.valid = true;
 
 	igp6.lat = 85;
-	igp6.lon = 30;
+	igp6.lon = -20;
 	igp6.setIonoDelayinMeter(60);
 	igp6.valid = true;
 
 	igp7.lat = 85;
-	igp7.lon = 0;
+	igp7.lon = 10;
 	igp7.setIonoDelayinMeter(70);
 	igp7.valid = true;
 
 	igp8.lat = 85;
-	igp8.lon = 30;
+	igp8.lon = 40;
 	igp8.setIonoDelayinMeter(80);
 	igp8.valid = true;
 
 	igp9.lat = 85;
-	igp9.lon = 60;
+	igp9.lon = 70;
 	igp9.setIonoDelayinMeter(90);
 	igp9.valid = true;
 
 	igp10.lat = 85;
-	igp10.lon = 90;
+	igp10.lon = 100;
 	igp10.setIonoDelayinMeter(100);
 	igp10.valid = true;
 
 	igp11.lat = 85;
-	igp11.lon = 120;
+	igp11.lon = 130;
 	igp11.setIonoDelayinMeter(110);
 	igp11.valid = true;
 
 	igp12.lat = 85;
-	igp12.lon = 150;
+	igp12.lon = 160;
 	igp12.setIonoDelayinMeter(120);
 	igp12.valid = true;
 

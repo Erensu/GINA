@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
 	igp5.valid = true;
 
 	igp6.lat = 85;
-	igp6.lon = 30;
+	igp6.lon = -30;
 	igp6.setIonoDelayinMeter(60);
 	igp6.valid = true;
 
