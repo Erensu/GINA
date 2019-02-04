@@ -28,14 +28,16 @@ namespace EGNOS {
 		IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &obj);
 
 		IonosphericGridPoint& operator=(const IonosphericGridPoint& other);
+
 		double getIonoCorr(void);
-		void setIonoDelayinMeter(double delay) { IGPVerticalDelayEstimate = delay * 8; };
+		int getIGPVerticalDelayEstimater(void) { return IGPVerticalDelayEstimate; };
+		void setIonoDelayinMeter(double delay) { IonoCorrinMeter = delay; };
+		void setIGPVerticalDelayEstimate(int delay) { IGPVerticalDelayEstimate = delay; IonoCorrinMeter = 8.0 * delay; };
 
 		bool valid = false;
 		double lat;
 		double lon;
 
-		int IGPVerticalDelayEstimate;
 		int IODI;
 		int GIVEI;
 
@@ -46,6 +48,8 @@ namespace EGNOS {
 		friend std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp);
 		
 	private:
+		double IonoCorrinMeter;
+		int IGPVerticalDelayEstimate;
 		void copy(const IonosphericGridPoint &obj);
 	};
 	

@@ -8,7 +8,7 @@ namespace EGNOS {
 #define IONO_DELAY_CORRECTION_MESSAGE_TYPE 26
 
 	IonosphericGridPoint::IonosphericGridPoint(void) {
-	
+		this->valid = false;
 	}
 
 	IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &copy)	{
@@ -20,6 +20,7 @@ namespace EGNOS {
 
 		this->GIVEI = obj.GIVEI;
 		this->IGPVerticalDelayEstimate = obj.IGPVerticalDelayEstimate;
+		this->IonoCorrinMeter = obj.IonoCorrinMeter;
 		this->IODI = obj.IODI;
 		this->lat = obj.lat;
 		this->lon = obj.lon;
@@ -37,7 +38,7 @@ namespace EGNOS {
 	}
 
 	double IonosphericGridPoint::getIonoCorr(void) {
-		return this->IGPVerticalDelayEstimate * 0.125;
+		return IonoCorrinMeter;//this->IGPVerticalDelayEstimate * 0.125;
 	}
 
 	std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp) {
@@ -416,7 +417,7 @@ namespace EGNOS {
 		temp.placeInBlock = offset;
 
 		temp.GIVEI = this->getGIVEI(offset);
-		temp.IGPVerticalDelayEstimate = this->getIGPVerticalDelay(offset);
+		temp.setIGPVerticalDelayEstimate(this->getIGPVerticalDelay(offset));
 
 		ionoPoints.push_back(temp);
 

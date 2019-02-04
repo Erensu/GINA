@@ -132,7 +132,7 @@ namespace EGNOS {
 		setPP(newPP);
 
 		double rtv;
-		if (abs(this->ionoPP.lat) < 85.0 ) {
+		if (abs(this->ionoPP.lat) <= 75.0 ) {
 			try
 			{
 				rtv = this->grid5x5Interpolator(Map);
@@ -157,6 +157,18 @@ namespace EGNOS {
 			}
 			
 		}
+		else if (75 <= abs(this->ionoPP.lat) && abs(this->ionoPP.lat) <= 85.0) {
+		
+			try
+			{
+				rtv = this->grid10x10Interpolator(Map);
+			}
+			catch (exception &e)
+			{
+				throw std::domain_error("Interppolation is not possible");
+			}
+
+		}
 		else {
 			throw std::domain_error("Unfinished code");
 		}
@@ -172,7 +184,7 @@ namespace EGNOS {
 		}
 		catch (std::exception& e)
 		{
-			throw std::domain_error("Interppolation in 5x5 grid is not possible");
+			throw std::domain_error("Interppolation in is not possible");
 		}
 		
 	}
@@ -303,6 +315,27 @@ namespace EGNOS {
 		catch (const std::exception&)
 		{
 			throw std::domain_error("Interppolation in 5x10 grid is not possible");
+		}
+
+		return corr;
+	}
+
+	double VerticalIonoDelayInterpolator::grid10x10InterpolatorwHorizontalInterpolation(IGPMapBase& Map) {
+
+		double corr;
+		double lonDistance = 10;
+		double latDistance = 10;
+		VerticesOfSquare table;
+
+		getVerticesOf10x10SquarewHorizontalInterpolation(table, Map);
+
+		try
+		{
+			corr = symmetricInterpolator(latDistance, lonDistance, table);
+		}
+		catch (const std::exception&)
+		{
+			throw std::domain_error("Interppolation in 10x10 grid is not possible");
 		}
 
 		return corr;
@@ -618,6 +651,393 @@ namespace EGNOS {
 				}
 				else if (igp41.valid == false) {
 					if (abs(ionoPP.lat - igp3.lat) >= absDistanceOfLongitude(igp3.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+			}
+		}
+
+	}
+
+	IonosphericGridPoint VerticalIonoDelayInterpolator::getHorizontallyInterpolatedVertices(IGPMapBase& Map, double lat, double lon, double increment) {
+
+		IonosphericGridPoint interpolatedVert;
+		IonosphericGridPoint interpolatedVertEast, interpolatedVertWest;
+
+		lon = restrictLong(lon);
+		increment = abs(increment);
+
+		interpolatedVert.lat = lat;
+		interpolatedVert.lon = lon;
+
+		interpolatedVertEast = getHorizontallyNearestIGP(Map, lat, lon, lat, lon, increment);
+		interpolatedVertWest = getHorizontallyNearestIGP(Map, lat, lon, lat, lon, -increment);
+
+		if (interpolatedVertEast.valid == false || interpolatedVertWest.valid == false) {
+			interpolatedVert.valid = false;
+			return interpolatedVert;
+		}
+
+		double lonDistance = abs(restrictLong(interpolatedVertWest.lon - interpolatedVertEast.lon));
+		if (lonDistance < 10e-3) {
+			interpolatedVert.setIonoDelayinMeter( interpolatedVertWest.getIonoCorr() );
+			interpolatedVert.valid = true;
+			return interpolatedVert;
+		}
+
+		if (lonDistance > 90) {
+			interpolatedVert.valid = false;
+			return interpolatedVert;
+		}
+
+		double deltaIonoCorr = interpolatedVertEast.getIonoCorr() - interpolatedVertWest.getIonoCorr();
+		double deltaLon = abs(restrictLong(lon - interpolatedVertWest.lon));
+
+		double interpolatedIonoCorr = interpolatedVertWest.getIonoCorr() + deltaIonoCorr * deltaLon / lonDistance;
+		interpolatedVert.setIonoDelayinMeter(interpolatedIonoCorr);
+
+		
+		interpolatedVert.valid = true;
+
+		return interpolatedVert;
+	}
+
+	IonosphericGridPoint VerticalIonoDelayInterpolator::getHorizontallyNearestIGP(IGPMapBase& Map, double originalLat, double originalLon, double lat, double lon, double increment) {
+
+		IonosphericGridPoint out;
+
+		lon = restrictLong(lon);
+		originalLon = restrictLong(originalLon);
+
+		if (abs(restrictLong(originalLon - lon)) > 90){
+			return out;
+		}
+
+		try
+		{
+			out = getIGP(Map, lat, lon);
+		}
+		catch (const std::exception&)
+		{
+			out = getHorizontallyNearestIGP(Map, originalLat, originalLon, originalLat, lon + increment, increment);
+		}
+
+		return out;
+	}
+
+	void VerticalIonoDelayInterpolator::getVerticesOf10x10SquarewHorizontalInterpolation(VerticesOfSquare& table, IGPMapBase& Map) {
+
+		double gridDistance = 10;
+		double numberOfValidIGP = 0;
+
+		double lat1, lat2, lon1, lon2;
+		getNearestLatLot(lat1, lat2, lon1, lon2);
+
+
+		numberOfValidIGP = 0;
+		{
+			IonosphericGridPoint igp1, igp21, igp33, igp42;
+
+			try
+			{
+				igp1 = getIGP(Map, lat2, lon2);
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp1.valid = false;
+			}
+
+			try
+			{
+				double temp = restrictLong(lon1 - 5);
+				igp21 = getIGP(Map, lat2, temp);
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp21.valid = false;
+			}
+
+			try
+			{
+				igp33 = getIGP(Map, lat1 - 5, restrictLong(lon1 - 5));
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp33.valid = false;
+			}
+
+			try
+			{
+				igp42 = getIGP(Map, lat1 - 5, lon2);
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp42.valid = false;
+			}
+
+			table.first = igp1;
+			table.second = igp21;
+			table.third = igp33;
+			table.fourth = igp42;
+
+			if (numberOfValidIGP == 4) {
+				return;
+			}
+
+			if (numberOfValidIGP == 3) {
+				if (igp1.valid == false) {
+					if (abs(ionoPP.lat - igp33.lat) <= gridDistance - absDistanceOfLongitude(igp33.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp21.valid == false) {
+					if (abs(ionoPP.lat - igp42.lat) <= gridDistance - absDistanceOfLongitude(igp42.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp33.valid == false) {
+					if (abs(ionoPP.lat - igp42.lat) >= gridDistance - absDistanceOfLongitude(igp21.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp42.valid == false) {
+					if (abs(ionoPP.lat - igp33.lat) >= absDistanceOfLongitude(igp33.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+			}
+
+		}
+
+		numberOfValidIGP = 0;
+		{
+			IonosphericGridPoint igp11, igp2, igp32, igp43;
+
+			try
+			{
+				igp11 = getIGP(Map, lat2, restrictLong(lon2 + 5));
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp11.valid = false;
+			}
+
+			try
+			{
+				igp2 = getIGP(Map, lat2, lon1);
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp2.valid = false;
+			}
+
+			try
+			{
+				igp32 = getIGP(Map, lat1 - 5, lon1);
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp32.valid = false;
+			}
+
+			try
+			{
+				igp43 = getIGP(Map, lat1 - 5, restrictLong(lon2 + 5));
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp43.valid = false;
+			}
+
+			table.first = igp11;
+			table.second = igp2;
+			table.third = igp32;
+			table.fourth = igp43;
+
+			if (numberOfValidIGP == 4) {
+				return;
+			}
+
+			if (numberOfValidIGP == 3) {
+				if (igp11.valid == false) {
+					if (abs(ionoPP.lat - igp32.lat) <= gridDistance - absDistanceOfLongitude(igp32.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp2.valid == false) {
+					if (abs(ionoPP.lat - igp43.lat) <= gridDistance - absDistanceOfLongitude(igp43.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp32.valid == false) {
+					if (abs(ionoPP.lat - igp43.lat) >= gridDistance - absDistanceOfLongitude(igp2.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp43.valid == false) {
+					if (abs(ionoPP.lat - igp32.lat) >= absDistanceOfLongitude(igp32.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+			}
+		}
+
+		numberOfValidIGP = 0;
+		{
+			IonosphericGridPoint igp13, igp22, igp3, igp41;
+
+			try
+			{
+				igp13 = getIGP(Map, lat2 + 5, restrictLong(lon2 + 5));
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp13.valid = false;
+			}
+
+			try
+			{
+				igp22 = getIGP(Map, lat2 + 5, lon1);
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp22.valid = false;
+			}
+
+			try
+			{
+				igp3 = getIGP(Map, lat1, lon1);
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp3.valid = false;
+			}
+
+			try
+			{
+				igp41 = getIGP(Map, lat1, restrictLong(lon2 + 5));
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp41.valid = false;
+			}
+
+			table.first = igp13;
+			table.second = igp22;
+			table.third = igp3;
+			table.fourth = igp41;
+
+			if (numberOfValidIGP == 4) {
+				return;
+			}
+
+			if (numberOfValidIGP == 3) {
+				if (igp13.valid == false) {
+					if (abs(ionoPP.lat - igp3.lat) <= gridDistance - absDistanceOfLongitude(igp3.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp22.valid == false) {
+					if (abs(ionoPP.lat - igp41.lat) <= gridDistance - absDistanceOfLongitude(igp41.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp3.valid == false) {
+					if (abs(ionoPP.lat - igp41.lat) >= gridDistance - absDistanceOfLongitude(igp22.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp41.valid == false) {
+					if (abs(ionoPP.lat - igp3.lat) >= absDistanceOfLongitude(igp3.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+			}
+		}
+
+		numberOfValidIGP = 0;
+		{
+			IonosphericGridPoint igp12, igp23, igp31, igp4;
+
+			try
+			{
+				igp12 = getIGP(Map, lat2 + 5, lon2);
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp12.valid = false;
+			}
+
+			try
+			{
+				igp23 = getIGP(Map, lat2 + 5, restrictLong(lon1 - 5));
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp23.valid = false;
+			}
+
+			try
+			{
+				igp31 = getIGP(Map, lat1, restrictLong(lon1 - 5));
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp31.valid = false;
+			}
+
+			try
+			{
+				igp4 = getIGP(Map, lat1, lon2);
+				numberOfValidIGP++;
+			}
+			catch (const std::exception&)
+			{
+				igp4.valid = false;
+			}
+
+			table.first = igp12;
+			table.second = igp23;
+			table.third = igp31;
+			table.fourth = igp4;
+
+			if (numberOfValidIGP == 4) {
+				return;
+			}
+
+			if (numberOfValidIGP == 3) {
+				if (igp12.valid == false) {
+					if (abs(ionoPP.lat - igp31.lat) <= gridDistance - absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp23.valid == false) {
+					if (abs(ionoPP.lat - igp4.lat) <= gridDistance - absDistanceOfLongitude(igp4.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp31.valid == false) {
+					if (abs(ionoPP.lat - igp4.lat) >= gridDistance - absDistanceOfLongitude(igp23.lon, ionoPP.lon)) {
+						return;
+					}
+				}
+				else if (igp4.valid == false) {
+					if (abs(ionoPP.lat - igp31.lat) >= absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
 						return;
 					}
 				}
