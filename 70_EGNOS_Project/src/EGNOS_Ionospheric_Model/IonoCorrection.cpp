@@ -749,7 +749,8 @@ namespace EGNOS {
 				else {
 					igp1 = getIGP(Map, lat2, lon2);
 				}
-				
+
+				if(igp1.valid == true)
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -766,6 +767,7 @@ namespace EGNOS {
 					igp21 = getIGP(Map, lat2, restrictLong(lon1 - 5));
 				}
 
+				if (igp21.valid == true)
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -840,6 +842,7 @@ namespace EGNOS {
 					igp11 = getIGP(Map, lat2, restrictLong(lon2 + 5));
 				}
 
+				if (igp11.valid == true)
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -856,6 +859,7 @@ namespace EGNOS {
 					igp2 = getIGP(Map, lat2, lon1);
 				}
 
+				if (igp2.valid == true)
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -929,6 +933,7 @@ namespace EGNOS {
 					igp13 = getIGP(Map, lat2 + 5, restrictLong(lon2 + 5));
 				}
 
+				if (igp13.valid == true)
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -945,6 +950,7 @@ namespace EGNOS {
 					igp22 = getHorizontallyInterpolatedVertices(Map, lat2 + 5, lon1, 5);
 				}
 
+				if (igp22.valid == true)
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -1018,6 +1024,7 @@ namespace EGNOS {
 					igp12 = getIGP(Map, lat2 + 5, lon2);
 				}
 
+				if (igp12.valid == true)
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -1034,6 +1041,7 @@ namespace EGNOS {
 					igp23 = getIGP(Map, lat2 + 5, restrictLong(lon1 - 5));
 				}
 
+				if (igp23.valid == true)
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
