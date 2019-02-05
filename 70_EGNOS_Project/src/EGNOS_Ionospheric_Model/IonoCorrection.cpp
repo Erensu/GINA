@@ -33,6 +33,9 @@
 #define NUMSTATIONS 0
 #define NUMSVS 0
 
+
+#define MAX_RANGE_FOR_INTERPOLATION 90
+
 using namespace std;
 
 namespace EGNOS {
@@ -381,7 +384,7 @@ namespace EGNOS {
 
 
 		if (table.first.valid == false) {
-			if (abs(ionoPP.lat - table.third.lat) <= latDistance - 0.5 * absDistanceOfLongitude(table.third.lon, this->ionoPP.lon)) {
+			if (abs(ionoPP.lat - table.third.lat) <= latDistance - latDistance / lonDistance * absDistanceOfLongitude(table.third.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.third.lat) / latDistance;
@@ -394,7 +397,7 @@ namespace EGNOS {
 			}
 		}
 		else if (table.second.valid == false) {
-			if (abs(ionoPP.lat - table.fourth.lat) <= latDistance - 0.5 * absDistanceOfLongitude(table.fourth.lon, this->ionoPP.lon)) {
+			if (abs(ionoPP.lat - table.fourth.lat) <= latDistance - latDistance / lonDistance * absDistanceOfLongitude(table.fourth.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.fourth.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.fourth.lat) / latDistance;
@@ -407,7 +410,7 @@ namespace EGNOS {
 			}
 		}
 		else if (table.third.valid == false) {
-			if (abs(ionoPP.lat - table.fourth.lat) >= latDistance - 0.5 * absDistanceOfLongitude(table.second.lon, this->ionoPP.lon)) {
+			if (abs(ionoPP.lat - table.fourth.lat) >= latDistance - latDistance / lonDistance * absDistanceOfLongitude(table.second.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.first.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.first.lat) / latDistance;
@@ -420,7 +423,7 @@ namespace EGNOS {
 			}
 		}
 		else if (table.fourth.valid == false) {
-			if (abs(ionoPP.lat - table.third.lat) >= 0.5 * absDistanceOfLongitude(table.third.lon, this->ionoPP.lon)) {
+			if (abs(ionoPP.lat - table.third.lat) >= latDistance / lonDistance * absDistanceOfLongitude(table.third.lon, this->ionoPP.lon)) {
 
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.second.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.second.lat) / latDistance;
@@ -557,22 +560,22 @@ namespace EGNOS {
 
 			if (numberOfValidIGP == 3) {
 				if (igp1.valid == false) {
-					if (abs(ionoPP.lat - igp31.lat) <= latDistance - 0.5 * absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp31.lat) <= latDistance - latDistance/ lonDistance * absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
 						return;
 					}
 				}
 				else if (igp21.valid == false) {
-					if (abs(ionoPP.lat - igp4.lat) <= latDistance - 0.5 * absDistanceOfLongitude(igp4.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp4.lat) <= latDistance - latDistance / lonDistance * absDistanceOfLongitude(igp4.lon, ionoPP.lon)) {
 						return;
 					}
 				}
 				else if (igp31.valid == false) {
-					if (abs(ionoPP.lat - igp4.lat) >= latDistance - 0.5 * absDistanceOfLongitude(igp21.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp4.lat) >= latDistance - latDistance / lonDistance * absDistanceOfLongitude(igp21.lon, ionoPP.lon)) {
 						return;
 					}
 				}
 				else if (igp4.valid == false) {
-					if (abs(ionoPP.lat - igp31.lat) >= 0.5 * absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp31.lat) >= latDistance / lonDistance * absDistanceOfLongitude(igp31.lon, ionoPP.lon)) {
 						return;
 					}
 				}
@@ -635,22 +638,22 @@ namespace EGNOS {
 
 			if (numberOfValidIGP == 3) {
 				if (igp11.valid == false) {
-					if (abs(ionoPP.lat - igp3.lat) <= latDistance - absDistanceOfLongitude(igp3.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp3.lat) <= latDistance - latDistance / lonDistance * absDistanceOfLongitude(igp3.lon, ionoPP.lon)) {
 						return;
 					}
 				}
 				else if (igp2.valid == false) {
-					if (abs(ionoPP.lat - igp41.lat) <= latDistance - absDistanceOfLongitude(igp41.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp41.lat) <= latDistance - latDistance / lonDistance * absDistanceOfLongitude(igp41.lon, ionoPP.lon)) {
 						return;
 					}
 				}
 				else if (igp3.valid == false) {
-					if (abs(ionoPP.lat - igp41.lat) >= latDistance - absDistanceOfLongitude(igp2.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp41.lat) >= latDistance - latDistance / lonDistance * absDistanceOfLongitude(igp2.lon, ionoPP.lon)) {
 						return;
 					}
 				}
 				else if (igp41.valid == false) {
-					if (abs(ionoPP.lat - igp3.lat) >= absDistanceOfLongitude(igp3.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp3.lat) >= latDistance / lonDistance * absDistanceOfLongitude(igp3.lon, ionoPP.lon)) {
 						return;
 					}
 				}
@@ -709,7 +712,7 @@ namespace EGNOS {
 		lon = restrictLong(lon);
 		originalLon = restrictLong(originalLon);
 
-		if (abs(restrictLong(originalLon - lon)) > 90){
+		if (abs(restrictLong(originalLon - lon)) > MAX_RANGE_FOR_INTERPOLATION){
 			return out;
 		}
 
@@ -740,7 +743,13 @@ namespace EGNOS {
 
 			try
 			{
-				igp1 = getIGP(Map, lat2, lon2);
+				if (abs(lat2 - 85) < 10e-3) {
+					igp1 = getHorizontallyInterpolatedVertices(Map, lat2, lon2, 5);
+				}
+				else {
+					igp1 = getIGP(Map, lat2, lon2);
+				}
+				
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -750,8 +759,13 @@ namespace EGNOS {
 
 			try
 			{
-				double temp = restrictLong(lon1 - 5);
-				igp21 = getIGP(Map, lat2, temp);
+				if (abs(lat2 - 85) < 10e-3) {
+					igp21 = getHorizontallyInterpolatedVertices(Map, lat2, restrictLong(lon1 - 5), 5);
+				}
+				else {
+					igp21 = getIGP(Map, lat2, restrictLong(lon1 - 5));
+				}
+
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -819,7 +833,13 @@ namespace EGNOS {
 
 			try
 			{
-				igp11 = getIGP(Map, lat2, restrictLong(lon2 + 5));
+				if (abs(lat2 - 85) < 10e-3) {
+					igp11 = getHorizontallyInterpolatedVertices(Map, lat2, restrictLong(lon2 + 5), 5);
+				}
+				else {
+					igp11 = getIGP(Map, lat2, restrictLong(lon2 + 5));
+				}
+
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -829,7 +849,13 @@ namespace EGNOS {
 
 			try
 			{
-				igp2 = getIGP(Map, lat2, lon1);
+				if (abs(lat2 - 85) < 10e-3) {
+					igp2 = getHorizontallyInterpolatedVertices(Map, lat2, lon1, 5);
+				}
+				else {
+					igp2 = getIGP(Map, lat2, lon1);
+				}
+
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -868,17 +894,17 @@ namespace EGNOS {
 
 			if (numberOfValidIGP == 3) {
 				if (igp11.valid == false) {
-					if (abs(ionoPP.lat - igp32.lat) <= gridDistance - absDistanceOfLongitude(igp32.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp32.lat) <= gridDistance - absDistanceOfLongitude(igp32.lon, ionoPP.lon), 5) {
 						return;
 					}
 				}
 				else if (igp2.valid == false) {
-					if (abs(ionoPP.lat - igp43.lat) <= gridDistance - absDistanceOfLongitude(igp43.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp43.lat) <= gridDistance - absDistanceOfLongitude(igp43.lon, ionoPP.lon), 5) {
 						return;
 					}
 				}
 				else if (igp32.valid == false) {
-					if (abs(ionoPP.lat - igp43.lat) >= gridDistance - absDistanceOfLongitude(igp2.lon, ionoPP.lon)) {
+					if (abs(ionoPP.lat - igp43.lat) >= gridDistance - absDistanceOfLongitude(igp2.lon, ionoPP.lon), 5) {
 						return;
 					}
 				}
@@ -896,7 +922,13 @@ namespace EGNOS {
 
 			try
 			{
-				igp13 = getIGP(Map, lat2 + 5, restrictLong(lon2 + 5));
+				if (abs(lat2 + 5 - 85) < 10e-3) {
+					igp13 = getHorizontallyInterpolatedVertices(Map, lat2 + 5, restrictLong(lon2 + 5), 5);
+				}
+				else {
+					igp13 = getIGP(Map, lat2 + 5, restrictLong(lon2 + 5));
+				}
+
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -906,7 +938,13 @@ namespace EGNOS {
 
 			try
 			{
-				igp22 = getIGP(Map, lat2 + 5, lon1);
+				if (abs(lat2 + 5 - 85) < 10e-3) {
+					igp22 = getHorizontallyInterpolatedVertices(Map, lat2 + 5, lon1, 5);
+				}
+				else {
+					igp22 = getHorizontallyInterpolatedVertices(Map, lat2 + 5, lon1, 5);
+				}
+
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -973,7 +1011,13 @@ namespace EGNOS {
 
 			try
 			{
-				igp12 = getIGP(Map, lat2 + 5, lon2);
+				if (abs(lat2 + 5 - 85) < 10e-3) {
+					igp12 = getHorizontallyInterpolatedVertices(Map, lat2 + 5, lon2, 5);
+				}
+				else {
+					igp12 = getIGP(Map, lat2 + 5, lon2);
+				}
+
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
@@ -983,7 +1027,13 @@ namespace EGNOS {
 
 			try
 			{
-				igp23 = getIGP(Map, lat2 + 5, restrictLong(lon1 - 5));
+				if (abs(lat2 + 5 - 85) < 10e-3) {
+					igp23 = getHorizontallyInterpolatedVertices(Map, lat2 + 5, restrictLong(lon1 - 5), 5);
+				}
+				else {
+					igp23 = getIGP(Map, lat2 + 5, restrictLong(lon1 - 5));
+				}
+
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
