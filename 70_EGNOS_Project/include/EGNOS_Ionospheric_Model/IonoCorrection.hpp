@@ -63,13 +63,15 @@ namespace EGNOS {
 
 		IonosphericGridPoint getIGP(IGPMapBase &Map, double lat, double lon);
 
+		double polarInterpolator(IGPMapBase& Map);
 		double grid5x5Interpolator(IGPMapBase& Map);
-		double grid10x10Interpolator(IGPMapBase& Map);
 		double grid5x10Interpolator(IGPMapBase& Map);
+		double grid10x10Interpolator(IGPMapBase& Map);
 		double grid10x10InterpolatorwHorizontalInterpolation(IGPMapBase& Map);
 		
-		void getVerticesOf5x10Square(VerticesOfSquare& table, IGPMapBase& Map);
+		void VerticalIonoDelayInterpolator::getPolarVertices(VerticesOfSquare &table, IGPMapBase &Map);
 		void getVerticesOf5x5Square(VerticesOfSquare& table, IGPMapBase& Map);
+		void getVerticesOf5x10Square(VerticesOfSquare& table, IGPMapBase& Map);
 		void getVerticesOf10x10Square(VerticesOfSquare& table, IGPMapBase& Map);
 		void getVerticesOf10x10SquarewHorizontalInterpolation(VerticesOfSquare& table, IGPMapBase& Map);
 		IonosphericGridPoint getHorizontallyNearestIGP(IGPMapBase& Map, double originalLat, double originalLon, double lat, double lon, double increment);

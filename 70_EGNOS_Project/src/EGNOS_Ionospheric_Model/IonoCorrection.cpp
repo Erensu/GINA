@@ -132,25 +132,28 @@ namespace EGNOS {
 
 	double VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint &newPP) {
 
-		setPP(newPP);
-
 		double rtv;
+		setPP(newPP);
+		
 		if (abs(this->ionoPP.lat) <= 75.0 ) {
 			try
 			{
 				rtv = this->grid5x5Interpolator(Map);
+				return rtv;
 			}
 			catch (exception &e)
 			{
 				try
 				{
 					rtv = this->grid5x10Interpolator(Map);
+					return rtv;
 				}
 				catch (exception &e)
 				{
 					try
 					{
 						rtv = this->grid10x10Interpolator(Map);
+						return rtv;
 					}
 					catch (exception &e)
 					{
@@ -158,24 +161,51 @@ namespace EGNOS {
 					}
 				}
 			}
-			
 		}
-		else if (75 <= abs(this->ionoPP.lat) && abs(this->ionoPP.lat) <= 85.0) {
+
+		if (abs(this->ionoPP.lat) == 75.0) {
+			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 5);
+			if (igp.valid == true) {
+				rtv = igp.getIonoCorr();
+				return rtv;
+			}
+		}
+
+		if (75 <= abs(this->ionoPP.lat) && abs(this->ionoPP.lat) <= 85.0) {
 		
 			try
 			{
 				rtv = this->grid10x10InterpolatorwHorizontalInterpolation(Map);
+				return rtv;
 			}
 			catch (exception &e)
 			{
 				throw std::domain_error("Interppolation is not possible");
 			}
-
-		}
-		else {
-			throw std::domain_error("Unfinished code");
 		}
 
+		if (abs(this->ionoPP.lat) >= 85.0) {
+			
+			try
+			{
+				rtv = this->polarInterpolator(Map);
+				return rtv;
+			}
+			catch (exception &e)
+			{
+				throw std::domain_error("Interppolation is not possible");
+			}
+		}
+		
+		if (abs(this->ionoPP.lat) == 85.0) {
+			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 10);
+			if (igp.valid == true) {
+				rtv = igp.getIonoCorr();
+				return rtv;
+			}
+		}
+
+		throw std::domain_error("Interppolation is not possible");
 		return rtv;
 	}
 	
@@ -189,7 +219,6 @@ namespace EGNOS {
 		{
 			throw std::domain_error("Interppolation in is not possible");
 		}
-		
 	}
 
 	int VerticalIonoDelayInterpolator::closestNumberFromLow(int n, int m)
@@ -279,6 +308,85 @@ namespace EGNOS {
 		else {
 			return result;
 		}
+	}
+
+	
+	double VerticalIonoDelayInterpolator::polarInterpolator(IGPMapBase& Map) {
+
+		VerticesOfSquare table;
+		getPolarVertices(table, Map);
+
+
+		double numberOfValidIGP = int(table.first.valid) + int(table.second.valid) + int(table.third.valid) + int(table.fourth.valid);
+
+		if (numberOfValidIGP < 3) {
+			throw std::domain_error("Interppolation is not possible");
+		}
+
+		if (table.first.valid && table.second.valid && table.third.valid && table.fourth.valid) {
+
+			double ypp = abs(ionoPP.lat) - 85 / 10;
+			double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / 90 * (1 - 2*ypp) + ypp;
+
+			double corr = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+			return corr;
+		}
+
+		if (table.first.valid == false) {
+			if ( -180 <= ionoPP.lat && ionoPP.lat <= 0) {
+
+				double ypp = abs(ionoPP.lat) - 85 / 10;
+				double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / 90 * (1 - 2 * ypp) + ypp;
+
+				double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+				return corr;
+			}
+			else {
+				throw std::domain_error("Interppolation is not possible");
+			}
+		}
+		else if (table.second.valid == false) {
+			if (-90 <= ionoPP.lat && ionoPP.lat <= 90) {
+
+				double ypp = abs(ionoPP.lat) - 85 / 10;
+				double xpp = absDistanceOfLongitude(ionoPP.lon, table.fourth.lon) / 90 * (1 - 2 * ypp) + ypp;
+
+				double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+				return corr;
+			}
+			else {
+				throw std::domain_error("Interppolation is not possible");
+			}
+		}
+		else if (table.third.valid == false) {
+			if (0 <= ionoPP.lat && ionoPP.lat <= 180) {
+
+				double ypp = abs(ionoPP.lat) - 85 / 10;
+				double xpp = absDistanceOfLongitude(ionoPP.lon, table.first.lon) / 90 * (1 - 2 * ypp) + ypp;
+
+				double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+				return corr;
+			}
+			else {
+				throw std::domain_error("Interppolation is not possible");
+			}
+		}
+		else if (table.fourth.valid == false) {
+			if ( (-90 < ionoPP.lat && ionoPP.lat < 90) == false) {
+
+				double ypp = abs(ionoPP.lat) - 85 / 10;
+				double xpp = absDistanceOfLongitude(ionoPP.lon, table.second.lon) / 90 * (1 - 2 * ypp) + ypp;
+
+				double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+				return corr;
+			}
+			else {
+				throw std::domain_error("Interppolation is not possible");
+			}
+		}
+
+		throw std::domain_error("Interppolation is not possible");
+		return 0;
 	}
 
 	double VerticalIonoDelayInterpolator::grid5x5Interpolator(IGPMapBase& Map) {
@@ -438,6 +546,63 @@ namespace EGNOS {
 
 		throw std::domain_error("Interppolation is not possible");
 		return 0;
+	}
+
+	void VerticalIonoDelayInterpolator::getPolarVertices(VerticesOfSquare &table, IGPMapBase &Map) {
+
+		IonosphericGridPoint igp1, igp2, igp3, igp4;
+
+		if (ionoPP.lat > 85) {
+
+			try {
+				igp1 = getIGP(Map, 85, 90);
+			}
+			catch (const std::exception&) {}
+
+			try {
+				igp2 = getIGP(Map, 85, 180);
+			}
+			catch (const std::exception&) {}
+			{
+
+			}
+			try {
+				igp3 = getIGP(Map, 85, -90);
+			}
+			catch (const std::exception&) {}
+
+			try {
+				igp4 = getIGP(Map, 85, 0);
+			}
+			catch (const std::exception&) {}
+		}
+		else if (ionoPP.lat < -85) {
+
+			try {
+				igp1 = getIGP(Map, -85, 90);
+			}
+			catch (const std::exception&) {}
+
+			try {
+				igp2 = getIGP(Map, -85, 180);
+			}
+			catch (const std::exception&) {}
+
+			try {
+				igp3 = getIGP(Map, -85, -90);
+			}
+			catch (const std::exception&) {}
+
+			try {
+				igp4 = getIGP(Map, -85, 0);
+			}
+			catch (const std::exception&) {}
+		}
+
+		table.first = igp1;
+		table.second = igp2;
+		table.third = igp3;
+		table.fourth = igp4;
 	}
 
 	void VerticalIonoDelayInterpolator::getVerticesOf5x5Square(VerticesOfSquare& table, IGPMapBase& Map) {
