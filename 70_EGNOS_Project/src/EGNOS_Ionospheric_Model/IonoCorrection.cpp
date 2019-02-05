@@ -164,7 +164,7 @@ namespace EGNOS {
 		
 			try
 			{
-				rtv = this->grid10x10Interpolator(Map);
+				rtv = this->grid10x10InterpolatorwHorizontalInterpolation(Map);
 			}
 			catch (exception &e)
 			{

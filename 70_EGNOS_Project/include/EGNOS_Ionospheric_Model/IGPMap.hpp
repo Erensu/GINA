@@ -15,7 +15,7 @@ namespace EGNOS {
 		double lat;
 		double lon;
 		bool const operator<(const IGPCoordinate_s &o) const {
-			return lat < o.lat || (lat == o.lat && lon < o.lon);
+			return lat < o.lat || (abs(lat - o.lat) < 10e-5 && lon < o.lon);
 		}
 	}IGPCoordinate;
 
