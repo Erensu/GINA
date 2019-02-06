@@ -18,7 +18,7 @@ end
 %map of the world
 world_map = load('coastline.txt');
 
-n_maps=0;
+n_maps=0; n_rms=0;
 while ~feof(fin)
     tline = fgetl(fin);
     if strfind(tline, 'LAT1 / LAT2 / DLAT')
@@ -35,9 +35,14 @@ while ~feof(fin)
       o = size(lon, 2);  %number of values in a block
       n = fix(o / 16) + 1;            %number of rows in a block
     end
-    if strfind(tline, 'START OF TEC MAP')
+    if (~isempty(strfind(tline, 'START OF TEC MAP')) || ~isempty(strfind(tline, 'START OF RMS MAP')))
 %todo: check lat, lon vectors exist
-      n_maps=n_maps+1;                           %index of current map
+      type_of_data = tline(70:73);
+      if strfind(type_of_data,'TEC')
+        n_maps=n_maps+1;                           %index of current map
+      else
+        n_rms=n_rms+1;
+      end  
       tline = fgetl(fin);
       if strfind(tline, 'EPOCH OF CURRENT MAP')
         year = str2num(tline(1:6));
@@ -76,7 +81,11 @@ while ~feof(fin)
           end
         end
   %short output of current map
-        fprintf ('%d TEC MAP read %d %02d %02d %02d:%02d:%02d\n', n_maps, year, month, day, hour, minute, sec);
+        if strfind(type_of_data,'TEC')
+          fprintf ('%d TEC MAP read %d %02d %02d %02d:%02d:%02d\n', n_maps, year, month, day, hour, minute, sec);
+        else
+          fprintf ('%d RMS MAP read %d %02d %02d %02d:%02d:%02d\n', n_rms, year, month, day, hour, minute, sec);
+        end  
         fprintf ('number of data %d\n', size(tec_map, 1));
         fprintf ('max %.1f min %.1f in TECU\n', max(tec_map(:,3)), min(tec_map(:,3)));
   %plot TEC MAP
@@ -94,8 +103,13 @@ while ~feof(fin)
         xlabel('Longitude [deg]')
         axis([-60 60 15 85]);
         caxis([0 60]);
-        title (sprintf('Total Electron Content Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec));
-        print(map, sprintf('iono%02d', n_maps),'-dpng');
+        if strfind(type_of_data,'TEC')
+          title (sprintf('Total Electron Content Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec));
+          print(map, sprintf('iono%02d', n_maps),'-dpng');
+        else
+          title (sprintf('Total Electron Content RMS Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec));
+          print(map, sprintf('rms%02d', n_rms),'-dpng');
+        end
         close(map);
       end
     end
