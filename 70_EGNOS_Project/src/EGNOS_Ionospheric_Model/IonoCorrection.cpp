@@ -130,10 +130,10 @@ namespace EGNOS {
 		this->ionoPP = newPP;
 	}
 
-	double VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint &newPP) {
+	IonCorrandVar VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint &newPP) {
 
 		bool interPolFailed = false;
-		double rtv;
+		IonCorrandVar rtv;
 		setPP(newPP);
 		
 		if (abs(this->ionoPP.lat) <= 75.0 ) {
@@ -166,7 +166,9 @@ namespace EGNOS {
 		if (abs(this->ionoPP.lat) == 75.0) {
 			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 5);
 			if (igp.valid == true) {
-				rtv = igp.getIonoCorr();
+
+				rtv.CorrinMeter = igp.getIonoCorr();
+				rtv.Variance = igp.getIonoCorrVariance();
 				return rtv;
 			}
 		}
@@ -187,7 +189,8 @@ namespace EGNOS {
 		if (abs(this->ionoPP.lat) == 85.0) {
 			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 10);
 			if (igp.valid == true) {
-				rtv = igp.getIonoCorr();
+				rtv.CorrinMeter = igp.getIonoCorr();
+				rtv.Variance = igp.getIonoCorrVariance();
 				return rtv;
 			}
 		}
@@ -314,11 +317,11 @@ namespace EGNOS {
 	}
 
 	
-	double VerticalIonoDelayInterpolator::polarInterpolator(IGPMapBase& Map) {
+	IonCorrandVar VerticalIonoDelayInterpolator::polarInterpolator(IGPMapBase& Map) {
 
 		VerticesOfSquare table;
 		getPolarVertices(table, Map);
-
+		IonCorrandVar rtv;
 
 		double numberOfValidIGP = int(table.first.valid) + int(table.second.valid) + int(table.third.valid) + int(table.fourth.valid);
 
@@ -331,8 +334,10 @@ namespace EGNOS {
 			double ypp = (abs(ionoPP.lat) - 85) / 10;
 			double xpp = restrictLong(ionoPP.lon - table.third.lon) / 90 * (1 - 2*ypp) + ypp;
 
-			double corr = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-			return corr;
+			rtv.CorrinMeter = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+			rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+
+			return rtv;
 		}
 
 		if (table.first.valid == false) {
@@ -340,26 +345,30 @@ namespace EGNOS {
 			double ypp = (abs(ionoPP.lat) - 85) / 10;
 			double xpp = restrictLong(ionoPP.lon - table.third.lon) / 90 * (1 - 2 * ypp) + ypp;
 
-			double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-			return corr;
+			rtv.CorrinMeter = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+			rtv.Variance = interpolation4point(xpp, ypp, table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+
+			return rtv;
 		}
 		else if (table.second.valid == false) {
 			
 			double ypp = (abs(ionoPP.lat) - 85) / 10;
 			double xpp = restrictLong(ionoPP.lon - table.third.lon) / 90 * (1 - 2 * ypp) + ypp;
 
-			double corr = interpolation3point(xpp, ypp, table.first.getIonoCorr(), table.fourth.getIonoCorr(), table.third.getIonoCorr());
-			return corr;
+			rtv.CorrinMeter = interpolation3point(xpp, ypp, table.first.getIonoCorr(), table.fourth.getIonoCorr(), table.third.getIonoCorr());
+			rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+
+			return rtv;
 		}
 		
 		throw std::domain_error("Interppolation is not possible");
-		return 0;
+		return rtv;
 	}
 
-	double VerticalIonoDelayInterpolator::grid5x5Interpolator(IGPMapBase& Map) {
+	IonCorrandVar VerticalIonoDelayInterpolator::grid5x5Interpolator(IGPMapBase& Map) {
 	
 		
-		double corr;
+		IonCorrandVar corr;
 		double latDistance = 5;
 		double lonDistance = 5;
 		VerticesOfSquare table;
@@ -367,7 +376,7 @@ namespace EGNOS {
 
 		try
 		{
-			corr = symmetricInterpolator(latDistance, lonDistance, table);
+			corr = Interpolator(latDistance, lonDistance, table);
 		}
 		catch (const std::exception&)
 		{
@@ -377,9 +386,9 @@ namespace EGNOS {
 		return corr;
 	}
 
-	double VerticalIonoDelayInterpolator::grid5x10Interpolator(IGPMapBase& Map) {
+	IonCorrandVar VerticalIonoDelayInterpolator::grid5x10Interpolator(IGPMapBase& Map) {
 
-		double corr;
+		IonCorrandVar corr;
 		double lonDistance = 10;
 		double latDistance = 5;
 		VerticesOfSquare table;
@@ -388,7 +397,7 @@ namespace EGNOS {
 
 		try
 		{
-			corr = symmetricInterpolator(latDistance, lonDistance, table);
+			corr = Interpolator(latDistance, lonDistance, table);
 		}
 		catch (const std::exception&)
 		{
@@ -398,9 +407,9 @@ namespace EGNOS {
 		return corr;
 	}
 
-	double VerticalIonoDelayInterpolator::grid10x10InterpolatorwHorizontalInterpolation(IGPMapBase& Map) {
+	IonCorrandVar VerticalIonoDelayInterpolator::grid10x10InterpolatorwHorizontalInterpolation(IGPMapBase& Map) {
 
-		double corr;
+		IonCorrandVar corr;
 		double lonDistance = 10;
 		double latDistance = 10;
 		VerticesOfSquare table;
@@ -409,7 +418,7 @@ namespace EGNOS {
 
 		try
 		{
-			corr = symmetricInterpolator(latDistance, lonDistance, table);
+			corr = Interpolator(latDistance, lonDistance, table);
 		}
 		catch (const std::exception&)
 		{
@@ -419,9 +428,9 @@ namespace EGNOS {
 		return corr;
 	}
 
-	double VerticalIonoDelayInterpolator::grid10x10Interpolator(IGPMapBase& Map) {
+	IonCorrandVar VerticalIonoDelayInterpolator::grid10x10Interpolator(IGPMapBase& Map) {
 
-		double corr;
+		IonCorrandVar corr;
 		double lonDistance = 10;
 		double latDistance = 10;
 		VerticesOfSquare table;
@@ -430,7 +439,7 @@ namespace EGNOS {
 
 		try
 		{
-			corr = symmetricInterpolator(latDistance, lonDistance, table);
+			corr = Interpolator(latDistance, lonDistance, table);
 		}
 		catch (const std::exception&)
 		{
@@ -440,9 +449,10 @@ namespace EGNOS {
 		return corr;
 	}
 
-	double VerticalIonoDelayInterpolator::symmetricInterpolator(double latDistance, double lonDistance, VerticesOfSquare table) {
+	IonCorrandVar VerticalIonoDelayInterpolator::Interpolator(double latDistance, double lonDistance, VerticesOfSquare table) {
 
 		double numberOfValidIGP = int(table.first.valid) + int(table.second.valid) + int(table.third.valid) + int(table.fourth.valid);
+		IonCorrandVar rtv;
 
 		if (numberOfValidIGP < 3) {
 			throw std::domain_error("Interppolation is not possible");
@@ -453,8 +463,10 @@ namespace EGNOS {
 			double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / lonDistance;
 			double ypp = abs(ionoPP.lat - table.third.lat) / latDistance;
 
-			double corr = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-			return corr;
+			rtv.CorrinMeter = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+			rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+
+			return rtv;
 		}
 
 
@@ -464,8 +476,9 @@ namespace EGNOS {
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.third.lat) / latDistance;
 
-				double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-				return corr;
+				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+				rtv.Variance = interpolation4point(xpp, ypp, table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				return rtv;
 			}
 			else {
 				throw std::domain_error("Interppolation is not possible");
@@ -477,8 +490,9 @@ namespace EGNOS {
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.fourth.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.fourth.lat) / latDistance;
 
-				double corr = interpolation3point(xpp, ypp, table.first.getIonoCorr(), table.fourth.getIonoCorr(), table.third.getIonoCorr());
-				return corr;
+				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.first.getIonoCorr(), table.fourth.getIonoCorr(), table.third.getIonoCorr());
+				rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				return rtv;
 			}
 			else {
 				throw std::domain_error("Interppolation is not possible");
@@ -490,8 +504,9 @@ namespace EGNOS {
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.first.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.first.lat) / latDistance;
 
-				double corr = interpolation3point(xpp, ypp, table.fourth.getIonoCorr(), table.first.getIonoCorr(), table.second.getIonoCorr());
-				return corr;
+				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.fourth.getIonoCorr(), table.first.getIonoCorr(), table.second.getIonoCorr());
+				rtv.Variance = interpolation4point(xpp, ypp, table.fourth.getIonoCorrVariance(), table.first.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				return rtv;
 			}
 			else {
 				throw std::domain_error("Interppolation is not possible");
@@ -503,8 +518,9 @@ namespace EGNOS {
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.second.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.second.lat) / latDistance;
 
-				double corr = interpolation3point(xpp, ypp, table.third.getIonoCorr(), table.second.getIonoCorr(), table.first.getIonoCorr());
-				return corr;
+				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.third.getIonoCorr(), table.second.getIonoCorr(), table.first.getIonoCorr());
+				rtv.Variance = interpolation4point(xpp, ypp, table.third.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.first.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				return rtv;
 			}
 			else {
 				throw std::domain_error("Interppolation is not possible");
@@ -512,7 +528,7 @@ namespace EGNOS {
 		}
 
 		throw std::domain_error("Interppolation is not possible");
-		return 0;
+		return rtv;
 	}
 
 	void VerticalIonoDelayInterpolator::getPolarVertices(VerticesOfSquare &table, IGPMapBase &Map) {

@@ -35,13 +35,13 @@ std::vector<testCaseDescriptor> FailedTestCases;
 
 void Test(EGNOS::VerticalIonoDelayInterpolator &interPol, EGNOS::IGPMap &IonoMap, EGNOS::IonosphericGridPoint pp, testCaseDescriptor testCase) {
 
-	double interPolationTestResult = -999;
+	EGNOS::IonCorrandVar interPolationTestResult;
 	testCase.givenResult = testStatus::Passed;
 	try
 	{
 		interPolationTestResult = interPol.interpolate(IonoMap, pp);
 
-		if (interPolationTestResult != testCase.interPolationExpectedResult) {
+		if (interPolationTestResult.CorrinMeter != testCase.interPolationExpectedResult) {
 			testCase.givenResult = testStatus::Failed;
 			numberOfFailedTests++;
 		}

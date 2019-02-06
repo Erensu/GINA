@@ -135,8 +135,20 @@ namespace EGNOS {
 	}
 
 	double IGPMap::getRMS(gpstk::CivilTime epoch, double lat, double lon) const {
-		IonosphericGridPoint igp = getIGP(lat, lon);
-		return igp.GIVEI;	// TODO write a function which can transform GIVEI to meter format.
+
+		double rms;
+
+		try {
+
+			IonosphericGridPoint igp = getIGP(lat, lon);
+			rms = igp.getIonoCorrVariance();
+		}
+		catch (const std::exception& e) {
+
+			throw(e);
+		}
+
+		return rms;
 	}
 
 	// TODO - unfinished

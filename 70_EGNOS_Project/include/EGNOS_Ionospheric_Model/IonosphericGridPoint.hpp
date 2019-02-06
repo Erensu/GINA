@@ -20,6 +20,11 @@ namespace EGNOS {
 		unsigned char block[225] = {0};
 	}IGPMaskBlock;
 
+	typedef struct {
+		double CorrinMeter;
+		double Variance;
+	}IonCorrandVar;
+
 	class IonosphericGridPoint
 	{
 	public:
@@ -30,6 +35,9 @@ namespace EGNOS {
 		IonosphericGridPoint& operator=(const IonosphericGridPoint& other);
 
 		double getIonoCorr(void);
+		double getIonoCorrVariance(void);
+		int getGIVEI(void);
+		void setGIVEI(int New_GIVEI);
 		int getIGPVerticalDelayEstimater(void) { return IGPVerticalDelayEstimate; };
 		void setIonoDelayinMeter(double delay) { IonoCorrinMeter = delay; };
 		void setIGPVerticalDelayEstimate(int delay) { IGPVerticalDelayEstimate = delay; IonoCorrinMeter = 8.0 * delay; };
@@ -39,7 +47,7 @@ namespace EGNOS {
 		double lon;
 
 		int IODI;
-		int GIVEI;
+		
 
 		int placeInBlock;
 		int blockId;
@@ -48,6 +56,7 @@ namespace EGNOS {
 		friend std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp);
 		
 	private:
+		int GIVEI;
 		double IonoCorrinMeter;
 		int IGPVerticalDelayEstimate;
 		void copy(const IonosphericGridPoint &obj);
@@ -94,7 +103,7 @@ namespace EGNOS {
 	class IonosphericDelayCorrectionsMessageParser
 	{
 	public:
-		IonosphericDelayCorrectionsMessageParser();
+		IonosphericDelayCorrectionsMessageParser() {};
 
 		IonosphericDelayCorrectionsMessageParser& operator+=(const std::bitset<256> &message);
 		IonosphericDelayCorrectionsMessageParser& operator+=(const std::bitset<250> &message);

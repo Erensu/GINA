@@ -38,7 +38,19 @@ namespace EGNOS {
 	}
 
 	double IonosphericGridPoint::getIonoCorr(void) {
-		return IonoCorrinMeter;//this->IGPVerticalDelayEstimate * 0.125;
+		return IonoCorrinMeter;
+	}
+
+	double IonosphericGridPoint::getIonoCorrVariance(void) {
+		return (double)GIVEI;
+	}
+
+	int IonosphericGridPoint:: getGIVEI(void) {
+		return GIVEI;
+	}
+
+	void IonosphericGridPoint::setGIVEI(int New_GIVEI) {
+		GIVEI = New_GIVEI;
 	}
 
 	std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp) {
@@ -229,7 +241,7 @@ namespace EGNOS {
 
 	void const IonosphericGridPointMasksMessageParser::updateIGP(IonosphericGridPoint & const igp) const{
 
-		if (igp.GIVEI == 15) {
+		if (igp.getGIVEI() == 15) {
 			igp.valid = false;
 			return;
 		}
@@ -276,10 +288,6 @@ namespace EGNOS {
 			#endif
 		}
 		return os;
-	}
-
-	IonosphericDelayCorrectionsMessageParser::IonosphericDelayCorrectionsMessageParser(void) {
-	
 	}
 
 	bool IonosphericDelayCorrectionsMessageParser::checkMessageType(void) {
@@ -416,11 +424,10 @@ namespace EGNOS {
 		temp.blockId = currentRecievedBlockNumber;
 		temp.placeInBlock = offset;
 
-		temp.GIVEI = this->getGIVEI(offset);
+		temp.setGIVEI(this->getGIVEI(offset));
 		temp.setIGPVerticalDelayEstimate(this->getIGPVerticalDelay(offset));
 
 		ionoPoints.push_back(temp);
-
 	}
 
 	void IonosphericDelayCorrectionsMessageParser::addAllIGP2Vector(void) {
@@ -442,9 +449,5 @@ namespace EGNOS {
 
 		return os;
 	}
-
-
-
-	
 
 }
