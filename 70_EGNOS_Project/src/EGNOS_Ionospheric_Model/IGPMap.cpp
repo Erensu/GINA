@@ -124,7 +124,7 @@ namespace EGNOS {
 		try	{
 
 			IonosphericGridPoint igp = getIGP(lat, lon);
-			tec = igp.IGPVerticalDelayEstimate;
+			tec = igp.getIonoCorr();
 		}
 		catch (const std::exception& e)	{
 
