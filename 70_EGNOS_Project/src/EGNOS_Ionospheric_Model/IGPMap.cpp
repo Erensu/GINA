@@ -5,38 +5,49 @@
 
 namespace EGNOS {
 
-	IGPMap::IGPMap(void) {
+#pragma region IGPMediator
 
+	void IGPMediator::updateIGPCandidate(const IonosphericGridPointMasksMessageParser & const IGPMessageParser) {
+
+		for (int i = 0; i < candidateIGPs.size(); i++) {
+
+			IGPMessageParser.updateIGP(candidateIGPs[i]);
+			candidateIGPs[i].setReferenceTime(this->currentDataTime);
+		}
 	}
+
+	void IGPMediator::setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs) { 
+
+		this->candidateIGPs = candidateIGPs; 
+	}
+
+	std::vector<IonosphericGridPoint> IGPMediator::getIGPCandidates(void) {
+
+		return this->candidateIGPs;
+	}
+
+	void IGPMediator::updateTime(gpstk::CommonTime &time) {
+
+		currentDataTime = time;
+	}
+
+#pragma endregion
+
+#pragma region IGPMap
 
 	IGPMap::IGPMap(IGPMap* original) {
 
-		this->candidateIGPs = original->candidateIGPs;
 		this->Map = original->Map;
 	}
 
 	IGPMap::~IGPMap(void) {
 
 		this->Map.clear();
-		this->candidateIGPs.clear();
 	}
 
-	void IGPMap::setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs) {
+	void IGPMap::updateMap(std::vector<IonosphericGridPoint> &candidateIGPs) {
 
-		this->candidateIGPs = candidateIGPs;
-	}
-
-	void IGPMap::updateIGPCandidate(const IonosphericGridPointMasksMessageParser & const IGPMessageParser) {
-
-		for (std::vector<IonosphericGridPoint>::iterator it = this->candidateIGPs.begin(); it != this->candidateIGPs.end(); ++it) {
-
-			IGPMessageParser.updateIGP(*it);
-		}
-	}
-
-	void IGPMap::updateMap(void) {
-
-		for (std::vector<IonosphericGridPoint>::const_iterator it = this->candidateIGPs.begin(); it != this->candidateIGPs.end(); ++it) {
+		for (std::vector<IonosphericGridPoint>::const_iterator it = candidateIGPs.begin(); it != candidateIGPs.end(); ++it) {
 			
 			if (it->valid != true) {
 				continue;
@@ -73,7 +84,6 @@ namespace EGNOS {
 	void IGPMap::reset(void) {
 
 		this->Map.clear();
-		this->candidateIGPs.clear();
 	}
 
 	std::ostream &operator<<(std::ostream &os, IGPMap const &imap) {
@@ -168,5 +178,6 @@ namespace EGNOS {
 		return epochs;
 	}
 
+#pragma endregion
 
 }

@@ -7,6 +7,7 @@
 
 #include "IonosphericMaskBand.hpp"
 
+#include "GPSWeekSecond.hpp"
 
 namespace EGNOS {
 
@@ -37,15 +38,19 @@ namespace EGNOS {
 		static const double IonosphericGridPoint::GIVEI_Meters[16];
 		static const double IonosphericGridPoint::GIVEI_Variance[16];
 
-		IonosphericGridPoint(void);
-		IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &obj);
-
+		IonosphericGridPoint(void) {this->valid = false;};
+		IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &obj) { this->copy(obj); };
 		IonosphericGridPoint& operator=(const IonosphericGridPoint& other);
+
+		void setReferenceTime(gpstk::CommonTime time);
+		gpstk::CommonTime getReferenceTime(void);
 
 		double getIonoCorr(void);
 		double getIonoCorrVariance(void);
+
 		int getGIVEI(void);
 		void setGIVEI(int New_GIVEI);
+
 		int getIGPVerticalDelayEstimater(void) { return IGPVerticalDelayEstimate; };
 		void setIonoDelayinMeter(double delay) { IonoCorrinMeter = delay; };
 		void setIGPVerticalDelayEstimate(int delay) { IGPVerticalDelayEstimate = delay; IonoCorrinMeter = 8.0 * delay; };
@@ -55,7 +60,6 @@ namespace EGNOS {
 		double lon;
 
 		int IODI;
-		
 
 		int placeInBlock;
 		int blockId;
@@ -65,7 +69,9 @@ namespace EGNOS {
 		
 	private:
 
+		gpstk::CommonTime referenceTime;  // Correction and Variance are reffered to this time point.
 		VarianceCalculation  varianceCalcStatus = DEGRADATAION_MODEL_NOT_USED;
+		
 		int GIVEI = 15;
 		double IonoCorrinMeter;
 		int IGPVerticalDelayEstimate;

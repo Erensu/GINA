@@ -1,6 +1,6 @@
 
 #include "IonosphericGridPoint.hpp"
-
+#include "CivilTime.hpp"
 
 namespace EGNOS {
 
@@ -10,16 +10,10 @@ namespace EGNOS {
 	const double IonosphericGridPoint::GIVEI_Meters[16] = { 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.6, 4.5, 6.0, 15.0, 45.0, 0 };
 	const double IonosphericGridPoint::GIVEI_Variance[16] = { 0.0084, 0.0333, 0.0749, 0.1331, 0.2079, 0.2994, 0.4075, 0.5322, 0.6735, 0.8315, 1.1974, 1.8709, 3.326, 20.787, 187.0826, 0 };
 
-	IonosphericGridPoint::IonosphericGridPoint(void) {
-		this->valid = false;
-	}
-
-	IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &copy)	{
-
-		this->copy(copy);	
-	}
-
 	void IonosphericGridPoint::copy(const IonosphericGridPoint &obj){
+
+		referenceTime = obj.referenceTime;  
+		varianceCalcStatus = obj.varianceCalcStatus;
 
 		this->GIVEI = obj.GIVEI;
 		this->IGPVerticalDelayEstimate = obj.IGPVerticalDelayEstimate;
@@ -40,7 +34,18 @@ namespace EGNOS {
 		return *this;
 	}
 
+	void IonosphericGridPoint::setReferenceTime(gpstk::CommonTime time) {
+
+		referenceTime = time; 
+	};
+
+	gpstk::CommonTime IonosphericGridPoint::getReferenceTime(void) {
+
+		return referenceTime; 
+	};
+
 	double IonosphericGridPoint::getIonoCorr(void) {
+
 		return IonoCorrinMeter;
 	}
 
@@ -77,6 +82,10 @@ namespace EGNOS {
 	}
 
 	std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp) {
+
+		gpstk::CivilTime civtime(igp.referenceTime);
+
+		os << "Time of Data: "  << civtime.year << " " << civtime.month << " "<< civtime.day << " " << civtime.hour << " " << civtime.minute << " " << civtime.second << std::endl;
 
 		os << "IODI " << igp.IODI << std::endl;
 		os << "bandNumber " << igp.bandNumber << std::endl;

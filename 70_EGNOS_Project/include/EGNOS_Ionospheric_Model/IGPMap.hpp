@@ -28,6 +28,20 @@ namespace EGNOS {
 		virtual IonexCompatible* clone() const = 0;
 	};
 
+	class IGPMediator 	
+	{
+		public:
+
+			void updateTime(gpstk::CommonTime &time);
+			std::vector<IonosphericGridPoint> IGPMediator::getIGPCandidates(void);
+			void IGPMediator::setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs);
+			void IGPMediator::updateIGPCandidate(const IonosphericGridPointMasksMessageParser & const IGPMessageParser);
+
+		private:
+			std::vector<IonosphericGridPoint> candidateIGPs;
+			gpstk::CommonTime currentDataTime;
+	};
+
 	class IGPMapBase {
 	public:
 
@@ -38,7 +52,7 @@ namespace EGNOS {
 	{
 		public:
 
-			IGPMap(void);
+			IGPMap(void) {};
 			IGPMap(IGPMap* original);
 			~IGPMap(void);
 
@@ -47,9 +61,7 @@ namespace EGNOS {
 			std::vector<gpstk::CivilTime> getEpochTimes(void) const;
 			IonexCompatible* clone() const { return new IGPMap(*this); }
 
-			void setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs);
-			void updateIGPCandidate( const IonosphericGridPointMasksMessageParser  & const IGPMessageParser);
-			void updateMap(void);
+			void updateMap(std::vector<IonosphericGridPoint> &candidateIGPs);
 			
 			void addIGPforDebugging(IonosphericGridPoint newIGP);
 			void restrictLonginDegree(double &indegree) const;
@@ -60,7 +72,6 @@ namespace EGNOS {
 			 
 		private:
 			
-			std::vector<IonosphericGridPoint> candidateIGPs;
 			std::map<IGPCoordinate, IonosphericGridPoint>  Map;
 	};
 };

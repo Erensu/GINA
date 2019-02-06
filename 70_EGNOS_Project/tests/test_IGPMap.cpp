@@ -29,7 +29,7 @@ std::bitset<N> project_range(std::bitset<N> b)
 
 int main(int argc, char **argv) {
 
-	
+
 	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\h17.ems";
 
 	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
@@ -39,11 +39,16 @@ int main(int argc, char **argv) {
 	EGNOS::IonosphericDelayCorrectionsMessageParser IonoGridPointParser;
 	EGNOS::IonosphericGridPointMasksMessageParser IonoMaskParser;
 	EGNOS::IGPMap IonoMap;
+	EGNOS::IGPMediator IgpMediator;
 
 	bool weHad18 = false;
 	bool weHad26 = false;
 
+	gpstk::CommonTime CurrentDataTime;
+
 	while (exampleStreamIn >> EData) {
+
+		CurrentDataTime = EData.messageTime;
 
 		if (EData.messageId == 18) {
 
@@ -60,9 +65,12 @@ int main(int argc, char **argv) {
 		}
 
 		if (weHad18 || weHad26) {
-			IonoMap.setIGPCandidates(IonoGridPointParser.getIonosphericGridPoint());
-			IonoMap.updateIGPCandidate(IonoMaskParser);
-			IonoMap.updateMap();
+
+			IgpMediator.updateTime(CurrentDataTime);
+			IgpMediator.setIGPCandidates(IonoGridPointParser.getIonosphericGridPoint());
+			IgpMediator.updateIGPCandidate(IonoMaskParser);
+
+			IonoMap.updateMap(IgpMediator.getIGPCandidates());
 
 			//cout << IonoMap;
 
@@ -72,7 +80,7 @@ int main(int argc, char **argv) {
 	}
 
 	cout << IonoMap;
-	
+
 	exampleStreamIn.close();
 
 	return 0;

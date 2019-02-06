@@ -12,545 +12,76 @@
 #include "IGPMap.hpp"
 #include "IonosphericMaskBand.hpp"
 #include "IonosphericGridPoint.hpp"
-#include "IonoCorrection.hpp"
 
 #include "GINAConfig.h"
 
 using namespace std;
 
-typedef enum {
-	Failed,
-	Passed
-}testStatus;
-
-typedef struct {
-	string nameOfTestCase;
-	testStatus givenResult;
-	testStatus expectedResult;
-	double interPolationExpectedResult;
-}testCaseDescriptor;
-
-int numberOfFailedTests = 0;
-std::vector<testCaseDescriptor> FailedTestCases;
-
-void Test(EGNOS::VerticalIonoDelayInterpolator &interPol, EGNOS::IGPMap &IonoMap, EGNOS::IonosphericGridPoint pp, testCaseDescriptor testCase) {
-
-	EGNOS::IonCorrandVar interPolationTestResult;
-	testCase.givenResult = testStatus::Passed;
-	try
-	{
-		interPolationTestResult = interPol.interpolate(IonoMap, pp);
-
-		if (interPolationTestResult.CorrinMeter != testCase.interPolationExpectedResult) {
-			testCase.givenResult = testStatus::Failed;
-			numberOfFailedTests++;
-		}
-
-		//cout << interPolationTestResult  << endl;
-	}
-	catch (exception &e)
-	{
-
-
-		if (testCase.expectedResult == testStatus::Passed) {
-			testCase.givenResult = testStatus::Failed;
-			//std::cout << e.what() << endl;
-			//std::cout << "Interpolation was not success and it was unexpected" << std::endl;
-			numberOfFailedTests++;
-		}
-		else {
-			//std::cout << "Interpolation was not success but it was expected" << std::endl;
-		}
-	}
-
-	FailedTestCases.push_back(testCase);
-
-}
-
-void WriteOutTotalTestResults(bool withExtraInfo) {
-	if (numberOfFailedTests > 0) {
-		std::cout << "Test is failed" << std::endl;
-		std::cout << std::endl << "Number of failed test cases are: " << numberOfFailedTests << std::endl;
-		for (size_t i = 0; i < FailedTestCases.size(); i++)
-		{
-			if (withExtraInfo == true) {
-				switch (FailedTestCases[i].givenResult)
-				{
-				case testStatus::Failed:
-					cout << "Test case " << FailedTestCases[i].nameOfTestCase << " FAILED" << endl;
-					break;
-				case testStatus::Passed:
-					cout << "Test case " << FailedTestCases[i].nameOfTestCase << " PASSED" << endl;
-					break;
-				default:
-					throw("Unexpected error");
-					break;
-				}
-			}
-
-		}
-	}
-	else {
-		std::cout << std::endl << "All the Tests are PASSED" << std::endl;
-
-	}
-
-
+template<std::size_t R, std::size_t L, std::size_t N>
+std::bitset<N> project_range(std::bitset<N> b)
+{
+	static_assert(R <= L && L <= N, "invalid bitrange");
+	b >>= R;            // drop R rightmost bits
+	b <<= (N - L + R);  // drop L-1 leftmost bits
+	b >>= (N - L);      // shift back into place
+	return b;
 }
 
 int main(int argc, char **argv) {
 
 
-#pragma region Initailaze Test
+	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\h17.ems";
 
-	testCaseDescriptor testCase;
+	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
 
+	EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
+
+	EGNOS::IonosphericDelayCorrectionsMessageParser IonoGridPointParser;
+	EGNOS::IonosphericGridPointMasksMessageParser IonoMaskParser;
 	EGNOS::IGPMap IonoMap;
-	EGNOS::VerticalIonoDelayInterpolator interPol;
+	EGNOS::IGPMediator IgpMediator;
 
-	EGNOS::IonosphericGridPoint igp1;
-	EGNOS::IonosphericGridPoint igp2;
-	EGNOS::IonosphericGridPoint igp3;
-	EGNOS::IonosphericGridPoint igp4;
+	bool weHad18 = false;
+	bool weHad26 = false;
 
-	EGNOS::IonosphericGridPoint pp;
+	gpstk::CommonTime CurrentDataTime;
 
-	igp1.lat = -85;
-	igp1.lon = 0;
-	igp1.setIonoDelayinMeter(10);
-	igp1.valid = true;
+	while (exampleStreamIn >> EData) {
 
-	igp2.lat = -85;
-	igp2.lon = 90;
-	igp2.setIonoDelayinMeter(20);
-	igp2.valid = true;
+		CurrentDataTime = EData.messageTime;
 
-	igp3.lat = -85;
-	igp3.lon = 180;
-	igp3.setIonoDelayinMeter(30);
-	igp3.valid = true;
+		if (EData.messageId == 18) {
 
-	igp4.lat = -85;
-	igp4.lon = -90;
-	igp4.setIonoDelayinMeter(40);
-	igp4.valid = true;
-#pragma endregion
+			IonoMaskParser += EData.message;
+			//cout << IonoMaskParser << endl;
+			weHad18 = true;
+		}
 
-#pragma region All 4 is fine
+		if (EData.messageId == 26) {
 
+			IonoGridPointParser += EData.message;
+			//cout << IonoGridPointParser << endl;
+			weHad26 = true;
+		}
 
-	/*  All 4 is fine*/
-	pp.lat = -90;
-	pp.lon = 0;
+		if (weHad18 || weHad26) {
 
+			IgpMediator.updateTime(CurrentDataTime);
+			IgpMediator.setIGPCandidates(IonoGridPointParser.getIonosphericGridPoint());
+			IgpMediator.updateIGPCandidate(IonoMaskParser);
+			
+			IonoMap.updateMap(IgpMediator.getIGPCandidates());
 
-	/*Test 1 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = true;
+			//cout << IonoMap;
 
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
+			weHad26 = false;
+			weHad18 = false;
+		}
+	}
 
-	testCase.interPolationExpectedResult = 25;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in the middle'";
-	Test(interPol, IonoMap, pp, testCase);
+	cout << IonoMap;
 
+	exampleStreamIn.close();
 
-	pp.lat = -85;
-	pp.lon = 0;
-
-	testCase.interPolationExpectedResult = 10;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 1st corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -85;
-	pp.lon = 90;
-
-	testCase.interPolationExpectedResult = 20;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 2nd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -85;
-	pp.lon = 180;
-
-	testCase.interPolationExpectedResult = 30;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 3rd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -85;
-	pp.lon = -90;
-
-	testCase.interPolationExpectedResult = 40;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 4th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -85;
-	pp.lon = 45;
-
-	testCase.interPolationExpectedResult = 15;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 1th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -85;
-	pp.lon = 135;
-
-	testCase.interPolationExpectedResult = 25;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 2nd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -85;
-	pp.lon = -135;
-
-	testCase.interPolationExpectedResult = 35;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 3rd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -85;
-	pp.lon = -45;
-
-	testCase.interPolationExpectedResult = 25;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 4th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	pp.lat = -87.5;
-	pp.lon = 45;
-
-	testCase.interPolationExpectedResult = 20;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 1th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -87.5;
-	pp.lon = 135;
-
-	testCase.interPolationExpectedResult = 25;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 2nd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -87.5;
-	pp.lon = -135;
-
-	testCase.interPolationExpectedResult = 30;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 3rd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-
-	pp.lat = -87.5;
-	pp.lon = -45;
-
-	testCase.interPolationExpectedResult = 25;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'All 4 is fine in 4th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
-
-#pragma endregion
-
-#pragma region 1st quarter
-	/*pp  1st quarter*/
-	pp.lat = -87.5;
-	pp.lon = 45;
-
-
-	/*Test 1 */
-	igp1.valid = false;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.expectedResult = testStatus::Failed;
-	testCase.nameOfTestCase = "'PP is in 1st quarter. 1st grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 2 */
-	igp1.valid = true;
-	igp2.valid = false;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.expectedResult = testStatus::Failed;
-	testCase.nameOfTestCase = "'PP is in 1st quarter. 2nd grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 3 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = false;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 22.5;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'PP is in 1st quarter. 3rd grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 4 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = false;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 17.5;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'PP is in 1st quarter. 4th grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-#pragma endregion
-
-#pragma region 2nd quarter
-	/*pp  2nd quarter*/
-	pp.lat = -87.5;
-	pp.lon = 135;
-
-
-	/*Test 1 */
-	igp1.valid = false;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 27.5;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'PP is in 2nd quarter. 1st grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 2 */
-	igp1.valid = true;
-	igp2.valid = false;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.expectedResult = testStatus::Failed;
-	testCase.nameOfTestCase = "'PP is in 2nd quarter. 2nd grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 3 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = false;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 25;
-	testCase.expectedResult = testStatus::Failed;
-	testCase.nameOfTestCase = "'PP is in 2nd quarter. 3rd grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 4 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = false;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 22.5;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'PP is in 2nd quarter. 4th grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-#pragma endregion
-
-#pragma region 3rd quarter
-	/*pp  3rd quarter*/
-	pp.lat = -87.5;
-	pp.lon = -135;
-
-
-	/*Test 1 */
-
-	igp1.valid = false;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 32.5;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'PP is in 3rd quarter. 1st grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 2 */
-	igp1.valid = true;
-	igp2.valid = false;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 27.5;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'PP is in 3rd quarter. 2nd grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 3 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = false;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.expectedResult = testStatus::Failed;
-	testCase.nameOfTestCase = "'PP is in 3rd quarter. 3rd grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 4 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = false;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 25;
-	testCase.expectedResult = testStatus::Failed;
-	testCase.nameOfTestCase = "'PP is in 3rd quarter. 4th grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-#pragma endregion
-
-#pragma region 4th quarter
-	/*pp  4th quarter*/
-	pp.lat = -87.5;
-	pp.lon = -45;
-
-
-	/*Test 1 */
-	igp1.valid = false;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 35;
-	testCase.expectedResult = testStatus::Failed;
-	testCase.nameOfTestCase = "'PP is in 4th quarter. 1st grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 2 */
-	igp1.valid = true;
-	igp2.valid = false;
-	igp3.valid = true;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 22.5;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'PP is in 4th quarter. 2nd grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 3 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = false;
-	igp4.valid = true;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.interPolationExpectedResult = 27.5;
-	testCase.expectedResult = testStatus::Passed;
-	testCase.nameOfTestCase = "'PP is in 4th quarter. 3rd grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-
-	/*Test 4 */
-	igp1.valid = true;
-	igp2.valid = true;
-	igp3.valid = true;
-	igp4.valid = false;
-
-	IonoMap.addIGPforDebugging(igp1);
-	IonoMap.addIGPforDebugging(igp2);
-	IonoMap.addIGPforDebugging(igp3);
-	IonoMap.addIGPforDebugging(igp4);
-
-	testCase.expectedResult = testStatus::Failed;
-	testCase.nameOfTestCase = "'PP is in 4th quarter. 4th grid is out'";
-	Test(interPol, IonoMap, pp, testCase);
-#pragma endregion
-
-	WriteOutTotalTestResults(true);
 	return 0;
 }
