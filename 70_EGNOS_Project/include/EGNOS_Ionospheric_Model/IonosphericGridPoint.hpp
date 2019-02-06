@@ -66,7 +66,7 @@ namespace EGNOS {
 	private:
 
 		VarianceCalculation  varianceCalcStatus = DEGRADATAION_MODEL_NOT_USED;
-		int GIVEI;
+		int GIVEI = 15;
 		double IonoCorrinMeter;
 		int IGPVerticalDelayEstimate;
 		void copy(const IonosphericGridPoint &obj);
