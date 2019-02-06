@@ -543,7 +543,7 @@ namespace EGNOS {
 			}
 			catch (const std::exception&) {}
 		}
-		else if (ionoPP.lat < -85) {
+		else if (ionoPP.lat <= -85) {
 
 			try {
 				igp1 = getIGP(Map, -85, 0);
