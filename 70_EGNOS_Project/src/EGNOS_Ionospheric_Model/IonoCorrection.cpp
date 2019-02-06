@@ -33,7 +33,6 @@
 #define NUMSTATIONS 0
 #define NUMSVS 0
 
-
 #define MAX_RANGE_FOR_INTERPOLATION 90
 
 using namespace std;
@@ -44,6 +43,18 @@ namespace EGNOS {
 	const double SlantIonoDelay::hI = 350000;
 
 #pragma region SlantIonoDelay
+
+	double SlantIonoDelay::getSlantFactor(SlantIonoDelay_Input data) {
+
+		double F;
+		setRoverPosition(data.RoverPos.rlat, data.RoverPos.rlon, data.RoverPos.rheight);
+		setazimuthOfSatId(data.SatVisibility.azimuthOfSatId, data.SatVisibility.elevationOfSatId);
+
+		calculatePP();
+		calculateSlantFactor();
+
+		return F;
+	}
 
 	void SlantIonoDelay::setazimuthOfSatId(double az, double el) {
 
@@ -70,25 +81,25 @@ namespace EGNOS {
 			ppLon = this->rlon + asin(sin(centralAngle) * sin(this->azimuthOfSatId) / cos(this->ppLat));
 		}
 	}
+
+	double SlantIonoDelay::calculateSlantFactor(void) {
+	
+		double F;
+
+		F = 1 / ( sqrt( 1 - pow((( Re * cos(elevationOfSatId)) / (Re + hI)), 2)));
+
+		return 0;
+	}
+
 #pragma endregion
 
 #pragma region VerticalIonoDelayInterpolator
-
-	VerticalIonoDelayInterpolator::VerticalIonoDelayInterpolator(void) {
-	
-	}
-
-	VerticalIonoDelayInterpolator::~VerticalIonoDelayInterpolator(void) {
-	
-	}
 
 	void SlantIonoDelay::setRoverPosition(double lat, double lon, double height) {
 	
 		this->rlat = lat;
 		this->rlon = lon;
 		this->rheight = height;
-
-		validRoverPosotion = true;
 	}
 
 	
@@ -316,7 +327,6 @@ namespace EGNOS {
 		}
 	}
 
-	
 	IonCorrandVar VerticalIonoDelayInterpolator::polarInterpolator(IGPMapBase& Map) {
 
 		VerticesOfSquare table;
@@ -606,7 +616,6 @@ namespace EGNOS {
 			table.third = igp4;
 			table.fourth = igp1;
 		}
-		
 	}
 
 	void VerticalIonoDelayInterpolator::getVerticesOf5x5Square(VerticesOfSquare& table, IGPMapBase& Map) {
@@ -749,7 +758,6 @@ namespace EGNOS {
 					}
 				}
 			}
-
 		}
 
 		numberOfValidIGP = 0;
@@ -828,7 +836,6 @@ namespace EGNOS {
 				}
 			}
 		}
-
 	}
 
 	IonosphericGridPoint VerticalIonoDelayInterpolator::getHorizontallyInterpolatedVertices(IGPMapBase& Map, double lat, double lon, double increment) {
@@ -904,7 +911,6 @@ namespace EGNOS {
 
 		double lat1, lat2, lon1, lon2;
 		getNearestLatLot(lat1, lat2, lon1, lon2);
-
 
 		numberOfValidIGP = 0;
 		{
@@ -995,7 +1001,6 @@ namespace EGNOS {
 					}
 				}
 			}
-
 		}
 
 		numberOfValidIGP = 0;
@@ -1357,7 +1362,6 @@ namespace EGNOS {
 					}
 				}
 			}
-
 		}
 
 		numberOfValidIGP = 0;

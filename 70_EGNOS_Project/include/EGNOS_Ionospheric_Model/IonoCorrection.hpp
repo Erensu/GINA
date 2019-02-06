@@ -12,7 +12,21 @@
 
 namespace EGNOS {
 
-	
+	typedef struct {
+		double rlat;
+		double rlon;
+		double rheight;
+	}SlantIonoDelay_RoverPos;
+
+	typedef struct {
+		double azimuthOfSatId;
+		double elevationOfSatId;
+	}SlantIonoDelay_SatVisibility;
+
+	typedef struct {
+		SlantIonoDelay_RoverPos RoverPos;
+		SlantIonoDelay_SatVisibility SatVisibility;
+	}SlantIonoDelay_Input;
 
 	class SlantIonoDelay
 	{
@@ -21,7 +35,16 @@ namespace EGNOS {
 		static const double SlantIonoDelay::Re;
 		static const double SlantIonoDelay::hI;
 
-		bool validRoverPosotion = false;
+		
+		double getSlantFactor(SlantIonoDelay_Input data);
+
+	private:
+
+		void setRoverPosition(double lat, double lon, double height);
+		void setazimuthOfSatId(double az, double el);
+
+		void calculatePP(void);
+		double calculateSlantFactor(void);
 
 		double rlat;
 		double rlon;
@@ -29,16 +52,7 @@ namespace EGNOS {
 
 		double azimuthOfSatId;
 		double elevationOfSatId;
-
 		double ppLat, ppLon;
-
-		void setRoverPosition(double lat, double lon, double height);
-		void setazimuthOfSatId(double az, double el);
-
-		void calculatePP(void);
-		
-	private:
-
 	};
 
 	class VerticalIonoDelayInterpolator	
@@ -52,8 +66,8 @@ namespace EGNOS {
 			IonosphericGridPoint fourth;
 		};
 
-		VerticalIonoDelayInterpolator(void);
-		~VerticalIonoDelayInterpolator(void);
+		VerticalIonoDelayInterpolator(void) {};
+		~VerticalIonoDelayInterpolator(void) {};
 
 		IonCorrandVar VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint& newPP);
 		IonosphericGridPoint getHorizontallyInterpolatedVertices(IGPMapBase& Map, double lat, double lon, double increment);
