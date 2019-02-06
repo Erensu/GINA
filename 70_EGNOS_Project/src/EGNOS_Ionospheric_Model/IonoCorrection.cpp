@@ -132,6 +132,7 @@ namespace EGNOS {
 
 	double VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint &newPP) {
 
+		bool interPolFailed = false;
 		double rtv;
 		setPP(newPP);
 		
@@ -153,11 +154,10 @@ namespace EGNOS {
 					try
 					{
 						rtv = this->grid10x10Interpolator(Map);
-						return rtv;
 					}
 					catch (exception &e)
 					{
-						throw std::domain_error("Interppolation is not possible");
+						interPolFailed = true;
 					}
 				}
 			}
@@ -180,7 +180,15 @@ namespace EGNOS {
 			}
 			catch (exception &e)
 			{
-				throw std::domain_error("Interppolation is not possible");
+				interPolFailed = true;
+			}
+		}
+
+		if (abs(this->ionoPP.lat) == 85.0) {
+			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 10);
+			if (igp.valid == true) {
+				rtv = igp.getIonoCorr();
+				return rtv;
 			}
 		}
 
@@ -193,19 +201,14 @@ namespace EGNOS {
 			}
 			catch (exception &e)
 			{
-				throw std::domain_error("Interppolation is not possible");
+				interPolFailed = true;
 			}
 		}
 		
-		if (abs(this->ionoPP.lat) == 85.0) {
-			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 10);
-			if (igp.valid == true) {
-				rtv = igp.getIonoCorr();
-				return rtv;
-			}
+		if (interPolFailed == true) {
+			throw std::domain_error("Interppolation is not possible"); 
 		}
 
-		throw std::domain_error("Interppolation is not possible");
 		return rtv;
 	}
 	
@@ -325,66 +328,30 @@ namespace EGNOS {
 
 		if (table.first.valid && table.second.valid && table.third.valid && table.fourth.valid) {
 
-			double ypp = abs(ionoPP.lat) - 85 / 10;
-			double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / 90 * (1 - 2*ypp) + ypp;
+			double ypp = (abs(ionoPP.lat) - 85) / 10;
+			double xpp = restrictLong(ionoPP.lon - table.third.lon) / 90 * (1 - 2*ypp) + ypp;
 
 			double corr = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
 			return corr;
 		}
 
 		if (table.first.valid == false) {
-			if ( -180 <= ionoPP.lat && ionoPP.lat <= 0) {
+			
+			double ypp = (abs(ionoPP.lat) - 85) / 10;
+			double xpp = restrictLong(ionoPP.lon - table.third.lon) / 90 * (1 - 2 * ypp) + ypp;
 
-				double ypp = abs(ionoPP.lat) - 85 / 10;
-				double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / 90 * (1 - 2 * ypp) + ypp;
-
-				double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-				return corr;
-			}
-			else {
-				throw std::domain_error("Interppolation is not possible");
-			}
+			double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+			return corr;
 		}
 		else if (table.second.valid == false) {
-			if (-90 <= ionoPP.lat && ionoPP.lat <= 90) {
+			
+			double ypp = (abs(ionoPP.lat) - 85) / 10;
+			double xpp = restrictLong(ionoPP.lon - table.third.lon) / 90 * (1 - 2 * ypp) + ypp;
 
-				double ypp = abs(ionoPP.lat) - 85 / 10;
-				double xpp = absDistanceOfLongitude(ionoPP.lon, table.fourth.lon) / 90 * (1 - 2 * ypp) + ypp;
-
-				double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-				return corr;
-			}
-			else {
-				throw std::domain_error("Interppolation is not possible");
-			}
+			double corr = interpolation3point(xpp, ypp, table.first.getIonoCorr(), table.fourth.getIonoCorr(), table.third.getIonoCorr());
+			return corr;
 		}
-		else if (table.third.valid == false) {
-			if (0 <= ionoPP.lat && ionoPP.lat <= 180) {
-
-				double ypp = abs(ionoPP.lat) - 85 / 10;
-				double xpp = absDistanceOfLongitude(ionoPP.lon, table.first.lon) / 90 * (1 - 2 * ypp) + ypp;
-
-				double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-				return corr;
-			}
-			else {
-				throw std::domain_error("Interppolation is not possible");
-			}
-		}
-		else if (table.fourth.valid == false) {
-			if ( (-90 < ionoPP.lat && ionoPP.lat < 90) == false) {
-
-				double ypp = abs(ionoPP.lat) - 85 / 10;
-				double xpp = absDistanceOfLongitude(ionoPP.lon, table.second.lon) / 90 * (1 - 2 * ypp) + ypp;
-
-				double corr = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-				return corr;
-			}
-			else {
-				throw std::domain_error("Interppolation is not possible");
-			}
-		}
-
+		
 		throw std::domain_error("Interppolation is not possible");
 		return 0;
 	}
@@ -552,57 +519,78 @@ namespace EGNOS {
 
 		IonosphericGridPoint igp1, igp2, igp3, igp4;
 
-		if (ionoPP.lat > 85) {
+		if (ionoPP.lat >= 85) {
 
 			try {
-				igp1 = getIGP(Map, 85, 90);
+				igp1 = getIGP(Map, 85, 0);
 			}
 			catch (const std::exception&) {}
 
 			try {
-				igp2 = getIGP(Map, 85, 180);
+				igp2 = getIGP(Map, 85, 90);
 			}
 			catch (const std::exception&) {}
 			{
 
 			}
 			try {
-				igp3 = getIGP(Map, 85, -90);
+				igp3 = getIGP(Map, 85, 180);
 			}
 			catch (const std::exception&) {}
 
 			try {
-				igp4 = getIGP(Map, 85, 0);
+				igp4 = getIGP(Map, 85, -90);
 			}
 			catch (const std::exception&) {}
 		}
 		else if (ionoPP.lat < -85) {
 
 			try {
-				igp1 = getIGP(Map, -85, 90);
+				igp1 = getIGP(Map, -85, 0);
 			}
 			catch (const std::exception&) {}
 
 			try {
-				igp2 = getIGP(Map, -85, 180);
+				igp2 = getIGP(Map, -85, 90);
 			}
 			catch (const std::exception&) {}
 
 			try {
-				igp3 = getIGP(Map, -85, -90);
+				igp3 = getIGP(Map, -85, 180);
 			}
 			catch (const std::exception&) {}
 
 			try {
-				igp4 = getIGP(Map, -85, 0);
+				igp4 = getIGP(Map, -85, -90);
 			}
 			catch (const std::exception&) {}
 		}
 
-		table.first = igp1;
-		table.second = igp2;
-		table.third = igp3;
-		table.fourth = igp4;
+		if (0 <= ionoPP.lon && ionoPP.lon <= 90) {
+			table.first = igp3;
+			table.second = igp4;
+			table.third = igp1;
+			table.fourth = igp2;
+		}
+		 else if (90 <= ionoPP.lon && ionoPP.lon <= 180) {
+			table.first = igp4;
+			table.second = igp1;
+			table.third = igp2;
+			table.fourth = igp3;
+		}
+		else if (-180 <= ionoPP.lon && ionoPP.lon <= -90) {
+			 table.first = igp1;
+			 table.second = igp2;
+			 table.third = igp3;
+			 table.fourth = igp4;
+		 }
+		else if (-90 <= ionoPP.lon && ionoPP.lon <= 0) {
+			table.first = igp2;
+			table.second = igp3;
+			table.third = igp4;
+			table.fourth = igp1;
+		}
+		
 	}
 
 	void VerticalIonoDelayInterpolator::getVerticesOf5x5Square(VerticesOfSquare& table, IGPMapBase& Map) {

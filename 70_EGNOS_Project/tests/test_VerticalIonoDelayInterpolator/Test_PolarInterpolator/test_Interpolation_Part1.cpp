@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in the middle'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 85;
@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 10;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 1st corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 85;
@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 20;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 2nd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 85;
@@ -185,7 +185,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 30;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 3rd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 85;
@@ -194,7 +194,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 40;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 4th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 85;
@@ -203,7 +203,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 15;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 1th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 85;
@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 2nd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 85;
@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 35;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 3rd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 85;
@@ -230,15 +230,17 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 4th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
+	//
+	//
 	pp.lat = 87.5;
 	pp.lon = 45;
 
 	testCase.interPolationExpectedResult = 20;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 1th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 87.5;
@@ -247,7 +249,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 2nd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 87.5;
@@ -256,7 +258,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 30;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 3rd corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 
 	pp.lat = 87.5;
@@ -265,7 +267,7 @@ int main(int argc, char **argv) {
 	testCase.interPolationExpectedResult = 25;
 	testCase.expectedResult = testStatus::Passed;
 	testCase.nameOfTestCase = "'All 4 is fine in 4th corner symmetric'";
-	Test(interPol, IonoMap, pp, testCase);
+	//Test(interPol, IonoMap, pp, testCase);
 
 #pragma endregion
 
