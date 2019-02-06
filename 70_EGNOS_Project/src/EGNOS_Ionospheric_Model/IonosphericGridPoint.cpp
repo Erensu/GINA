@@ -7,6 +7,9 @@ namespace EGNOS {
 #define IONO_GRID_MASK_MESSAGE_TYPE 18
 #define IONO_DELAY_CORRECTION_MESSAGE_TYPE 26
 
+	const double IonosphericGridPoint::GIVEI_Meters[16] = { 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.6, 4.5, 6.0, 15.0, 45.0, 0 };
+	const double IonosphericGridPoint::GIVEI_Variance[16] = { 0.0084, 0.0333, 0.0749, 0.1331, 0.2079, 0.2994, 0.4075, 0.5322, 0.6735, 0.8315, 1.1974, 1.8709, 3.326, 20.787, 187.0826, 0 };
+
 	IonosphericGridPoint::IonosphericGridPoint(void) {
 		this->valid = false;
 	}
@@ -42,14 +45,34 @@ namespace EGNOS {
 	}
 
 	double IonosphericGridPoint::getIonoCorrVariance(void) {
-		return (double)GIVEI;
+
+		double var = 0;
+
+		if (varianceCalcStatus == DEGRADATAION_MODEL_NOT_USED) {
+			var = GIVEI_Variance[GIVEI];
+		}
+		else if (varianceCalcStatus = DEGRADATAION_MODEL_USED) {
+			// TODO - implement the algorithm
+		}
+		else {
+			var = GIVEI_Variance[GIVEI];
+		}
+		
+		return var;
 	}
 
 	int IonosphericGridPoint:: getGIVEI(void) {
+
 		return GIVEI;
 	}
 
 	void IonosphericGridPoint::setGIVEI(int New_GIVEI) {
+
+		if (New_GIVEI < 0 || New_GIVEI > 14) {
+
+			this->valid = false;
+		}
+
 		GIVEI = New_GIVEI;
 	}
 

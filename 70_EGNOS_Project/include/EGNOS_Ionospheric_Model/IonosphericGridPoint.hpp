@@ -29,6 +29,14 @@ namespace EGNOS {
 	{
 	public:
 
+		typedef enum {
+			DEGRADATAION_MODEL_NOT_USED = 0,
+			DEGRADATAION_MODEL_USED = 1
+		}VarianceCalculation;
+
+		static const double IonosphericGridPoint::GIVEI_Meters[16];
+		static const double IonosphericGridPoint::GIVEI_Variance[16];
+
 		IonosphericGridPoint(void);
 		IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &obj);
 
@@ -56,6 +64,8 @@ namespace EGNOS {
 		friend std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp);
 		
 	private:
+
+		VarianceCalculation  varianceCalcStatus = DEGRADATAION_MODEL_NOT_USED;
 		int GIVEI;
 		double IonoCorrinMeter;
 		int IGPVerticalDelayEstimate;
