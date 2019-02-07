@@ -45,7 +45,9 @@ namespace EGNOS {
 		this->Map.clear();
 	}
 
-	void IGPMap::updateMap(std::vector<IonosphericGridPoint> &candidateIGPs) {
+	bool IGPMap::updateMap(std::vector<IonosphericGridPoint> &candidateIGPs) {
+
+		bool didWeHaveNewData = false;
 
 		for (std::vector<IonosphericGridPoint>::const_iterator it = candidateIGPs.begin(); it != candidateIGPs.end(); ++it) {
 			
@@ -54,8 +56,17 @@ namespace EGNOS {
 			}
 
 			IGPCoordinate coor = { it->lat , it->lon};
-			this->Map[coor] = *it;
+
+			if (this->Map[coor] == *it) {
+				// Do nothing
+			}
+			else {
+				didWeHaveNewData = true;
+				this->Map[coor] = *it;
+			}
 		}
+
+		return didWeHaveNewData;
 	}
 
 	void IGPMap::addIGPforDebugging(IonosphericGridPoint newIGP) {

@@ -65,6 +65,7 @@ namespace EGNOS {
 		int blockId;
 		int bandNumber;
 
+		friend bool operator==(const IonosphericGridPoint& lhs, const IonosphericGridPoint& rhs);
 		friend std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp);
 		
 	private:
@@ -86,6 +87,8 @@ namespace EGNOS {
 
 		IonosphericGridPointMasksMessageParser& operator+=(const std::bitset<256> &message);
 		IonosphericGridPointMasksMessageParser& operator+=(const std::bitset<250> &message);
+
+		
 
 		int currentRecievedBandNumber = INVALID_BAND_NUMBER;
 		int numberOfBroadcastedBands = 0;

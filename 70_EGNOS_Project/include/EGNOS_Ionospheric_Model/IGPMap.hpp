@@ -61,7 +61,7 @@ namespace EGNOS {
 			std::vector<gpstk::CivilTime> getEpochTimes(void) const;
 			IonexCompatible* clone() const { return new IGPMap(*this); }
 
-			void updateMap(std::vector<IonosphericGridPoint> &candidateIGPs);
+			bool updateMap(std::vector<IonosphericGridPoint> &candidateIGPs);
 			
 			void addIGPforDebugging(IonosphericGridPoint newIGP);
 			void restrictLonginDegree(double &indegree) const;

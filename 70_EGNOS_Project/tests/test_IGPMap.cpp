@@ -66,12 +66,17 @@ int main(int argc, char **argv) {
 
 		if (weHad18 || weHad26) {
 
+			bool newData = false;
+
 			IgpMediator.updateTime(CurrentDataTime);
 			IgpMediator.setIGPCandidates(IonoGridPointParser.getIonosphericGridPoint());
 			IgpMediator.updateIGPCandidate(IonoMaskParser);
 
-			IonoMap.updateMap(IgpMediator.getIGPCandidates());
+			newData = IonoMap.updateMap(IgpMediator.getIGPCandidates());
 
+			if (newData == true) {
+				cout << "IGP Map updated" << endl;
+			}
 			//cout << IonoMap;
 
 			weHad26 = false;

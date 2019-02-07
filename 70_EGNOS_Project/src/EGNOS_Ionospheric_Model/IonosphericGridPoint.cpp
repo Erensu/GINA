@@ -81,6 +81,15 @@ namespace EGNOS {
 		GIVEI = New_GIVEI;
 	}
 
+	bool operator==(const IonosphericGridPoint& lhs, const IonosphericGridPoint& rhs) {
+
+		return (	lhs.lat == rhs.lat && 
+					lhs.lon == rhs.lon && 
+					lhs.GIVEI == rhs.GIVEI &&  
+					lhs.IonoCorrinMeter == rhs.IonoCorrinMeter && 
+					lhs.referenceTime == rhs.referenceTime			);
+	}
+
 	std::ostream &operator<<(std::ostream &os, IonosphericGridPoint const &igp) {
 
 		gpstk::CivilTime civtime(igp.referenceTime);
