@@ -62,7 +62,6 @@ namespace EGNOS {
 			double getRMS(gpstk::CommonTime epoch, double lat, double lon) const;
 			std::vector<gpstk::CommonTime> getEpochTimes(void) const;
 			IonexCompatible* clone() const { return new IGPMap(*this); }
-			//gpstk::CommonTime getReferenceTime(void) { return referenceTime; };
 
 			bool updateMap(IGPMediator &mediator);
 			
