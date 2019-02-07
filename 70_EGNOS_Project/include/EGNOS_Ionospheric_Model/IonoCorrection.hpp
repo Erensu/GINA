@@ -138,13 +138,13 @@ namespace EGNOS {
 			std::string ionexFile;
 			gpstk::IonexHeader header;
 			gpstk::IonexStream strm;
-			std::vector<gpstk::CivilTime> epochs;
+			std::vector<gpstk::CommonTime> epochs;
 			IonexCompatible *ionoData;
 
 			bool getMapEpochs(void);
 			void createHeader(void);
-			gpstk::IonexData createDataBlock(gpstk::CivilTime currentEpoch, int mapID, dataType type);
-			double getData(gpstk::CivilTime currentEpoch, double currLat, double currLon, dataType type);
+			gpstk::IonexData createDataBlock(gpstk::CommonTime currentEpoch, int mapID, dataType type);
+			double getData(gpstk::CommonTime currentEpoch, double currLat, double currLon, dataType type);
 
 			void writeHeader(gpstk::IonexHeader &header);
 			void writeData(gpstk::IonexData &data);
@@ -154,7 +154,7 @@ namespace EGNOS {
 			void closeFile(void);
 
 			int calcDim(int lat1, int lat2, double dlat);
-			double calculateIntervalinSec(gpstk::CivilTime firstEpoch, gpstk::CivilTime secondEpoch);
+			double calculateIntervalinSec(gpstk::CommonTime firstEpoch, gpstk::CommonTime secondEpoch);
 			std::string typeString(dataType type);
 	};
 };

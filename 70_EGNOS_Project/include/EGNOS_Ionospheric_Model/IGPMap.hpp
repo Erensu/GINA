@@ -22,9 +22,9 @@ namespace EGNOS {
 	class IonexCompatible {
 	public:
 		virtual ~IonexCompatible() {};
-		virtual double getTEC(gpstk::CivilTime epoch, double lat, double lon) const = 0;
-		virtual double getRMS(gpstk::CivilTime epoch, double lat, double lon) const = 0;
-		virtual std::vector<gpstk::CivilTime> getEpochTimes(void) const = 0;
+		virtual double getTEC(gpstk::CommonTime epoch, double lat, double lon) const = 0;
+		virtual double getRMS(gpstk::CommonTime epoch, double lat, double lon) const = 0;
+		virtual std::vector<gpstk::CommonTime> getEpochTimes(void) const = 0;
 		virtual IonexCompatible* clone() const = 0;
 	};
 
@@ -36,6 +36,8 @@ namespace EGNOS {
 			std::vector<IonosphericGridPoint> IGPMediator::getIGPCandidates(void);
 			void IGPMediator::setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs);
 			void IGPMediator::updateIGPCandidate(const IonosphericGridPointMasksMessageParser & const IGPMessageParser);
+
+			gpstk::CommonTime getReferencetime(void) {return currentDataTime;};
 
 		private:
 			std::vector<IonosphericGridPoint> candidateIGPs;
@@ -56,12 +58,13 @@ namespace EGNOS {
 			IGPMap(IGPMap* original);
 			~IGPMap(void);
 
-			double getTEC(gpstk::CivilTime epoch, double lat, double lon) const;
-			double getRMS(gpstk::CivilTime epoch, double lat, double lon) const;
-			std::vector<gpstk::CivilTime> getEpochTimes(void) const;
+			double getTEC(gpstk::CommonTime epoch, double lat, double lon) const;
+			double getRMS(gpstk::CommonTime epoch, double lat, double lon) const;
+			std::vector<gpstk::CommonTime> getEpochTimes(void) const;
 			IonexCompatible* clone() const { return new IGPMap(*this); }
+			//gpstk::CommonTime getReferenceTime(void) { return referenceTime; };
 
-			bool updateMap(std::vector<IonosphericGridPoint> &candidateIGPs);
+			bool updateMap(IGPMediator &mediator);
 			
 			void addIGPforDebugging(IonosphericGridPoint newIGP);
 			void restrictLonginDegree(double &indegree) const;
@@ -71,7 +74,7 @@ namespace EGNOS {
 			friend std::ostream &operator<<(std::ostream &os, IGPMap const &imap);
 			 
 		private:
-			
+			gpstk::CommonTime referenceTime;
 			std::map<IGPCoordinate, IonosphericGridPoint>  Map;
 	};
 };

@@ -45,9 +45,12 @@ namespace EGNOS {
 		this->Map.clear();
 	}
 
-	bool IGPMap::updateMap(std::vector<IonosphericGridPoint> &candidateIGPs) {
+	bool IGPMap::updateMap(IGPMediator &mediator) {
 
 		bool didWeHaveNewData = false;
+		this->referenceTime = mediator.getReferencetime();
+
+		std::vector<IonosphericGridPoint> candidateIGPs = mediator.getIGPCandidates();
 
 		for (std::vector<IonosphericGridPoint>::const_iterator it = candidateIGPs.begin(); it != candidateIGPs.end(); ++it) {
 			
@@ -138,7 +141,7 @@ namespace EGNOS {
 		}
 	}
 
-	double IGPMap::getTEC(gpstk::CivilTime epoch, double lat, double lon) const {
+	double IGPMap::getTEC(gpstk::CommonTime epoch, double lat, double lon) const {
 
 		double tec;
 
@@ -155,7 +158,7 @@ namespace EGNOS {
 		return tec;
 	}
 
-	double IGPMap::getRMS(gpstk::CivilTime epoch, double lat, double lon) const {
+	double IGPMap::getRMS(gpstk::CommonTime epoch, double lat, double lon) const {
 
 		double rms;
 
@@ -172,20 +175,11 @@ namespace EGNOS {
 		return rms;
 	}
 
-	// TODO - unfinished
-	std::vector<gpstk::CivilTime> IGPMap::getEpochTimes(void) const {
+	std::vector<gpstk::CommonTime> IGPMap::getEpochTimes(void) const {
 
-		std::vector<gpstk::CivilTime> epochs;
+		std::vector<gpstk::CommonTime> epochs;
+		epochs.push_back(this->referenceTime);
 
-		gpstk::CivilTime firstAndOnly;
-		firstAndOnly.year = 2019;
-		firstAndOnly.month = 1;
-		firstAndOnly.day = 24;
-		firstAndOnly.hour = 17;
-		firstAndOnly.minute = 29;
-		firstAndOnly.second = 42;
-
-		epochs.push_back(firstAndOnly);
 		return epochs;
 	}
 

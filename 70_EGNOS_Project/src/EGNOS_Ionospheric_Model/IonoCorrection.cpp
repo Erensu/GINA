@@ -1702,6 +1702,7 @@ namespace EGNOS {
 
 	void IonexCreator::createHeader(void) {
 
+		header.clear();
 		gpstk::CivilTime firstEpoch= epochs[0];
 		gpstk::CivilTime lastEpoch = epochs[epochs.size()-1];
 		
@@ -1780,7 +1781,7 @@ namespace EGNOS {
 		 return date;
 	}
 
-	gpstk::IonexData IonexCreator::createDataBlock(gpstk::CivilTime currentEpoch, int mapID, dataType type) {
+	gpstk::IonexData IonexCreator::createDataBlock(gpstk::CommonTime currentEpoch, int mapID, dataType type) {
 
 		gpstk::IonexData iod;
 		double lat1, lat2, dlat;
@@ -1863,7 +1864,7 @@ namespace EGNOS {
 		return iod;
 	}
 
-	double IonexCreator::getData(gpstk::CivilTime currentEpoch, double currLat, double currLon, dataType type) {
+	double IonexCreator::getData(gpstk::CommonTime currentEpoch, double currLat, double currLon, dataType type) {
 
 		double rtv;
 		switch (type)
@@ -1916,15 +1917,20 @@ namespace EGNOS {
 		return validEpochs;
 	}
 
-	double IonexCreator::calculateIntervalinSec(gpstk::CivilTime firstEpoch, gpstk::CivilTime secondEpoch) {
+	double IonexCreator::calculateIntervalinSec(gpstk::CommonTime firstEpoch, gpstk::CommonTime secondEpoch) {
+		
+		gpstk::CommonTime timeDiff = firstEpoch;
+			
+		timeDiff - secondEpoch;
+		gpstk::CivilTime civTime(timeDiff);
 
 		double intervalBetweenEpochinSec;
 		if (epochs.size() > 1) {
-			if ((epochs[1].year == epochs[0].year) && (epochs[1].month == epochs[0].month) && (epochs[1].day == epochs[0].day)) {
+			if ((civTime.year == 0) && (civTime.month == 0) && (civTime.day == 0)) {
 
-				intervalBetweenEpochinSec = (epochs[1].hour - epochs[0].hour) * 3600 +
-					(epochs[1].minute - epochs[0].minute) * 60 +
-					(epochs[1].second - epochs[0].second);
+				intervalBetweenEpochinSec = civTime.hour * 3600 +
+											civTime.minute * 60 +
+											civTime.second;
 			}
 			else {
 				intervalBetweenEpochinSec = 0;
