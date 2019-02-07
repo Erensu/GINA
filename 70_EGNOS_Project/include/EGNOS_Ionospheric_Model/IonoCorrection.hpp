@@ -55,7 +55,7 @@ namespace EGNOS {
 		double ppLat, ppLon;
 	};
 
-	class VerticalIonoDelayInterpolator	
+	class VerticalIonoDelayInterpolator: public IonexCompatibleInterPolator
 	{
 
 	public:
@@ -67,12 +67,18 @@ namespace EGNOS {
 		};
 
 		VerticalIonoDelayInterpolator(void) {};
+		VerticalIonoDelayInterpolator(VerticalIonoDelayInterpolator* original);
 		~VerticalIonoDelayInterpolator(void) {};
 
 		IonCorrandVar VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint& newPP);
 		IonosphericGridPoint getHorizontallyInterpolatedVertices(IGPMapBase& Map, double lat, double lon, double increment);
-		
+
+		double getTEC(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon);
+		double getRMS(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon);
+		IonexCompatibleInterPolator* clone() const { return new VerticalIonoDelayInterpolator(*this); };
+	
 	private:
+
 		IonosphericGridPoint ionoPP;
 
 		IonosphericGridPoint getIGP(IGPMapBase &Map, double lat, double lon);
@@ -130,16 +136,20 @@ namespace EGNOS {
 			IonexCreator(void) {};
 			~IonexCreator(void);
 
-			void setIonexData(IonexCompatible &Ionex);
-			bool write2file(std::string newIonexFile);
+			void setIonexData(IonexCompatibleMap &Ionex);
+			void setInterpolator(IonexCompatibleInterPolator &interPol);
+			bool writeIGPMap2file(std::string newIonexFile);
 
 		private:
+
+			bool isInterPolatorSet = false;
 
 			std::string ionexFile;
 			gpstk::IonexHeader header;
 			gpstk::IonexStream strm;
 			std::vector<gpstk::CommonTime> epochs;
-			IonexCompatible *ionoData;
+			IonexCompatibleMap *ionoData;
+			IonexCompatibleInterPolator* interPol;
 
 			bool getMapEpochs(void);
 			void createHeader(void);

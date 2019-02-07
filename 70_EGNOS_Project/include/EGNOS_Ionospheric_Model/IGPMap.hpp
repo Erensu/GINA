@@ -19,13 +19,28 @@ namespace EGNOS {
 		}
 	}IGPCoordinate;
 
-	class IonexCompatible {
+	class IGPMapBase {
 	public:
-		virtual ~IonexCompatible() {};
+
+		virtual IonosphericGridPoint getIGP(double lat, double lon) const = 0;
+	};
+
+	class IonexCompatibleMap : public IGPMapBase {
+	public:
+		virtual ~IonexCompatibleMap() {};
 		virtual double getTEC(gpstk::CommonTime epoch, double lat, double lon) const = 0;
 		virtual double getRMS(gpstk::CommonTime epoch, double lat, double lon) const = 0;
 		virtual std::vector<gpstk::CommonTime> getEpochTimes(void) const = 0;
-		virtual IonexCompatible* clone() const = 0;
+		virtual IonexCompatibleMap* clone() const = 0;
+	};
+
+	class IonexCompatibleInterPolator {
+	public:
+		virtual ~IonexCompatibleInterPolator() {};
+		
+		virtual double getTEC(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon) = 0;
+		virtual double getRMS(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon) = 0;
+		virtual IonexCompatibleInterPolator* clone() const = 0;
 	};
 
 	class IGPMediator 	
@@ -44,13 +59,9 @@ namespace EGNOS {
 			gpstk::CommonTime currentDataTime;
 	};
 
-	class IGPMapBase {
-	public:
+	
 
-		virtual IonosphericGridPoint getIGP(double lat, double lon) const = 0;
-	};
-
-	class IGPMap:public IGPMapBase, public IonexCompatible
+	class IGPMap:public IonexCompatibleMap
 	{
 		public:
 
@@ -61,7 +72,7 @@ namespace EGNOS {
 			double getTEC(gpstk::CommonTime epoch, double lat, double lon) const;
 			double getRMS(gpstk::CommonTime epoch, double lat, double lon) const;
 			std::vector<gpstk::CommonTime> getEpochTimes(void) const;
-			IonexCompatible* clone() const { return new IGPMap(*this); }
+			IonexCompatibleMap* clone() const { return new IGPMap(*this); }
 
 			bool updateMap(IGPMediator &mediator);
 			

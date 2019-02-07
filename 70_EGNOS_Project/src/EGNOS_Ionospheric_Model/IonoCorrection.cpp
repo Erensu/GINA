@@ -95,6 +95,11 @@ namespace EGNOS {
 
 #pragma region VerticalIonoDelayInterpolator
 
+	VerticalIonoDelayInterpolator::VerticalIonoDelayInterpolator(VerticalIonoDelayInterpolator* original) {
+
+		this->ionoPP = original->ionoPP;
+	}
+
 	void SlantIonoDelay::setRoverPosition(double lat, double lon, double height) {
 	
 		this->rlat = lat;
@@ -138,8 +143,51 @@ namespace EGNOS {
 	}
 
 	void VerticalIonoDelayInterpolator::setPP(IonosphericGridPoint newPP) {
+
 		this->ionoPP = newPP;
 	}
+
+	double VerticalIonoDelayInterpolator::getTEC(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon) {
+
+		IonCorrandVar interPolatedValues;
+		try
+		{
+			IGPMapBase *downCastedMap = static_cast<IGPMapBase*> (Map);
+
+			IonosphericGridPoint targetPP;
+			targetPP.lat = lat;
+			targetPP.lon = lon;
+
+			interPolatedValues = interpolate(*downCastedMap, targetPP);
+		}
+		catch (const std::exception& e)
+		{
+			throw(e);
+		}
+		
+		return interPolatedValues.CorrinMeter;
+	};
+
+	double VerticalIonoDelayInterpolator::getRMS(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon) {
+
+		IonCorrandVar interPolatedValues;
+		try
+		{
+			IGPMapBase *downCastedMap = static_cast<IGPMapBase*> (Map);
+
+			IonosphericGridPoint targetPP;
+			targetPP.lat = lat;
+			targetPP.lon = lon;
+
+			interPolatedValues = interpolate(*downCastedMap, targetPP);
+		}
+		catch (const std::exception& e)
+		{
+			throw(e);
+		}
+
+		return interPolatedValues.Variance;
+	};
 
 	IonCorrandVar VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint &newPP) {
 
@@ -1641,9 +1689,10 @@ namespace EGNOS {
 
 	IonexCreator::~IonexCreator(void){
 		delete ionoData; 
+		delete interPol;
 	};
 
-	bool IonexCreator::write2file(std::string newIonexFile) {
+	bool IonexCreator::writeIGPMap2file(std::string newIonexFile) {
 
 		bool validityFlag = false;
 		ionexFile = newIonexFile;
@@ -1675,9 +1724,15 @@ namespace EGNOS {
 
 	}
 
-	void IonexCreator::setIonexData(IonexCompatible &Ionex) {
+	void IonexCreator::setIonexData(IonexCompatibleMap &Ionex) {
 
 		ionoData = Ionex.clone();
+	}
+
+	void IonexCreator::setInterpolator(IonexCompatibleInterPolator &interPol) {
+
+		isInterPolatorSet = true;
+		this->interPol = interPol.clone();
 	}
 
 	void IonexCreator::openFile(void) {
@@ -1871,7 +1926,12 @@ namespace EGNOS {
 		{
 			case TEC:
 				try	{
-					rtv = ionoData->getTEC(currentEpoch, currLat, currLon);
+					if (isInterPolatorSet == true) {
+						rtv = interPol->getTEC(ionoData, currentEpoch, currLat, currLon);
+					}
+					else {
+						rtv = ionoData->getTEC(currentEpoch, currLat, currLon);
+					}
 				}
 				catch (const std::exception&){
 					rtv = INVALID_VALUE * std::pow(10, header.exponent);
@@ -1880,7 +1940,13 @@ namespace EGNOS {
 
 			case RMS:
 				try	{
-					rtv = ionoData->getRMS(currentEpoch, currLat, currLon);
+
+					if (isInterPolatorSet == true) {
+						rtv = interPol->getRMS(ionoData, currentEpoch, currLat, currLon);
+					}
+					else {
+						rtv = ionoData->getRMS(currentEpoch, currLat, currLon);
+					}
 				}
 				catch (const std::exception&){
 					rtv = INVALID_VALUE * std::pow(10, header.exponent);
@@ -1891,6 +1957,7 @@ namespace EGNOS {
 				rtv = INVALID_VALUE * std::pow(10, header.exponent);
 				break;
 		}
+
 		return rtv;
 	}
 	void IonexCreator::writeHeader(gpstk::IonexHeader &header) {
