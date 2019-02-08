@@ -20,6 +20,8 @@
 
 using namespace std;
 
+string createStrFileIndex(int index);
+
 int main(int argc, char **argv) {
 
 
@@ -39,7 +41,7 @@ int main(int argc, char **argv) {
 	EGNOS::IonexCreator ionexWriter;
 	EGNOS::IGPMediator IgpMediator;
 
-	ionexWriter.setInterpolator(egnosInterPol);
+	//ionexWriter.setInterpolator(egnosInterPol);
 
 	bool weHad18 = false;
 	bool weHad26 = false;
@@ -77,7 +79,7 @@ int main(int argc, char **argv) {
 
 			if (newData == true) {
 				updateIndex++;
-				string ems_out_file_index = std::to_string(updateIndex);
+				string ems_out_file_index = createStrFileIndex(updateIndex);
 				std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\Ionex_from_h17\\h17ems_ionex_out_" + ems_out_file_index + ".18i";
 				
 				ionexWriter.setIonexData(IonoMap);
@@ -92,8 +94,40 @@ int main(int argc, char **argv) {
 	}
 
 	//cout << IonoMap;
+	std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\h17ems_ionex_out_debug_InterPol.18i";
+
+	ionexWriter.setIonexData(IonoMap);
+	ionexWriter.writeIGPMap2file(ionexFile_Out);
 
 	exampleStreamIn.close();
 
 	return 0;
+}
+
+string createStrFileIndex(int index) {
+
+	index = abs(index);
+
+	string ems_out_file_index = std::to_string(index);
+
+	if (index < 10) {
+		ems_out_file_index  = "0000" + ems_out_file_index;
+	}
+	else if (index >= 10 && index < 100) {
+		ems_out_file_index = "000" + ems_out_file_index;
+	}
+	else if (index >= 100 && index < 1000) {
+		ems_out_file_index = "00" + ems_out_file_index;
+	}
+	else if (index >= 1000 && index < 10000) {
+		ems_out_file_index = "0" + ems_out_file_index;
+	}
+	else if (index >= 10000 && index < 100000) {
+		// Do nothing
+	}
+	else {
+		cout << "file index is to big" << endl;
+	}
+
+	return ems_out_file_index;
 }
