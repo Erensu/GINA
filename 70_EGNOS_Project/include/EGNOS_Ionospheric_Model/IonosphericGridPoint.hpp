@@ -73,7 +73,10 @@ namespace EGNOS {
 		gpstk::CommonTime referenceTime;  // Correction and Variance are reffered to this time point.
 		VarianceCalculation  varianceCalcStatus = DEGRADATAION_MODEL_NOT_USED;
 		
+		double IonoCorr_RMS;
+		double IonoCorr_Variance;
 		int GIVEI = 15;
+
 		double IonoCorrinMeter;
 		int IGPVerticalDelayEstimate;
 		void copy(const IonosphericGridPoint &obj);

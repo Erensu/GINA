@@ -140,8 +140,9 @@ namespace EGNOS {
 			void setInterpolator(IonexCompatibleInterPolator &interPol);
 			bool writeIGPMap2file(std::string newIonexFile);
 
+			bool doWeNeedValuesinTEC = true;
 		private:
-
+			
 			bool isInterPolatorSet = false;
 
 			std::string ionexFile;
