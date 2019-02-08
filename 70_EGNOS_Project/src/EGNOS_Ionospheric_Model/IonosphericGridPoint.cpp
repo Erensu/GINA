@@ -53,6 +53,10 @@ namespace EGNOS {
 
 		double var = 0;
 
+		if (GIVEI == 15) {
+			throw std::domain_error("Grid is not monitored");
+		}
+
 		if (varianceCalcStatus == DEGRADATAION_MODEL_NOT_USED) {
 			var = GIVEI_Variance[GIVEI];
 		}
@@ -67,7 +71,7 @@ namespace EGNOS {
 	}
 
 	int IonosphericGridPoint:: getGIVEI(void) {
-
+	
 		return GIVEI;
 	}
 
@@ -78,6 +82,8 @@ namespace EGNOS {
 			this->valid = false;
 		}
 
+		IonoCorr_RMS = GIVEI_Meters[GIVEI];
+		IonoCorr_Variance = GIVEI_Variance[GIVEI];
 		GIVEI = New_GIVEI;
 	}
 

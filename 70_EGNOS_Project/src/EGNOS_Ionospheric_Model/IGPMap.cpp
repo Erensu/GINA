@@ -160,20 +160,19 @@ namespace EGNOS {
 
 	double IGPMap::getRMS(gpstk::CommonTime epoch, double lat, double lon) const {
 
-		double rms;
+		double variance;
 
 		try {
 
 			IonosphericGridPoint igp = getIGP(lat, lon);
-			rms = igp.getIonoCorrVariance();
+			variance = igp.getIonoCorrVariance();
 		}
 		catch (const std::exception& e) {
 
 			throw(e);
 		}
 
-		rms = sqrt(rms);
-		return rms;
+		return sqrt(variance);
 	}
 
 	std::vector<gpstk::CommonTime> IGPMap::getEpochTimes(void) const {

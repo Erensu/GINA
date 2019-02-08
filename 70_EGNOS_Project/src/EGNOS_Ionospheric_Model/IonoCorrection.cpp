@@ -1,6 +1,7 @@
 
 #include "IonoCorrection.hpp"
 
+#define TEC_IN_METER 0.162372
 
 #define MAX_VALUE 9999
 #define INVALID_VALUE MAX_VALUE
@@ -26,7 +27,8 @@
 #define DESCRIPTION_PART2 "Creator: Balazs Lupsic"
 #define DESCRIPTION_PART3 "Contact adress: balazs.lupsic@hu.bosch.com"
 #define DESCRIPTION_PART4 "Contact adress: balazs.lupsic@gmail.com"
-#define	COMMENT_PART1 "TEC values in 0.1 [m] units;  9999, if no value available"
+#define	COMMENT_PART_1 "TEC values in "
+#define	COMMENT_PART_2 "9999, if no value available"
 #define	MAPPINGFUNCTION "TBD" // TODO - to be discussed
 #define	ELEVATION 0
 #define	OBSERVABLEUSED "TEC is obtained from EGNOS"
@@ -186,7 +188,7 @@ namespace EGNOS {
 			throw(e);
 		}
 
-		return interPolatedValues.Variance;
+		return sqrt(interPolatedValues.Variance);
 	};
 
 	IonCorrandVar VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint &newPP) {
@@ -226,8 +228,16 @@ namespace EGNOS {
 			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 5);
 			if (igp.valid == true) {
 
-				rtv.CorrinMeter = igp.getIonoCorr();
-				rtv.Variance = igp.getIonoCorrVariance();
+				try
+				{
+					rtv.CorrinMeter = igp.getIonoCorr();
+					rtv.Variance = igp.getIonoCorrVariance();
+				}
+				catch (const std::exception& e)
+				{
+					throw(e);
+				}
+				
 				return rtv;
 			}
 		}
@@ -248,8 +258,16 @@ namespace EGNOS {
 		if (abs(this->ionoPP.lat) == 85.0) {
 			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 10);
 			if (igp.valid == true) {
-				rtv.CorrinMeter = igp.getIonoCorr();
-				rtv.Variance = igp.getIonoCorrVariance();
+				try
+				{
+					rtv.CorrinMeter = igp.getIonoCorr();
+					rtv.Variance = igp.getIonoCorrVariance();
+				}
+				catch (const std::exception& e)
+				{
+					throw(e);
+				}
+				
 				return rtv;
 			}
 		}
@@ -278,11 +296,16 @@ namespace EGNOS {
 
 		try
 		{
-			return Map.getIGP(lat, lon);
+			IonosphericGridPoint igp = Map.getIGP(lat, lon);
+
+			if(igp.getGIVEI() == 15){
+				throw std::domain_error("IGP is not monitored in is not possible");
+			}
+			return igp;
 		}
 		catch (std::exception& e)
 		{
-			throw std::domain_error("Interppolation in is not possible");
+			throw std::domain_error("IGP is not valid in is not possible");
 		}
 	}
 
@@ -392,9 +415,16 @@ namespace EGNOS {
 			double ypp = (abs(ionoPP.lat) - 85) / 10;
 			double xpp = restrictLong(ionoPP.lon - table.third.lon) / 90 * (1 - 2*ypp) + ypp;
 
-			rtv.CorrinMeter = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-			rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
-
+			try
+			{
+				rtv.CorrinMeter = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+				rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+			}
+			catch (const std::exception& e)
+			{
+				throw(e);
+			}
+			
 			return rtv;
 		}
 
@@ -403,8 +433,15 @@ namespace EGNOS {
 			double ypp = (abs(ionoPP.lat) - 85) / 10;
 			double xpp = restrictLong(ionoPP.lon - table.third.lon) / 90 * (1 - 2 * ypp) + ypp;
 
-			rtv.CorrinMeter = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-			rtv.Variance = interpolation4point(xpp, ypp, table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+			try
+			{
+				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+				rtv.Variance = interpolation4point(xpp, ypp, table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+			}
+			catch (const std::exception& e)
+			{
+				throw(e);
+			}
 
 			return rtv;
 		}
@@ -413,8 +450,15 @@ namespace EGNOS {
 			double ypp = (abs(ionoPP.lat) - 85) / 10;
 			double xpp = restrictLong(ionoPP.lon - table.third.lon) / 90 * (1 - 2 * ypp) + ypp;
 
-			rtv.CorrinMeter = interpolation3point(xpp, ypp, table.first.getIonoCorr(), table.fourth.getIonoCorr(), table.third.getIonoCorr());
-			rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+			try
+			{
+				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.first.getIonoCorr(), table.fourth.getIonoCorr(), table.third.getIonoCorr());
+				rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+			}
+			catch (const std::exception& e)
+			{
+				throw(e);
+			}
 
 			return rtv;
 		}
@@ -521,8 +565,15 @@ namespace EGNOS {
 			double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / lonDistance;
 			double ypp = abs(ionoPP.lat - table.third.lat) / latDistance;
 
-			rtv.CorrinMeter = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-			rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+			try
+			{
+				rtv.CorrinMeter = interpolation4point(xpp, ypp, table.first.getIonoCorr(), table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+				rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+			}
+			catch (const std::exception& e)
+			{
+				throw(e);
+			}
 
 			return rtv;
 		}
@@ -534,8 +585,15 @@ namespace EGNOS {
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.third.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.third.lat) / latDistance;
 
-				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
-				rtv.Variance = interpolation4point(xpp, ypp, table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				try
+				{
+					rtv.CorrinMeter = interpolation3point(xpp, ypp, table.second.getIonoCorr(), table.third.getIonoCorr(), table.fourth.getIonoCorr());
+					rtv.Variance = interpolation4point(xpp, ypp, table.second.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				}
+				catch (const std::exception& e)
+				{
+					throw(e);
+				}
 				return rtv;
 			}
 			else {
@@ -548,8 +606,16 @@ namespace EGNOS {
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.fourth.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.fourth.lat) / latDistance;
 
-				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.first.getIonoCorr(), table.fourth.getIonoCorr(), table.third.getIonoCorr());
-				rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				try
+				{
+					rtv.CorrinMeter = interpolation3point(xpp, ypp, table.first.getIonoCorr(), table.fourth.getIonoCorr(), table.third.getIonoCorr());
+					rtv.Variance = interpolation4point(xpp, ypp, table.first.getIonoCorrVariance(), table.fourth.getIonoCorrVariance(), table.third.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				}
+				catch (const std::exception& e)
+				{
+					throw(e);
+				}
+
 				return rtv;
 			}
 			else {
@@ -562,8 +628,16 @@ namespace EGNOS {
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.first.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.first.lat) / latDistance;
 
-				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.fourth.getIonoCorr(), table.first.getIonoCorr(), table.second.getIonoCorr());
-				rtv.Variance = interpolation4point(xpp, ypp, table.fourth.getIonoCorrVariance(), table.first.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				try
+				{
+					rtv.CorrinMeter = interpolation3point(xpp, ypp, table.fourth.getIonoCorr(), table.first.getIonoCorr(), table.second.getIonoCorr());
+					rtv.Variance = interpolation4point(xpp, ypp, table.fourth.getIonoCorrVariance(), table.first.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				}
+				catch (const std::exception& e)
+				{
+					throw(e);
+				}
+
 				return rtv;
 			}
 			else {
@@ -576,8 +650,15 @@ namespace EGNOS {
 				double xpp = absDistanceOfLongitude(ionoPP.lon, table.second.lon) / lonDistance;
 				double ypp = abs(ionoPP.lat - table.second.lat) / latDistance;
 
-				rtv.CorrinMeter = interpolation3point(xpp, ypp, table.third.getIonoCorr(), table.second.getIonoCorr(), table.first.getIonoCorr());
-				rtv.Variance = interpolation4point(xpp, ypp, table.third.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.first.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				try
+				{
+					rtv.CorrinMeter = interpolation3point(xpp, ypp, table.third.getIonoCorr(), table.second.getIonoCorr(), table.first.getIonoCorr());
+					rtv.Variance = interpolation4point(xpp, ypp, table.third.getIonoCorrVariance(), table.second.getIonoCorrVariance(), table.first.getIonoCorrVariance(), table.fourth.getIonoCorrVariance());
+				}
+				catch (const std::exception& e)
+				{
+					throw(e);
+				}
 				return rtv;
 			}
 			else {
@@ -908,6 +989,13 @@ namespace EGNOS {
 		double lonDistance = abs(restrictLong(interpolatedVertWest.lon - interpolatedVertEast.lon));
 		if (lonDistance < 10e-3) {
 			interpolatedVert.setIonoDelayinMeter( interpolatedVertWest.getIonoCorr() );
+			int givei = interpolatedVertWest.getGIVEI();
+
+			if (givei == 15) {
+				throw std::domain_error("Grid is not monitored");
+			}
+
+			interpolatedVert.setGIVEI(givei);
 			interpolatedVert.valid = true;
 			return interpolatedVert;
 		}
@@ -923,6 +1011,14 @@ namespace EGNOS {
 		double interpolatedIonoCorr = interpolatedVertWest.getIonoCorr() + deltaIonoCorr * deltaLon / lonDistance;
 		interpolatedVert.setIonoDelayinMeter(interpolatedIonoCorr);
 
+
+		int givei = interpolatedVertWest.getGIVEI();
+
+		if (givei == 15) {
+			throw std::domain_error("Grid is not monitored");
+		}
+
+		interpolatedVert.setGIVEI(givei);
 		
 		interpolatedVert.valid = true;
 
@@ -1784,8 +1880,14 @@ namespace EGNOS {
 		header.descriptionList.push_back(DESCRIPTION_PART3);
 		header.descriptionList.push_back(DESCRIPTION_PART4);
 
-		header.commentList.push_back(COMMENT_PART1);
 
+		if (doWeNeedValuesinTEC == true) {
+			header.commentList.push_back(COMMENT_PART_1 "10e" + std::to_string(header.exponent) + " [TEC] " COMMENT_PART_2);
+		}
+		else {
+			header.commentList.push_back(COMMENT_PART_1  " 10e" + std::to_string(header.exponent) + " [m] " COMMENT_PART_2);
+		}
+		
 		header.firstEpoch = firstEpoch;
 		header.lastEpoch = lastEpoch;
 		header.interval = intervalBetweenEpochinSec;
@@ -1815,6 +1917,9 @@ namespace EGNOS {
 
 		header.svsmap.clear();
 		header.auxDataFlag = false;
+		
+		
+
 
 		header.valid = true;
 	}
@@ -1870,7 +1975,11 @@ namespace EGNOS {
 
 		while (counter < numberOfValues)
 		{	
-			values(counter) = getData(currentEpoch, currLat, currLon, type);
+			double TECorRMS = getData(currentEpoch, currLat, currLon, type);
+
+			
+
+			values(counter) = TECorRMS;
 
 			if (abs(currLon - lon2) < dlon) {
 				currLon = lon1 - dlon;
@@ -1910,8 +2019,13 @@ namespace EGNOS {
 		{
 			iod.type.type = "UN";
 		}
+		if (doWeNeedValuesinTEC == true) {
+			iod.type.units = "10e" + std::to_string(header.exponent) + " [TEC]";
+		}
+		else {
+			iod.type.units = "10e" + std::to_string(header.exponent) + " [m]";
+		}
 		
-		iod.type.units = "10e" + std::to_string(header.exponent) + " meter";
 		iod.type.description = "Total Electron Content map";
 
 		iod.time = currentEpoch;
@@ -1928,6 +2042,7 @@ namespace EGNOS {
 				try	{
 					if (isInterPolatorSet == true) {
 						rtv = interPol->getTEC(ionoData, currentEpoch, currLat, currLon);
+						
 					}
 					else {
 						rtv = ionoData->getTEC(currentEpoch, currLat, currLon);
@@ -1935,6 +2050,7 @@ namespace EGNOS {
 				}
 				catch (const std::exception&){
 					rtv = INVALID_VALUE * std::pow(10, header.exponent);
+					return rtv;
 				}
 				break;
 
@@ -1943,19 +2059,27 @@ namespace EGNOS {
 
 					if (isInterPolatorSet == true) {
 						rtv = interPol->getRMS(ionoData, currentEpoch, currLat, currLon);
+						
 					}
 					else {
 						rtv = ionoData->getRMS(currentEpoch, currLat, currLon);
 					}
+
 				}
 				catch (const std::exception&){
 					rtv = INVALID_VALUE * std::pow(10, header.exponent);
+					return rtv;
 				}
 				break;
 
 			default:
 				rtv = INVALID_VALUE * std::pow(10, header.exponent);
+				return rtv;
 				break;
+		}
+
+		if (doWeNeedValuesinTEC) {
+			rtv = rtv / TEC_IN_METER;
 		}
 
 		return rtv;
