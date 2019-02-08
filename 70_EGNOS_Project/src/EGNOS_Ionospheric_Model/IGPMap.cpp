@@ -172,6 +172,7 @@ namespace EGNOS {
 			throw(e);
 		}
 
+		rms = sqrt(rms);
 		return rms;
 	}
 
