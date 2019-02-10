@@ -53,7 +53,7 @@ string createStrFileIndex(int index) {
 int main(int argc, char **argv) {
 
 
-	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\h17.ems";
+	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17.ems";
 	
 	EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
 
@@ -107,8 +107,8 @@ int main(int argc, char **argv) {
 			if (newData == true) {
 				updateIndex++;
 				string ems_out_file_index = createStrFileIndex(updateIndex);
-				//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\Ionex_from_h17_Europe\\h17ems_ionex_Europe_" + ems_out_file_index + ".18i";
-				std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\Ionex_from_h17_Europe_Interpolated\\h17ems_ionex_Europe_2.5_" + ems_out_file_index + ".18i";
+				//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\Ionex_from_h17_Europe\\h17ems_ionex_Europe_" + ems_out_file_index + ".18i";
+				std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\Ionex_from_h17_Europe_Interpolated\\h17ems_ionex_Europe_2.5_" + ems_out_file_index + ".18i";
 				
 				ionexWriter.setIonexData(IonoMap);
 				ionexWriter.writeIGPMap2file(ionexFile_Out);
@@ -122,10 +122,10 @@ int main(int argc, char **argv) {
 	}
 
 	//cout << IonoMap;
-	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\h17ems_ionex_Europe_5x5_IGPMap.18i";
-	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\h17ems_ionex_Europe_2.5x2.5_IGPMap.18i";
-	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\h17ems_ionex_Europe_5x5_InterPol.18i";
-	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\h17ems_ionex_Europe_2.5x2.5_InterPol.18i";
+	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_5x5_IGPMap.18i";
+	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_2.5x2.5_IGPMap.18i";
+	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_5x5_InterPol.18i";
+	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_2.5x2.5_InterPol.18i";
 
 	//ionexWriter.setIonexData(IonoMap);
 	//ionexWriter.writeIGPMap2file(ionexFile_Out);
