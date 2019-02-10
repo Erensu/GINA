@@ -7,7 +7,7 @@ clear all; close all; clc; %page_screen_output(0)
 %  arg_list = argv ();
 %  ionex_file = arg_list{1};
 %else
-  ionex_file = 'h17ems_ionex_out.18i';  %just for testing
+  ionex_file = 'h17ems_ionex_Europe_1x1_InterPol.18i';  %just for testing
 %end
 [fin, errormsg] = fopen(ionex_file, 'r');
 if errormsg

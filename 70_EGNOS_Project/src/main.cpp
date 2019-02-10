@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 	EGNOS::IGPMap IonoMap;
 	EGNOS::VerticalIonoDelayInterpolator egnosInterPol;
 	EGNOS::IonexCreator ionexWriter;
-	ionexWriter.headerType = EGNOS::europe2_5x2_5_tec; // europe5x5_tec | europe2_5x2_5_tec
+	ionexWriter.headerType = EGNOS::europe2_5x2_5_tec; // europe5x5_tec | europe2_5x2_5_tec |europe1x1_tec
 	EGNOS::IGPMediator IgpMediator;
 
 	ionexWriter.setInterpolator(egnosInterPol);
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
 			
 			newData = IonoMap.updateMap(IgpMediator);
 
-			if (newData == true) {
+			/*if (newData == true) {
 				updateIndex++;
 				string ems_out_file_index = createStrFileIndex(updateIndex);
 				//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\Ionex_from_h17_Europe\\h17ems_ionex_Europe_" + ems_out_file_index + ".18i";
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
 				ionexWriter.setIonexData(IonoMap);
 				ionexWriter.writeIGPMap2file(ionexFile_Out);
 				cout << "IGP Map updated and file created" << endl;
-			}
+			}*/
 			//cout << IonoMap;
 
 			weHad26 = false;
@@ -126,9 +126,10 @@ int main(int argc, char **argv) {
 	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_2.5x2.5_IGPMap.18i";
 	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_5x5_InterPol.18i";
 	//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_2.5x2.5_InterPol.18i";
+	std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_1x1_InterPol.18i";
 
-	//ionexWriter.setIonexData(IonoMap);
-	//ionexWriter.writeIGPMap2file(ionexFile_Out);
+	ionexWriter.setIonexData(IonoMap);
+	ionexWriter.writeIGPMap2file(ionexFile_Out);
 
 	exampleStreamIn.close();
 

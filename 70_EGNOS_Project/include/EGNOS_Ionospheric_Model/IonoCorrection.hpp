@@ -17,10 +17,14 @@ namespace EGNOS {
 		world5x5_meter,
 		world2_5x2_5_tec,
 		world2_5x2_5_meter,
+		world1x1_tec,
+		world1x1_meter,
 		europe5x5_tec,
 		europe5x5_meter,
 		europe2_5x2_5_tec,
-		europe2_5x2_5_meter
+		europe2_5x2_5_meter,
+		europe1x1_tec,
+		europe1x1_meter
 	}EGNOSMapType;
 
 	typedef struct {

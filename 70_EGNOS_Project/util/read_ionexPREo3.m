@@ -7,8 +7,19 @@ clear all; close all; clc; %page_screen_output(0)
 %  arg_list = argv ();
 %  ionex_file = arg_list{1};
 %else
-  ionex_file = 'h17ems_ionex_out_debug_IGPMap.18i';  %just for testing
+  ionex_file = 'h17ems_ionex_Europe_1x1_InterPol.18i';  %just for testing
 %end
+
+File = GetFullPath(ionex_file, 'lean');
+[filepath,name,ext] = fileparts(File);
+
+if exist(ionex_file, 'file') == 2
+    
+else
+    error('%s file open error\n', strcat(filepath,ionex_file));
+end
+
+
 [fin, errormsg] = fopen(ionex_file, 'r');
 if errormsg
   error('%s file open error\n', ionex_file);
@@ -105,10 +116,10 @@ while ~feof(fin)
         caxis([0 60]);
         if strfind(type_of_data,'TEC')
           title (sprintf('Total Electron Content Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec));
-          print(map, sprintf('iono%02d', n_maps),'-dpng');
+          print(map, strcat(filepath,sprintf(strcat(strrep(strcat(name,ext),'.','_'), '_iono%02d'), n_maps)),'-dpng');
         else
           title (sprintf('Total Electron Content RMS Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec));
-          print(map, sprintf('rms%02d', n_rms),'-dpng');
+          print(map, strcat(filepath,sprintf(strcat(strrep(strcat(name,ext),'.','_'), '_rms%02d'), n_rms)),'-dpng');
         end
         close(map);
       end

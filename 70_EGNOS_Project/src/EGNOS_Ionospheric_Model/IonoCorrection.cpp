@@ -1876,6 +1876,16 @@ namespace EGNOS {
 			unit = unitType::tec;
 			createHeader_World(2.5);
 			break;
+		case EGNOSMapType::world1x1_meter:
+			exponent = -1;
+			unit = unitType::meter;
+			createHeader_World(1);
+			break;
+		case EGNOSMapType::world1x1_tec:
+			exponent = 0;
+			unit = unitType::tec;
+			createHeader_World(1);
+			break;
 		case EGNOSMapType::europe5x5_tec:
 			exponent = 0;
 			unit = unitType::tec;
@@ -1896,6 +1906,15 @@ namespace EGNOS {
 			unit = unitType::meter;
 			createHeader_Europe(2.5);
 			break;
+		case EGNOSMapType::europe1x1_tec:
+			exponent = 0;
+			unit = unitType::tec;
+			createHeader_Europe(1);
+			break;
+		case EGNOSMapType::europe1x1_meter:
+			exponent = -1;
+			unit = unitType::meter;
+			createHeader_Europe(1);
 		default:
 			unit = unitType::meter;
 			exponent = -1;
@@ -1988,8 +2007,8 @@ namespace EGNOS {
 
 	void IonexCreator::createHeader_Europe(double gridSize){
 
-		if (gridSize < 2.5) {
-			throw std::domain_error("GridSize is too small. 2.5 degree is the smallest value");
+		if (gridSize < 1.0) {
+			throw std::domain_error("GridSize is too small. 1.0 degree is the smallest value");
 		}
 
 		maxLat = 90;
