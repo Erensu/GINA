@@ -167,11 +167,17 @@ namespace EGNOS {
 		IonCorrandVar rtv;
 		setPP(newPP);
 		
-		if (abs(this->ionoPP.lat) < 75.0 ) {
+		try
+		{
+			IonosphericGridPoint igp = getIGP(Map, ionoPP.lat, ionoPP.lon);
+			rtv.CorrinMeter = igp.getIonoCorr();
+			rtv.Variance = igp.getIonoCorrVariance();
+			return rtv;
+		}
+		catch (const std::exception& e)
+		{}
 
-			if (this->ionoPP.lat == 50 && this->ionoPP.lon >= -20 ) {
-				cout << endl;
-			}
+		if (abs(this->ionoPP.lat) < 75.0 ) {
 
 			try
 			{
@@ -1440,8 +1446,7 @@ namespace EGNOS {
 
 			try
 			{
-				double temp = restrictLong(lon1 - 5);
-				igp21 = getIGP(Map, lat2, temp);
+				igp21 = getIGP(Map, lat2, restrictLong(lon1 - 5));
 				numberOfValidIGP++;
 			}
 			catch (const std::exception&)
