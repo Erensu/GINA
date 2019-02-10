@@ -2,40 +2,9 @@
 #include "IonoCorrection.hpp"
 
 #define TEC_IN_METER 0.162372
-
-#define MAX_VALUE 9999
-#define INVALID_VALUE MAX_VALUE
-
-#define MAX_HEIGHT_OF_IONO_LAYER 300
-#define MIN_HEIGHT_OF_IONO_LAYER 300
-#define HEIGHT_DISTANCE 0
-#define MAX_LAT 85
-#define MIN_LAT -85
-#define MAX_LON 180
-#define MIN_LON -180
-#define LAT_DISTANCE -5
-#define LON_DISTANCE 5
-#define	BASE_RADIUS 6371.4
-#define	MAPDIMS 2
-#define	EXPONENT -1
-#define	VERSION 1.0
-#define FILETYPE "IONOSPHERE MAPS"
-#define	SYTEM "GPS" // TODO What shall be there instead of 'MIX'?
-#define	FILEPROGRAM "GINA 1.0"
-#define	FILEAGENCY "GINA Project"
-#define DESCRIPTION_PART1 "Infrastructure: Robert Bosch Kft., Budapest"
-#define DESCRIPTION_PART2 "Creator: Balazs Lupsic"
-#define DESCRIPTION_PART3 "Contact adress: balazs.lupsic@hu.bosch.com"
-#define DESCRIPTION_PART4 "Contact adress: balazs.lupsic@gmail.com"
-#define	COMMENT_PART_1 "TEC values in "
-#define	COMMENT_PART_2 "9999, if no value available"
-#define	MAPPINGFUNCTION "TBD" // TODO - to be discussed
-#define	ELEVATION 0
-#define	OBSERVABLEUSED "TEC is obtained from EGNOS"
-#define NUMSTATIONS 0
-#define NUMSVS 0
-
 #define MAX_RANGE_FOR_INTERPOLATION 90
+
+
 
 using namespace std;
 
@@ -100,6 +69,7 @@ namespace EGNOS {
 	VerticalIonoDelayInterpolator::VerticalIonoDelayInterpolator(VerticalIonoDelayInterpolator* original) {
 
 		this->ionoPP = original->ionoPP;
+		this->incrementOfSearchWindowforHorizontalInterPolator = incrementOfSearchWindowforHorizontalInterPolator;
 	}
 
 	void SlantIonoDelay::setRoverPosition(double lat, double lon, double height) {
@@ -197,7 +167,12 @@ namespace EGNOS {
 		IonCorrandVar rtv;
 		setPP(newPP);
 		
-		if (abs(this->ionoPP.lat) <= 75.0 ) {
+		if (abs(this->ionoPP.lat) < 75.0 ) {
+
+			if (this->ionoPP.lat == 50 && this->ionoPP.lon >= -20 ) {
+				cout << endl;
+			}
+
 			try
 			{
 				rtv = this->grid5x5Interpolator(Map);
@@ -215,6 +190,7 @@ namespace EGNOS {
 					try
 					{
 						rtv = this->grid10x10Interpolator(Map);
+						return rtv;
 					}
 					catch (exception &e)
 					{
@@ -225,7 +201,7 @@ namespace EGNOS {
 		}
 
 		if (abs(this->ionoPP.lat) == 75.0) {
-			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 5);
+			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, incrementOfSearchWindowforHorizontalInterPolator);
 			if (igp.valid == true) {
 
 				try
@@ -242,7 +218,7 @@ namespace EGNOS {
 			}
 		}
 
-		if (75 <= abs(this->ionoPP.lat) && abs(this->ionoPP.lat) <= 85.0) {
+		if (75 < abs(this->ionoPP.lat) && abs(this->ionoPP.lat) < 85.0) {
 		
 			try
 			{
@@ -251,12 +227,12 @@ namespace EGNOS {
 			}
 			catch (exception &e)
 			{
-				interPolFailed = true;
 			}
 		}
 
 		if (abs(this->ionoPP.lat) == 85.0) {
-			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, 10);
+			
+			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, incrementOfSearchWindowforHorizontalInterPolator);
 			if (igp.valid == true) {
 				try
 				{
@@ -272,7 +248,7 @@ namespace EGNOS {
 			}
 		}
 
-		if (abs(this->ionoPP.lat) >= 85.0) {
+		if (abs(this->ionoPP.lat) > 85.0) {
 			
 			try
 			{
@@ -281,13 +257,11 @@ namespace EGNOS {
 			}
 			catch (exception &e)
 			{
-				interPolFailed = true;
 			}
 		}
 		
-		if (interPolFailed == true) {
-			throw std::domain_error("Interppolation is not possible"); 
-		}
+		
+		throw std::domain_error("Interppolation is not possible"); 
 
 		return rtv;
 	}
@@ -978,8 +952,28 @@ namespace EGNOS {
 		interpolatedVert.lat = lat;
 		interpolatedVert.lon = lon;
 
-		interpolatedVertEast = getHorizontallyNearestIGP(Map, lat, lon, lat, lon, increment);
-		interpolatedVertWest = getHorizontallyNearestIGP(Map, lat, lon, lat, lon, -increment);
+		double lat1, lat2, lon1, lon2;
+		getNearestLatLot(lat1, lat2, lon1, lon2);
+
+		try
+		{
+			interpolatedVertEast = getHorizontallyNearestIGP(Map, lat, lon, lat, lon2, increment);
+			interpolatedVertWest = getHorizontallyNearestIGP(Map, lat, lon, lat, lon1, -increment);
+		}
+		catch (const std::exception& e)
+		{
+			interpolatedVert.valid = false;
+			return interpolatedVert;
+		}
+		
+		if (interpolatedVertEast.valid == true && interpolatedVertEast.lon == lon) {
+			return interpolatedVertEast;
+		}
+
+		if (interpolatedVertWest.valid == true && interpolatedVertWest.lon == lon)
+		{
+			return interpolatedVertWest;
+		}
 
 		if (interpolatedVertEast.valid == false || interpolatedVertWest.valid == false) {
 			interpolatedVert.valid = false;
@@ -1265,7 +1259,7 @@ namespace EGNOS {
 					igp22 = getHorizontallyInterpolatedVertices(Map, lat2 + 5, lon1, 5);
 				}
 				else {
-					igp22 = getHorizontallyInterpolatedVertices(Map, lat2 + 5, lon1, 5);
+					igp22 = getIGP(Map, lat2 + 5, lon1);
 				}
 
 				if (igp22.valid == true)
@@ -1783,6 +1777,9 @@ namespace EGNOS {
 
 #pragma region IonexCreator
 
+	const int IonexCreator::maxValue = 9999;
+	const int IonexCreator::invalidValue = maxValue;
+
 	IonexCreator::~IonexCreator(void){
 		delete ionoData; 
 		delete interPol;
@@ -1850,13 +1847,65 @@ namespace EGNOS {
 			return int(abs((int(lat2) - int(lat1)) / dlat) + 1);
 		}
 	}
-
 	void IonexCreator::createHeader(void) {
 
-		header.clear();
-		gpstk::CivilTime firstEpoch= epochs[0];
-		gpstk::CivilTime lastEpoch = epochs[epochs.size()-1];
+		switch (headerType)
+		{
+		case EGNOSMapType::world5x5_meter:
+			exponent = -1;
+			unit = unitType::meter;
+			createHeader_World(5);
+			break;
+		case EGNOSMapType::world5x5_tec:
+			exponent = 0;
+			unit = unitType::tec;
+			createHeader_World(5);
+			break;
+		case EGNOSMapType::world2_5x2_5_meter:
+			exponent = -1;
+			unit = unitType::meter;
+			createHeader_World(2.5);
+			break;
+		case EGNOSMapType::world2_5x2_5_tec:
+			exponent = 0;
+			unit = unitType::tec;
+			createHeader_World(2.5);
+			break;
+		case EGNOSMapType::europe5x5_tec:
+			exponent = 0;
+			unit = unitType::tec;
+			createHeader_Europe(5);
+			break;
+		case EGNOSMapType::europe5x5_meter:
+			exponent = -1;
+			unit = unitType::meter;
+			createHeader_Europe(5);
+			break;
+		case EGNOSMapType::europe2_5x2_5_tec:
+			exponent = 0;
+			unit = unitType::tec;
+			createHeader_Europe(2.5);
+			break;
+		case EGNOSMapType::europe2_5x2_5_meter:
+			exponent = -1;
+			unit = unitType::meter;
+			createHeader_Europe(2.5);
+			break;
+		default:
+			unit = unitType::meter;
+			exponent = -1;
+			createHeader_World(5);
+			break;
+		}
 		
+	}
+
+	void IonexCreator::createHeaderBase(void) {
+
+		header.clear();
+		gpstk::CivilTime firstEpoch = epochs[0];
+		gpstk::CivilTime lastEpoch = epochs[epochs.size() - 1];
+
 		double intervalBetweenEpochinSec;
 		try
 		{
@@ -1866,62 +1915,105 @@ namespace EGNOS {
 		{
 			intervalBetweenEpochinSec = 0;
 		}
-		
-		header.version = VERSION;
-		header.fileType = FILETYPE;
-		header.system = SYTEM; 
-		header.fileProgram = FILEPROGRAM;
-		header.fileAgency = FILEAGENCY;
+
+		header.version = version;
+		header.fileType = fileType;
+		header.system = system;
+		header.fileProgram = fileProgram;
+		header.fileAgency = fileAgency;
 		header.date = getCurrentTimeinStr();
 
 		header.descriptionList.clear();
-		header.descriptionList.push_back(DESCRIPTION_PART1);
-		header.descriptionList.push_back(DESCRIPTION_PART2);
-		header.descriptionList.push_back(DESCRIPTION_PART3);
-		header.descriptionList.push_back(DESCRIPTION_PART4);
 
+		for (int i = 0; i < description.size(); i++) {
 
-		if (doWeNeedValuesinTEC == true) {
-			header.commentList.push_back(COMMENT_PART_1 "10e" + std::to_string(header.exponent) + " [TEC] " COMMENT_PART_2);
+			header.descriptionList.push_back(description[i]);
 		}
-		else {
-			header.commentList.push_back(COMMENT_PART_1  " 10e" + std::to_string(header.exponent) + " [m] " COMMENT_PART_2);
+
+		switch (unit)
+		{
+		case unitType::tec:
+			exponent = 0;
+			header.exponent = exponent;
+			header.commentList.push_back(comment_part1 + "10e" + std::to_string(header.exponent) + " [TEC] " + comment_part2);
+			break;
+		case unitType::meter:
+			exponent = -1;
+			header.exponent = exponent;
+			header.commentList.push_back(comment_part1 + " 10e" + std::to_string(header.exponent) + " [m] " + comment_part2);
+			break;
+		default:
+			exponent = 0;
+			header.exponent = exponent;
+			header.commentList.push_back(comment_part1 + "10e" + std::to_string(header.exponent) + " [TEC] " + comment_part2);
+			break;
 		}
-		
+
 		header.firstEpoch = firstEpoch;
 		header.lastEpoch = lastEpoch;
 		header.interval = intervalBetweenEpochinSec;
 		header.numMaps = epochs.size(); // TODO - if the recieved maps are fewer than the epoch number, the number of maps won't match with the declared number in header.
-		header.mappingFunction = MAPPINGFUNCTION; // TODO - to be discussed
-		header.elevation = ELEVATION;
-		header.observablesUsed = OBSERVABLEUSED;
-		header.numStations = NUMSTATIONS;
-		header.numSVs = NUMSVS;
-		header.baseRadius = BASE_RADIUS;
-		header.mapDims = MAPDIMS;
+		header.mappingFunction = this->mappingFunction; // TODO - to be discussed
+		header.elevation = elevation;
+		header.observablesUsed = observablesUsed;
+		header.numStations = numStations;
+		header.numSVs = numSVs;
+		header.baseRadius = baseRadius;
+		header.mapDims = mapDims;
 
-		header.hgt[0] = MIN_HEIGHT_OF_IONO_LAYER;
-		header.hgt[1] = MAX_HEIGHT_OF_IONO_LAYER;
-		header.hgt[2] = HEIGHT_DISTANCE;
+		header.hgt[0] = minHeight;
+		header.hgt[1] = maxHeight;
+		header.hgt[2] = heightDistance;
 
-		header.lat[0] = MAX_LAT;
-		header.lat[1] = MIN_LAT;
-		header.lat[2] = LAT_DISTANCE;
+		header.lat[0] = maxLat;
+		header.lat[1] = minLat;
+		header.lat[2] = latDistance;
 
-		header.lon[0] = MIN_LON;
-		header.lon[1] = MAX_LON;
-		header.lon[2] = LON_DISTANCE;
+		header.lon[0] = minLon;
+		header.lon[1] = maxLon;
+		header.lon[2] = lonDistance;
 
-		header.exponent = EXPONENT;
 		header.auxData = "";
 
 		header.svsmap.clear();
 		header.auxDataFlag = false;
-		
-		
-
 
 		header.valid = true;
+	}
+
+	void IonexCreator::createHeader_Europe(double gridSize){
+
+		if (gridSize < 2.5) {
+			throw std::domain_error("GridSize is too small. 2.5 degree is the smallest value");
+		}
+
+		maxLat = 90;
+		minLat = 10;
+		latDistance = -abs(gridSize);
+
+		maxLon = 60;
+		minLon = -60;
+		lonDistance = abs(gridSize);
+
+		createHeaderBase();
+		
+	}
+
+	void IonexCreator::createHeader_World(double gridSize) {
+
+		if (gridSize < 2.5) {
+			throw std::domain_error("GridSize is too small. 2.5 degree is the smallest value");
+		}
+
+		maxLat = 90;
+		minLat = -90;
+		latDistance = -abs(gridSize);
+
+		maxLon = 180;
+		minLon = -180;
+		lonDistance = abs(gridSize);
+		
+		createHeaderBase();
 	}
 
 	std::string IonexCreator::getCurrentTimeinStr(void) {
@@ -2019,11 +2111,14 @@ namespace EGNOS {
 		{
 			iod.type.type = "UN";
 		}
-		if (doWeNeedValuesinTEC == true) {
+		if (unit == unitType::tec) {
 			iod.type.units = "10e" + std::to_string(header.exponent) + " [TEC]";
 		}
-		else {
+		else if (unit == unitType::meter) {
 			iod.type.units = "10e" + std::to_string(header.exponent) + " [m]";
+		}
+		else {
+			iod.type.units = "Unknown";
 		}
 		
 		iod.type.description = "Total Electron Content map";
@@ -2049,7 +2144,7 @@ namespace EGNOS {
 					}
 				}
 				catch (const std::exception&){
-					rtv = INVALID_VALUE * std::pow(10, header.exponent);
+					rtv = invalidValue * std::pow(10, header.exponent);
 					return rtv;
 				}
 				break;
@@ -2067,18 +2162,18 @@ namespace EGNOS {
 
 				}
 				catch (const std::exception&){
-					rtv = INVALID_VALUE * std::pow(10, header.exponent);
+					rtv = invalidValue * std::pow(10, header.exponent);
 					return rtv;
 				}
 				break;
 
 			default:
-				rtv = INVALID_VALUE * std::pow(10, header.exponent);
+				rtv = invalidValue * std::pow(10, header.exponent);
 				return rtv;
 				break;
 		}
 
-		if (doWeNeedValuesinTEC) {
+		if (unit == unitType::tec) {
 			rtv = rtv / TEC_IN_METER;
 		}
 
