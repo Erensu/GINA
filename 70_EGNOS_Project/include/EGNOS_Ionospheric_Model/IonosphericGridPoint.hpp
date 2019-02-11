@@ -53,7 +53,7 @@ namespace EGNOS {
 
 		int getIGPVerticalDelayEstimater(void) { return IGPVerticalDelayEstimate; };
 		void setIonoDelayinMeter(double delay) { IonoCorrinMeter = delay; };
-		void setIGPVerticalDelayEstimate(int delay) { IGPVerticalDelayEstimate = delay; IonoCorrinMeter = 8.0 * delay; };
+		void setIGPVerticalDelayEstimate(int delay) { IGPVerticalDelayEstimate = delay; IonoCorrinMeter = delay / 8.0; };
 
 		bool valid = false;
 		double lat;
