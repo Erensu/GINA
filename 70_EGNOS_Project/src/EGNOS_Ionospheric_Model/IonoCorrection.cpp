@@ -1957,7 +1957,7 @@ namespace EGNOS {
 		switch (unit)
 		{
 		case unitType::tec:
-			exponent = 0;
+			exponent = -1;
 			header.exponent = exponent;
 			header.commentList.push_back(comment_part1 + "10e" + std::to_string(header.exponent) + " [TEC] " + comment_part2);
 			break;
@@ -1967,7 +1967,7 @@ namespace EGNOS {
 			header.commentList.push_back(comment_part1 + " 10e" + std::to_string(header.exponent) + " [m] " + comment_part2);
 			break;
 		default:
-			exponent = 0;
+			exponent = -1;
 			header.exponent = exponent;
 			header.commentList.push_back(comment_part1 + "10e" + std::to_string(header.exponent) + " [TEC] " + comment_part2);
 			break;
