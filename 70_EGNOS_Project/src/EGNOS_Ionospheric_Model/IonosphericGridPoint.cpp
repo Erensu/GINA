@@ -188,7 +188,7 @@ namespace EGNOS {
 		for (size_t i = 0; i < 201; i++) {
 
 			if (this->message[24 + i] > 0) {
-				temp.block[a] = i;
+				temp.block[a] = i + 1;
 				a++;
 			}
 		}
@@ -252,7 +252,7 @@ namespace EGNOS {
 		for (size_t i = 0; i < 4; i++) {
 			Bits[3-i] = this->message[18 + i];
 		}
-
+		
 		return Bits.to_ulong();
 	}
 
