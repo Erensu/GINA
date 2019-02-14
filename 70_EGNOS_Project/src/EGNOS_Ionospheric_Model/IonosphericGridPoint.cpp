@@ -6,6 +6,37 @@ namespace EGNOS {
 
 #define IONO_GRID_MASK_MESSAGE_TYPE 18
 #define IONO_DELAY_CORRECTION_MESSAGE_TYPE 26
+#define IONO_GRID_MASK_SIZE 201
+#define EGNOS_SATELLITE_MESSAGE_SIZE 250
+#define EGNOS_EMS_MESSAGE_SIZE 256
+#define INVALID_GIVEI_NUMBER 15
+#define MAX_NUMBER_OF_BLOCKS 15
+#define SIZE_OF_PREAMBLE 8
+
+#define IGP_MASK_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID 6
+#define IGP_MASK_MESSAGE_SIZE_OF_NUMBER_OF_BANDS 4
+#define IGP_MASK_MESSAGE_SIZE_OF_BAND_NUMBER 4
+#define IGP_MASK_MESSAGE_SIZE_OF_IODI 2
+#define IGP_MASK_MESSAGE_STARTING_BIT_OF_MESSAGE_TYPE_ID SIZE_OF_PREAMBLE
+#define IGP_MASK_MESSAGE_STARTING_BIT_OF_NUMBER_OF_BANDS IGP_MASK_MESSAGE_STARTING_BIT_OF_MESSAGE_TYPE_ID + IGP_MASK_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID
+#define IGP_MASK_MESSAGE_STARTING_BIT_OF_BAND_NUMBER IGP_MASK_MESSAGE_STARTING_BIT_OF_NUMBER_OF_BANDS + IGP_MASK_MESSAGE_SIZE_OF_NUMBER_OF_BANDS
+#define IGP_MASK_MESSAGE_STARTING_BIT_OF_IODI IGP_MASK_MESSAGE_STARTING_BIT_OF_BAND_NUMBER + IGP_MASK_MESSAGE_SIZE_OF_BAND_NUMBER
+#define IGP_MASK_MESSAGE_STARTING_BIT_OF_IONOMASK IGP_MASK_MESSAGE_STARTING_BIT_OF_IODI + IGP_MASK_MESSAGE_SIZE_OF_IODI
+
+
+#define IGP_DELAY_CORR_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID 6
+#define IGP_DELAY_CORR_MESSAGE_SIZE_OF_BAND_NUMBER 4
+#define IGP_DELAY_CORR_MESSAGE_SIZE_OF_BLOCK_ID 4
+#define IGP_DELAY_CORR_MESSAGE_SIZE_OF_VERTICAL_DELAY 9
+#define IGP_DELAY_CORR_MESSAGE_SIZE_OF_GIVEI 4
+
+#define IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_MESSAGE_TYPE_ID SIZE_OF_PREAMBLE
+#define IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_BAND_NUMBER IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_MESSAGE_TYPE_ID + IGP_DELAY_CORR_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID
+#define IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_BLOCK_ID IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_BAND_NUMBER + IGP_DELAY_CORR_MESSAGE_SIZE_OF_BAND_NUMBER
+#define IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_REPEATED_DATA IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_BLOCK_ID + IGP_DELAY_CORR_MESSAGE_SIZE_OF_BLOCK_ID
+
+#define IGP_DELAY_CORR_MESSAGE_SIZE_OF_IODI 2
+#define	IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_IODI  IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_REPEATED_DATA + 15 * (IGP_DELAY_CORR_MESSAGE_SIZE_OF_VERTICAL_DELAY + IGP_DELAY_CORR_MESSAGE_SIZE_OF_GIVEI)// 217
 
 	const double IonosphericGridPoint::GIVEI_Meters[16] = { 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.6, 4.5, 6.0, 15.0, 45.0, 0 };
 	const double IonosphericGridPoint::GIVEI_Variance[16] = { 0.0084, 0.0333, 0.0749, 0.1331, 0.2079, 0.2994, 0.4075, 0.5322, 0.6735, 0.8315, 1.1974, 1.8709, 3.326, 20.787, 187.0826, 0 };
@@ -53,7 +84,7 @@ namespace EGNOS {
 
 		double var = 0;
 
-		if (GIVEI == 15) {
+		if (GIVEI == INVALID_GIVEI_NUMBER) {
 			throw std::domain_error("Grid is not monitored");
 		}
 
@@ -77,7 +108,7 @@ namespace EGNOS {
 
 	void IonosphericGridPoint::setGIVEI(int New_GIVEI) {
 
-		if (New_GIVEI < 0 || New_GIVEI > 14) {
+		if (New_GIVEI < 0 || New_GIVEI >= INVALID_GIVEI_NUMBER) {
 
 			this->valid = false;
 		}
@@ -116,23 +147,24 @@ namespace EGNOS {
 		
 		return os;
 	}
+#pragma region IonosphericGridPointMasksMessageParser
 
 	IonosphericGridPointMasksMessageParser::IonosphericGridPointMasksMessageParser(void) {
 	
 	}
 
-	void IonosphericGridPointMasksMessageParser::addMessage(const std::bitset<256> &message) {
+	void IonosphericGridPointMasksMessageParser::addMessage(const std::bitset<EGNOS_EMS_MESSAGE_SIZE> &message) {
 	
 		this->message = message;
 
 		this->processMessage();
 	}
 
-	void IonosphericGridPointMasksMessageParser::addMessage(const std::bitset<250> &message) {
+	void IonosphericGridPointMasksMessageParser::addMessage(const std::bitset<EGNOS_SATELLITE_MESSAGE_SIZE> &message) {
 
 		this->message.reset();
 
-		for (size_t i = 0; i < 250; i++){
+		for (size_t i = 0; i < EGNOS_SATELLITE_MESSAGE_SIZE; i++){
 			this->message[i] = message[i];
 		}
 		
@@ -160,13 +192,13 @@ namespace EGNOS {
 		this->setIODIMAsk();
 	}
 
-	IonosphericGridPointMasksMessageParser& IonosphericGridPointMasksMessageParser::operator+=(const std::bitset<256> &message) {
+	IonosphericGridPointMasksMessageParser& IonosphericGridPointMasksMessageParser::operator+=(const std::bitset<EGNOS_EMS_MESSAGE_SIZE> &message) {
 	
 		this->addMessage(message);
 		return *this;
 	}
 
-	IonosphericGridPointMasksMessageParser& IonosphericGridPointMasksMessageParser::operator+=(const std::bitset<250> &message) {
+	IonosphericGridPointMasksMessageParser& IonosphericGridPointMasksMessageParser::operator+=(const std::bitset<EGNOS_SATELLITE_MESSAGE_SIZE> &message) {
 
 		this->addMessage(message);
 		return *this;
@@ -185,9 +217,9 @@ namespace EGNOS {
 
 		int a = 0;
 
-		for (size_t i = 0; i < 201; i++) {
+		for (size_t i = 0; i < IONO_GRID_MASK_SIZE; i++) {
 
-			if (this->message[24 + i] > 0) {
+			if (this->message[IGP_MASK_MESSAGE_STARTING_BIT_OF_IONOMASK + i] > 0) {
 				temp.block[a] = i + 1;
 				a++;
 			}
@@ -207,15 +239,15 @@ namespace EGNOS {
 					// First. Create the new blocks from the new mask
 					IGPMaskBlock temp;
 					int a = 0;
-					for (size_t i = 0; i < 201; i++) {
+					for (size_t i = 0; i < IONO_GRID_MASK_SIZE; i++) {
 
-						if (this->message[24 + i] > 0) {
+						if (this->message[IGP_MASK_MESSAGE_STARTING_BIT_OF_IONOMASK + i] > 0) {
 							temp.block[a] = i;
 							a++;
 						}
 					}
 					// Second. Compare the old and new blocks
-					for (size_t i = 0; i < 201; i++)
+					for (size_t i = 0; i < IONO_GRID_MASK_SIZE; i++)
 					{
 						if (it->block[i] != temp.block[i]) {
 							it = this->blocks.erase(it);
@@ -236,10 +268,10 @@ namespace EGNOS {
 	}
 
 	int IonosphericGridPointMasksMessageParser::getIODI(void) {
-		std::bitset<2> iodeBits;
+		std::bitset<IGP_MASK_MESSAGE_SIZE_OF_IODI> iodeBits;
 	
-		for (size_t i = 0; i < 2; i++) {
-			iodeBits[1-i] = this->message[22 + i];
+		for (size_t i = 0; i < IGP_MASK_MESSAGE_SIZE_OF_IODI; i++) {
+			iodeBits[IGP_MASK_MESSAGE_SIZE_OF_IODI - 1 - i] = this->message[IGP_MASK_MESSAGE_STARTING_BIT_OF_IODI + i];
 		}
 
 		return iodeBits.to_ulong();
@@ -247,20 +279,20 @@ namespace EGNOS {
 
 	int IonosphericGridPointMasksMessageParser::getBandNumber(void) {
 	
-		std::bitset<4> Bits;
+		std::bitset<IGP_MASK_MESSAGE_SIZE_OF_BAND_NUMBER> Bits;
 
-		for (size_t i = 0; i < 4; i++) {
-			Bits[3-i] = this->message[18 + i];
+		for (size_t i = 0; i < IGP_MASK_MESSAGE_SIZE_OF_BAND_NUMBER; i++) {
+			Bits[IGP_MASK_MESSAGE_SIZE_OF_BAND_NUMBER -1 - i] = this->message[IGP_MASK_MESSAGE_STARTING_BIT_OF_BAND_NUMBER + i];
 		}
 		
 		return Bits.to_ulong();
 	}
 
 	int IonosphericGridPointMasksMessageParser::getNumberOfBroadcastedBands(void) {
-		std::bitset<4> Bits;
+		std::bitset<IGP_MASK_MESSAGE_SIZE_OF_NUMBER_OF_BANDS> Bits;
 
-		for (size_t i = 0; i < 4; i++) {
-			Bits[3-i] = this->message[14 + i];
+		for (size_t i = 0; i < IGP_MASK_MESSAGE_SIZE_OF_NUMBER_OF_BANDS; i++) {
+			Bits[IGP_MASK_MESSAGE_SIZE_OF_NUMBER_OF_BANDS -1 -i] = this->message[IGP_MASK_MESSAGE_STARTING_BIT_OF_NUMBER_OF_BANDS + i];
 		}
 
 		return Bits.to_ulong();
@@ -268,10 +300,10 @@ namespace EGNOS {
 
 	bool IonosphericGridPointMasksMessageParser::checkMessageType() {
 
-		std::bitset<6> typeBits;
+		std::bitset<IGP_MASK_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID> typeBits;
 
-		for (size_t i = 0; i < 6; i++) {
-			typeBits[5-i] = this->message[8 + i];
+		for (size_t i = 0; i < IGP_MASK_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID; i++) {
+			typeBits[IGP_MASK_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID - 1 -i] = this->message[IGP_MASK_MESSAGE_STARTING_BIT_OF_MESSAGE_TYPE_ID + i];
 		}
 
 		return typeBits.to_ulong() == IONO_GRID_MASK_MESSAGE_TYPE;
@@ -288,7 +320,7 @@ namespace EGNOS {
 
 	void const IonosphericGridPointMasksMessageParser::updateIGP(IonosphericGridPoint & const igp) const{
 
-		if (igp.getGIVEI() == 15) {
+		if (igp.getGIVEI() == INVALID_GIVEI_NUMBER) {
 			igp.valid = false;
 			return;
 		}
@@ -296,7 +328,7 @@ namespace EGNOS {
 		int bitpos = 0;
 		for (std::vector<IGPMaskBlock>::const_iterator it = this->blocks.begin(); it != this->blocks.end(); ++it) {
 			if (it->bandId == igp.bandNumber && it->idodi == igp.IODI) {
-				bitpos = it->block[igp.blockId * 15 + igp.placeInBlock];
+				bitpos = it->block[igp.blockId * MAX_NUMBER_OF_BLOCKS + igp.placeInBlock];
 				break;
 			}
 			
@@ -325,7 +357,7 @@ namespace EGNOS {
 			os << "Band Id and IODI: " << it->bandId <<  " " <<  it->idodi << std::endl;
 
 			#ifdef EGNOS_IGPMESSAGEPARSER_OBJECT_LONG_DISPLAY
-				for (size_t i = 0; i < 201; i++)
+				for (size_t i = 0; i < IONO_GRID_MASK_SIZE; i++)
 				{
 					if (int(it->block[i]) > 0) {
 						os << " " << int(it->block[i]);
@@ -337,28 +369,32 @@ namespace EGNOS {
 		return os;
 	}
 
-	bool IonosphericDelayCorrectionsMessageParser::checkMessageType(void) {
-		std::bitset<6> typeBits;
+#pragma endregion
 
-		for (size_t i = 0; i < 6; i++) {
-			typeBits[5-i] = this->message[8 + i];
+#pragma region IonosphericDelayCorrectionsMessageParser
+
+	bool IonosphericDelayCorrectionsMessageParser::checkMessageType(void) {
+		std::bitset<IGP_DELAY_CORR_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID> typeBits;
+
+		for (size_t i = 0; i < IGP_DELAY_CORR_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID; i++) {
+			typeBits[IGP_DELAY_CORR_MESSAGE_SIZE_OF_MESSAGE_TYPE_ID  -1 - i] = this->message[IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_MESSAGE_TYPE_ID + i];
 		}
 
 		return typeBits.to_ulong() == IONO_DELAY_CORRECTION_MESSAGE_TYPE;
 	}
 
-	void IonosphericDelayCorrectionsMessageParser::addMessage(const std::bitset<256> &message) {
+	void IonosphericDelayCorrectionsMessageParser::addMessage(const std::bitset<EGNOS_EMS_MESSAGE_SIZE> &message) {
 
 		this->message = message;
 
 		this->processMessage();
 	}
 
-	void IonosphericDelayCorrectionsMessageParser::addMessage(const std::bitset<250> &message) {
+	void IonosphericDelayCorrectionsMessageParser::addMessage(const std::bitset<EGNOS_SATELLITE_MESSAGE_SIZE> &message) {
 
 		this->message.reset();
 
-		for (size_t i = 0; i < 250; i++) {
+		for (size_t i = 0; i < EGNOS_SATELLITE_MESSAGE_SIZE; i++) {
 			this->message[i] = message[i];
 		}
 
@@ -367,20 +403,20 @@ namespace EGNOS {
 
 	int IonosphericDelayCorrectionsMessageParser::getBandNumber(void) {
 
-		std::bitset<4> Bits;
+		std::bitset<IGP_DELAY_CORR_MESSAGE_SIZE_OF_BAND_NUMBER> Bits;
 
-		for (size_t i = 0; i < 4; i++) {
-			Bits[3-i] = this->message[14 + i];
+		for (size_t i = 0; i < IGP_DELAY_CORR_MESSAGE_SIZE_OF_BAND_NUMBER; i++) {
+			Bits[IGP_DELAY_CORR_MESSAGE_SIZE_OF_BAND_NUMBER - 1 -i] = this->message[IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_BAND_NUMBER + i];
 		}
 
 		return Bits.to_ulong();
 	}
 
 	int IonosphericDelayCorrectionsMessageParser::getIODI(void) {
-		std::bitset<2> iodeBits;
+		std::bitset<IGP_DELAY_CORR_MESSAGE_SIZE_OF_IODI> iodeBits;
 
-		for (size_t i = 0; i < 2; i++) {
-			iodeBits[1-i] = this->message[217 + i];
+		for (size_t i = 0; i < IGP_DELAY_CORR_MESSAGE_SIZE_OF_IODI; i++) {
+			iodeBits[IGP_DELAY_CORR_MESSAGE_SIZE_OF_IODI - 1 -i] = this->message[IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_IODI + i];
 		}
 
 		return iodeBits.to_ulong();
@@ -416,14 +452,14 @@ namespace EGNOS {
 		this->addAllIGP2Vector();
 	}
 
-	IonosphericDelayCorrectionsMessageParser& IonosphericDelayCorrectionsMessageParser::operator+=(const std::bitset<256> &message) {
+	IonosphericDelayCorrectionsMessageParser& IonosphericDelayCorrectionsMessageParser::operator+=(const std::bitset<EGNOS_EMS_MESSAGE_SIZE> &message) {
 
 		this->reset();
 		this->addMessage(message);
 		return *this;
 	}
 
-	IonosphericDelayCorrectionsMessageParser& IonosphericDelayCorrectionsMessageParser::operator+=(const std::bitset<250> &message) {
+	IonosphericDelayCorrectionsMessageParser& IonosphericDelayCorrectionsMessageParser::operator+=(const std::bitset<EGNOS_SATELLITE_MESSAGE_SIZE> &message) {
 
 		this->reset();
 		this->addMessage(message);
@@ -432,9 +468,9 @@ namespace EGNOS {
 
 	int IonosphericDelayCorrectionsMessageParser::getBlockId(void) {
 
-		std::bitset<4> Bits;
-		for (size_t i = 0; i < 4; i++) {
-			Bits[3-i] = this->message[18 + i];
+		std::bitset<IGP_DELAY_CORR_MESSAGE_SIZE_OF_BLOCK_ID> Bits;
+		for (size_t i = 0; i < IGP_DELAY_CORR_MESSAGE_SIZE_OF_BLOCK_ID; i++) {
+			Bits[IGP_DELAY_CORR_MESSAGE_SIZE_OF_BLOCK_ID - 1 - i] = this->message[IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_BLOCK_ID + i];
 		}
 
 		return Bits.to_ulong();
@@ -442,10 +478,10 @@ namespace EGNOS {
 
 	int IonosphericDelayCorrectionsMessageParser::getIGPVerticalDelay(int offset) {
 	
-		std::bitset<9> Bits;
-		int offsetinBits = offset * 13;
-		for (size_t i = 0; i < 9; i++) {
-			Bits[8-i] = this->message[offsetinBits + 22 + i];
+		std::bitset<IGP_DELAY_CORR_MESSAGE_SIZE_OF_VERTICAL_DELAY> Bits;
+		int offsetinBits = offset * (IGP_DELAY_CORR_MESSAGE_SIZE_OF_VERTICAL_DELAY + IGP_DELAY_CORR_MESSAGE_SIZE_OF_GIVEI);
+		for (size_t i = 0; i < IGP_DELAY_CORR_MESSAGE_SIZE_OF_VERTICAL_DELAY; i++) {
+			Bits[IGP_DELAY_CORR_MESSAGE_SIZE_OF_VERTICAL_DELAY - 1 -i] = this->message[offsetinBits + IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_REPEATED_DATA + i];
 		}
 
 		return Bits.to_ulong();
@@ -453,10 +489,10 @@ namespace EGNOS {
 
 	int IonosphericDelayCorrectionsMessageParser::getGIVEI(int offset) {
 	
-		std::bitset<4> Bits;
-		int offsetinBits = offset * 13;
-		for (size_t i = 0; i < 4; i++) {
-			Bits[3-i] = this->message[offsetinBits + 31 + i];
+		std::bitset<IGP_DELAY_CORR_MESSAGE_SIZE_OF_GIVEI> Bits;
+		int offsetinBits = offset * (IGP_DELAY_CORR_MESSAGE_SIZE_OF_VERTICAL_DELAY + IGP_DELAY_CORR_MESSAGE_SIZE_OF_GIVEI);
+		for (size_t i = 0; i < IGP_DELAY_CORR_MESSAGE_SIZE_OF_GIVEI; i++) {
+			Bits[IGP_DELAY_CORR_MESSAGE_SIZE_OF_GIVEI - 1 - i] = this->message[offsetinBits + IGP_DELAY_CORR_MESSAGE_STARTING_BIT_OF_REPEATED_DATA + IGP_DELAY_CORR_MESSAGE_SIZE_OF_VERTICAL_DELAY + i];
 		}
 
 		return Bits.to_ulong();
@@ -479,7 +515,7 @@ namespace EGNOS {
 
 	void IonosphericDelayCorrectionsMessageParser::addAllIGP2Vector(void) {
 
-		for (size_t offset = 0; offset < 15; offset++)	{
+		for (size_t offset = 0; offset < MAX_NUMBER_OF_BLOCKS; offset++)	{
 			this->addIonosphericGridPoint2Vector(offset);
 		}
 	}
@@ -496,5 +532,5 @@ namespace EGNOS {
 
 		return os;
 	}
-
+#pragma endregion
 }

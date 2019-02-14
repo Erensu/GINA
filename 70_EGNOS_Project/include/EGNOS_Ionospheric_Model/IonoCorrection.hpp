@@ -85,14 +85,16 @@ namespace EGNOS {
 		VerticalIonoDelayInterpolator(VerticalIonoDelayInterpolator* original);
 		~VerticalIonoDelayInterpolator(void) {};
 
-		IonCorrandVar VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint& newPP);
+		IonCorrandVar VerticalIonoDelayInterpolator::interpolate(gpstk::CommonTime &epoch, IGPMapBase& Map, IonosphericGridPoint& newPP);
 		IonosphericGridPoint getHorizontallyInterpolatedVertices(IGPMapBase& Map, double lat, double lon, double increment);
 
-		double getTEC(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon);
-		double getRMS(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon);
+		double getTEC(IonexCompatibleMap *Map, gpstk::CommonTime &epoch, double lat, double lon);
+		double getRMS(IonexCompatibleMap *Map, gpstk::CommonTime &epoch, double lat, double lon);
 		IonexCompatibleInterPolator* clone() const { return new VerticalIonoDelayInterpolator(*this); };
 		
 	private:
+
+		gpstk::CommonTime referenceTime;
 
 		// With this step will the program search for available igps.
 		double incrementOfSearchWindowforHorizontalInterPolator = 5;
@@ -162,7 +164,7 @@ namespace EGNOS {
 			IonexCreator(void) {};
 			~IonexCreator(void);
 
-			void setIonexData(IonexCompatibleMap &Ionex);
+			void setIonexCompatibleMap(IonexCompatibleMap &Ionex);
 			void setInterpolator(IonexCompatibleInterPolator &interPol);
 			bool writeIGPMap2file(std::string newIonexFile);
 
@@ -177,8 +179,8 @@ namespace EGNOS {
 			gpstk::IonexHeader header;
 			gpstk::IonexStream strm;
 			std::vector<gpstk::CommonTime> epochs;
-			IonexCompatibleMap *ionoData;
-			IonexCompatibleInterPolator* interPol;
+			IonexCompatibleMap *ionoData = NULL;
+			IonexCompatibleInterPolator* interPol = NULL;
 
 			bool getMapEpochs(void);
 			void createHeader(void);
@@ -186,8 +188,8 @@ namespace EGNOS {
 			void createHeader_Europe(double gridSize);
 			void createHeaderBase(void);
 
-			gpstk::IonexData createDataBlock(gpstk::CommonTime currentEpoch, int mapID, dataType type);
-			double getData(gpstk::CommonTime currentEpoch, double currLat, double currLon, dataType type);
+			gpstk::IonexData createDataBlock(gpstk::CommonTime &currentEpoch, int mapID, dataType type);
+			double getData(gpstk::CommonTime &currentEpoch, double currLat, double currLon, dataType type);
 
 			void writeHeader(gpstk::IonexHeader &header);
 			void writeData(gpstk::IonexData &data);
@@ -197,7 +199,6 @@ namespace EGNOS {
 			void closeFile(void);
 
 			int calcDim(int lat1, int lat2, double dlat);
-			double calculateIntervalinSec(gpstk::CommonTime firstEpoch, gpstk::CommonTime secondEpoch);
 			std::string typeString(dataType type);
 
 			double maxHeight = 350;

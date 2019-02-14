@@ -119,18 +119,35 @@ namespace EGNOS {
 		this->ionoPP = newPP;
 	}
 
-	double VerticalIonoDelayInterpolator::getTEC(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon) {
+	double VerticalIonoDelayInterpolator::getTEC(IonexCompatibleMap *Map, gpstk::CommonTime &epoch, double lat, double lon) {
 
 		IonCorrandVar interPolatedValues;
 		try
 		{
-			IGPMapBase *downCastedMap = static_cast<IGPMapBase*> (Map);
+			IGPMapBase *downCastedMap = dynamic_cast<IGPMapBase*> (Map);
+
+			if (downCastedMap == NULL) {
+				throw std::domain_error("Dynamic cast of IGPMapBase failed");
+			}
+
+			bool timeMatched = false;
+			vector<gpstk::CommonTime> allTime = Map->getEpochTimes();
+
+			for (size_t i = 0; i < allTime.size(); i++)	{
+				if (allTime[i] == epoch) {
+					timeMatched = true;
+					break;
+				}
+			}
+			if (timeMatched == false) {
+				throw std::domain_error("Time is not found");
+			}
 
 			IonosphericGridPoint targetPP;
 			targetPP.lat = lat;
 			targetPP.lon = lon;
 
-			interPolatedValues = interpolate(*downCastedMap, targetPP);
+			interPolatedValues = interpolate(epoch, *downCastedMap, targetPP);
 		}
 		catch (const std::exception& e)
 		{
@@ -140,18 +157,22 @@ namespace EGNOS {
 		return interPolatedValues.CorrinMeter;
 	};
 
-	double VerticalIonoDelayInterpolator::getRMS(IonexCompatibleMap *Map, gpstk::CommonTime epoch, double lat, double lon) {
+	double VerticalIonoDelayInterpolator::getRMS(IonexCompatibleMap *Map, gpstk::CommonTime &epoch, double lat, double lon) {
 
 		IonCorrandVar interPolatedValues;
 		try
 		{
-			IGPMapBase *downCastedMap = static_cast<IGPMapBase*> (Map);
+			IGPMapBase *downCastedMap = dynamic_cast<IGPMapBase*> (Map);
+
+			if (downCastedMap == NULL) {
+				throw std::domain_error("Dynamic cast of IGPMapBase failed");
+			}
 
 			IonosphericGridPoint targetPP;
 			targetPP.lat = lat;
 			targetPP.lon = lon;
 
-			interPolatedValues = interpolate(*downCastedMap, targetPP);
+			interPolatedValues = interpolate(epoch, *downCastedMap, targetPP);
 		}
 		catch (const std::exception& e)
 		{
@@ -161,10 +182,11 @@ namespace EGNOS {
 		return sqrt(interPolatedValues.Variance);
 	};
 
-	IonCorrandVar VerticalIonoDelayInterpolator::interpolate(IGPMapBase& Map, IonosphericGridPoint &newPP) {
+	IonCorrandVar VerticalIonoDelayInterpolator::interpolate(gpstk::CommonTime &epoch, IGPMapBase& Map, IonosphericGridPoint &newPP) {
 
 		bool interPolFailed = false;
 		IonCorrandVar rtv;
+		referenceTime = epoch;
 		setPP(newPP);
 		
 		try
@@ -206,25 +228,7 @@ namespace EGNOS {
 			}
 		}
 
-		if (abs(this->ionoPP.lat) == 75.0) {
-			IonosphericGridPoint igp = getHorizontallyInterpolatedVertices(Map, this->ionoPP.lat, this->ionoPP.lon, incrementOfSearchWindowforHorizontalInterPolator);
-			if (igp.valid == true) {
-
-				try
-				{
-					rtv.CorrinMeter = igp.getIonoCorr();
-					rtv.Variance = igp.getIonoCorrVariance();
-				}
-				catch (const std::exception& e)
-				{
-					throw(e);
-				}
-				
-				return rtv;
-			}
-		}
-
-		if (75 < abs(this->ionoPP.lat) && abs(this->ionoPP.lat) < 85.0) {
+		if (75 <= abs(this->ionoPP.lat) && abs(this->ionoPP.lat) < 85.0) {
 		
 			try
 			{
@@ -244,17 +248,15 @@ namespace EGNOS {
 				{
 					rtv.CorrinMeter = igp.getIonoCorr();
 					rtv.Variance = igp.getIonoCorrVariance();
+					return rtv;
 				}
 				catch (const std::exception& e)
 				{
-					throw(e);
 				}
-				
-				return rtv;
 			}
 		}
 
-		if (abs(this->ionoPP.lat) > 85.0) {
+		if (abs(this->ionoPP.lat) >= 85.0) {
 			
 			try
 			{
@@ -276,7 +278,7 @@ namespace EGNOS {
 
 		try
 		{
-			IonosphericGridPoint igp = Map.getIGP(lat, lon);
+			IonosphericGridPoint igp = Map.getIGP(referenceTime, lat, lon);
 
 			if(igp.getGIVEI() == 15){
 				throw std::domain_error("IGP is not monitored in is not possible");
@@ -1822,8 +1824,9 @@ namespace EGNOS {
 
 	}
 
-	void IonexCreator::setIonexData(IonexCompatibleMap &Ionex) {
+	void IonexCreator::setIonexCompatibleMap(IonexCompatibleMap &Ionex) {
 
+		delete ionoData;
 		ionoData = Ionex.clone();
 	}
 
@@ -1927,16 +1930,15 @@ namespace EGNOS {
 	void IonexCreator::createHeaderBase(void) {
 
 		header.clear();
-		gpstk::CivilTime firstEpoch = epochs[0];
-		gpstk::CivilTime lastEpoch = epochs[epochs.size() - 1];
+		gpstk::CommonTime firstEpoch = epochs[0];
+		gpstk::CommonTime lastEpoch = epochs[epochs.size() - 1];
 
 		double intervalBetweenEpochinSec;
-		try
-		{
-			intervalBetweenEpochinSec = calculateIntervalinSec(firstEpoch, lastEpoch);
+		
+		if (epochs.size() > 1) {
+			intervalBetweenEpochinSec = (lastEpoch - firstEpoch ) / (epochs.size() - 1);
 		}
-		catch (const std::exception&)
-		{
+		else {
 			intervalBetweenEpochinSec = 0;
 		}
 
@@ -2057,7 +2059,7 @@ namespace EGNOS {
 		 return date;
 	}
 
-	gpstk::IonexData IonexCreator::createDataBlock(gpstk::CommonTime currentEpoch, int mapID, dataType type) {
+	gpstk::IonexData IonexCreator::createDataBlock(gpstk::CommonTime &currentEpoch, int mapID, dataType type) {
 
 		gpstk::IonexData iod;
 		double lat1, lat2, dlat;
@@ -2088,12 +2090,11 @@ namespace EGNOS {
 
 		double currLat = lat1;
 		double currLon = lon1;
+		double TECorRMS;
 
 		while (counter < numberOfValues)
 		{	
-			double TECorRMS = getData(currentEpoch, currLat, currLon, type);
-
-			
+			TECorRMS = getData(currentEpoch, currLat, currLon, type);
 
 			values(counter) = TECorRMS;
 
@@ -2152,7 +2153,7 @@ namespace EGNOS {
 		return iod;
 	}
 
-	double IonexCreator::getData(gpstk::CommonTime currentEpoch, double currLat, double currLon, dataType type) {
+	double IonexCreator::getData(gpstk::CommonTime &currentEpoch, double currLat, double currLon, dataType type) {
 
 		double rtv;
 		switch (type)
@@ -2225,36 +2226,6 @@ namespace EGNOS {
 		}
 
 		return validEpochs;
-	}
-
-	double IonexCreator::calculateIntervalinSec(gpstk::CommonTime firstEpoch, gpstk::CommonTime secondEpoch) {
-		
-		gpstk::CommonTime timeDiff = firstEpoch;
-			
-		timeDiff - secondEpoch;
-		gpstk::CivilTime civTime(timeDiff);
-
-		double intervalBetweenEpochinSec;
-		if (epochs.size() > 1) {
-			if ((civTime.year == 0) && (civTime.month == 0) && (civTime.day == 0)) {
-
-				intervalBetweenEpochinSec = civTime.hour * 3600 +
-											civTime.minute * 60 +
-											civTime.second;
-			}
-			else {
-				intervalBetweenEpochinSec = 0;
-			}
-		}
-		else {
-			intervalBetweenEpochinSec = 0;
-		}
-
-		if (intervalBetweenEpochinSec == 0) {
-			throw std::domain_error("Interval is 0 or noncalculable!");
-		}
-
-		return intervalBetweenEpochinSec;
 	}
 
 	std::string IonexCreator::typeString(dataType type) {

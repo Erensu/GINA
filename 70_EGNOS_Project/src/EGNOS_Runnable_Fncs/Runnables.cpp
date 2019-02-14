@@ -35,19 +35,23 @@ namespace EGNOS
 	
 	
 		void processEMS(	std::string EDAS_FileNamewPath,
-						std::string Output_IonexFileNamewPath,
-						std::string Output_IonexFileNamewPath_Detailed,
-						EGNOSMapType mapType) {
+							std::string Output_IonexFileNamewPath,
+							std::string Output_IonexFileNamewPathLast,		
+							std::string Output_IonexFileNamewPath_Detailed,
+							EGNOSMapType mapType,
+							bool interPolationOn) {
 
 
 			//std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17.ems";
 
-			EGNOS_EMS_Parser::EGNOS_EMS_Stream exampleStreamIn(EDAS_FileNamewPath.c_str());
+			EGNOS_EMS_Parser::EGNOS_EMS_Stream EMSStream(EDAS_FileNamewPath.c_str());
 
 			EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
 
 			EGNOS::IonosphericDelayCorrectionsMessageParser IonoGridPointParser;
 			EGNOS::IonosphericGridPointMasksMessageParser IonoMaskParser;
+
+			EGNOS::IGPMapStore igpMapStore;
 
 			gpstk::CommonTime CurrentDataTime;
 
@@ -57,13 +61,14 @@ namespace EGNOS
 			ionexWriter.headerType = mapType; //EGNOS::europe5x5_tec; // europe5x5_tec | europe2_5x2_5_tec |europe1x1_tec
 			EGNOS::IGPMediator IgpMediator;
 
-			//ionexWriter.setInterpolator(egnosInterPol);
+			if(interPolationOn == true)
+			ionexWriter.setInterpolator(egnosInterPol);
 
 			bool weHad18 = false;
 			bool weHad26 = false;
 
 			int updateIndex = 0;
-			while (exampleStreamIn >> EData) {
+			while (EMSStream >> EData) {
 
 				CurrentDataTime = EData.messageTime;
 
@@ -91,18 +96,23 @@ namespace EGNOS
 
 					newData = IonoMap.updateMap(IgpMediator);
 
-					if (Output_IonexFileNamewPath_Detailed != "" ) {
-						if (newData == true) {
+					if (newData == true) {
+				
+						igpMapStore.addMap(CurrentDataTime, IonoMap);
+
+						if (Output_IonexFileNamewPath_Detailed != "") {
 							updateIndex++;
 							string ems_out_file_index = createStrFileIndex(updateIndex);
-							//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\Ionex_from_h17_Europe\\h17ems_ionex_Europe_" + ems_out_file_index + ".18i";
-							std::string ionexFile_Out_Detailed = Output_IonexFileNamewPath_Detailed + ems_out_file_index;
+							std::string ionexFile_Out_Detailed = Output_IonexFileNamewPath_Detailed;
+							ionexFile_Out_Detailed = ionexFile_Out_Detailed.insert(Output_IonexFileNamewPath_Detailed.size() - 4, ems_out_file_index.c_str());
 
-							ionexWriter.setIonexData(IonoMap);
+							ionexWriter.setIonexCompatibleMap(IonoMap);
 							ionexWriter.writeIGPMap2file(ionexFile_Out_Detailed);
-							cout << "IGP Map updated and file created" << endl;
 						}
+							
+						cout << "IGP Map updated and file created" << endl;
 					}
+					
 					
 					//cout << IonoMap;
 
@@ -111,6 +121,8 @@ namespace EGNOS
 				}
 			}
 
+			EMSStream.close();
+
 			//cout << IonoMap;
 			//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_5x5_IGPMap.18i";
 			//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_2.5x2.5_IGPMap.18i";
@@ -118,13 +130,46 @@ namespace EGNOS
 			//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_2.5x2.5_InterPol.18i";
 			//std::string ionexFile_Out = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_1x1_InterPol.18i";
 
+			if (Output_IonexFileNamewPathLast != "") {
+
+				ionexWriter.setIonexCompatibleMap(IonoMap);
+				ionexWriter.writeIGPMap2file(Output_IonexFileNamewPathLast);
+			}
+
 			if (Output_IonexFileNamewPath != "") {
-				ionexWriter.setIonexData(IonoMap);
+				ionexWriter.setIonexCompatibleMap(igpMapStore);
 				ionexWriter.writeIGPMap2file(Output_IonexFileNamewPath);
 			}
 			
+			
 
-			exampleStreamIn.close();
+			IGPMap2IonexData ionexConverter;
+
+			gpstk::IonexStore ionexStore = ionexConverter.convert(igpMapStore);
+
+			cout << "Init Time: " << ionexStore.getInitialTime() << endl;
+			cout << "Final Time: " << ionexStore.getFinalTime() << endl;
+
+			gpstk::Position RX;
+			RX.setGeocentric(32.3, 15.4, 0);
+			
+
+			try
+			{
+				cout << endl << endl;
+				gpstk::Triple rtv = ionexStore.getIonexValue(ionexStore.getInitialTime() + 1000, RX, 1);
+				cout << rtv << endl;
+
+			}
+			catch (...)
+			{
+				std::cout << "We could not get TEC and RMS information from the IonexStore" << std::endl;
+			}
+
+			cout << endl << endl;
+
+			ionexStore.dump();
+			
 
 			return;
 		}

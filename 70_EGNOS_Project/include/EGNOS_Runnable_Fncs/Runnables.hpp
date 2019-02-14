@@ -17,8 +17,11 @@
 
 #include "GINAConfig.h"
 
+#include "IonexStore.hpp"
+
 #include "IGPMap.hpp"
 #include "IonoCorrection.hpp"
+#include "EGNOS_Ionex_Converter.hpp"
 
 using namespace std;
 namespace EGNOS 
@@ -28,9 +31,11 @@ namespace EGNOS
 		string createStrFileIndex(int index);
 
 		void processEMS(std::string EDAS_FileNamewPath,
+						std::string EDAS_FileNamewPath_LastMap,
 						std::string Output_IonexFileNamewPath,
 						std::string Output_IonexFileNamewPath_Detailed = "",
-						EGNOSMapType mapType = EGNOS::europe5x5_tec);
+						EGNOSMapType mapType = EGNOS::europe5x5_tec,
+						bool interPolationOn = true);
 	};
 	
 };
