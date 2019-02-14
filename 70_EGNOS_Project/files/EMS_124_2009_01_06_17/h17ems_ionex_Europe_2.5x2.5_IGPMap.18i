@@ -19,7 +19,7 @@ TEC is obtained from EGNOS                                  OBSERVABLES USED
    -60.0  60.0   2.5                                        LON1 / LON2 / DLON  
      0                                                      EXPONENT            
                                                             END OF HEADER       
-     0                                                      START OF TEC MAP    
+     1                                                      START OF TEC MAP
   2009     1     6    17    59    59                        EPOCH OF CURRENT MAP
     90.0 -60.0  60.0   2.5 350.0                            LAT/LON1/LON2/DLON/H
  9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
@@ -186,8 +186,8 @@ TEC is obtained from EGNOS                                  OBSERVABLES USED
  9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
  9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
  9999                                                                           
-     0                                                      END OF TEC MAP      
-     0                                                      START OF RMS MAP    
+     1                                                      END OF TEC MAP      
+     1                                                      START OF RMS MAP    
   2009     1     6    17    59    59                        EPOCH OF CURRENT MAP
     90.0 -60.0  60.0   2.5 350.0                            LAT/LON1/LON2/DLON/H
  9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
@@ -354,4 +354,4 @@ TEC is obtained from EGNOS                                  OBSERVABLES USED
  9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
  9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
  9999                                                                           
-     0                                                      END OF RMS MAP      
+     1                                                      END OF RMS MAP      
