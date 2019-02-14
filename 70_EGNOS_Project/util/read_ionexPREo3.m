@@ -1,28 +1,32 @@
 %octave script to read ionex file and draw Total Electron Content map(s)
 
 clear all; close all; clc; %page_screen_output(0)
+folder = fileparts(which(mfilename)); 
+addpath(genpath(folder));
 
 %ionex file name as the first argument
 %if nargin == 1
 %  arg_list = argv ();
 %  ionex_file = arg_list{1};
 %else
-  ionex_file = 'h17ems_ionex_Europe_1x1_InterPol.18i';  %just for testing
+  ionex_file = '\EMS_136_2019_02_11_15\h15ems_ionex_Europe_5x5_IGPMap_All.19i';  %just for testing
+  plusFilePath2Pics = 'Ionex_from_h15_Europe\Grid5x5\pics';
 %end
+filewPath = which(ionex_file);
 
-File = GetFullPath(ionex_file, 'lean');
-[filepath,name,ext] = fileparts(File);
+%File = GetFullPath(ionex_file, 'lean');
+[filepath,name,ext] = fileparts(filewPath);
 
-if exist(ionex_file, 'file') == 2
+if exist(filewPath, 'file') == 2
     
 else
-    error('%s file open error\n', strcat(filepath,ionex_file));
+    error('%s file open error\n', filewPath);
 end
 
 
-[fin, errormsg] = fopen(ionex_file, 'r');
+[fin, errormsg] = fopen(filewPath, 'r');
 if errormsg
-  error('%s file open error\n', ionex_file);
+  error('%s file open error\n', filewPath);
   exit
 end
 
@@ -100,7 +104,7 @@ while ~feof(fin)
         fprintf ('number of data %d\n', size(tec_map, 1));
         fprintf ('max %.1f min %.1f in TECU\n', max(tec_map(:,3)), min(tec_map(:,3)));
   %plot TEC MAP
-        map = figure();
+        map = figure('visible','off');
         scatter(tec_map(:,1), tec_map(:,2), 50, tec_map(:,3), 's', 'filled');
         hold on;
         %drawing coastlines
@@ -112,14 +116,14 @@ while ~feof(fin)
         title(colorbar,'TEC [TECU]')
         ylabel('Latitude [deg]')
         xlabel('Longitude [deg]')
-        axis([-60 60 15 85]);
-        caxis([0 60]);
+        axis([-60 60 10 85]);
+        caxis([0 10]);
         if strfind(type_of_data,'TEC')
           title (sprintf('Total Electron Content Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec));
-          print(map, strcat(filepath,sprintf(strcat(strrep(strcat(name,ext),'.','_'), '_iono%02d'), n_maps)),'-dpng');
+          print(map, fullfile(filepath,plusFilePath2Pics,sprintf(strcat(strrep(strcat(name,ext),'.','_'), '_iono%02d'), n_maps)),'-dpng');
         else
           title (sprintf('Total Electron Content RMS Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec));
-          print(map, strcat(filepath,sprintf(strcat(strrep(strcat(name,ext),'.','_'), '_rms%02d'), n_rms)),'-dpng');
+          print(map, fullfile(filepath,plusFilePath2Pics,sprintf(strcat(strrep(strcat(name,ext),'.','_'), '_rms%02d'), n_rms)),'-dpng');
         end
         close(map);
       end
