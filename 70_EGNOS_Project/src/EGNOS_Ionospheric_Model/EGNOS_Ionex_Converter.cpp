@@ -96,12 +96,12 @@ namespace EGNOS {
 		ionexDataRMS.dim[1] = dimlon;
 		ionexDataRMS.dim[2] = dimhgt;
 
-		ionexDataTEC.exponent = 1;
+		ionexDataTEC.exponent = 0;
 		ionexDataTEC.lat[0] = lat1;
 		ionexDataTEC.lat[1] = lat2;
 		ionexDataTEC.lat[2] = dlat;
 
-		ionexDataRMS.exponent = 1;
+		ionexDataRMS.exponent = 0;
 		ionexDataRMS.lat[0] = lat1;
 		ionexDataRMS.lat[1] = lat2;
 		ionexDataRMS.lat[2] = dlat;

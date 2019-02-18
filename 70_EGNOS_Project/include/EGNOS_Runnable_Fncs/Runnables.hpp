@@ -18,6 +18,7 @@
 #include "GINAConfig.h"
 
 #include "IonexStore.hpp"
+#include "IonexData.hpp"
 
 #include "IGPMap.hpp"
 #include "IonoCorrection.hpp"
@@ -26,16 +27,44 @@
 using namespace std;
 namespace EGNOS 
 {
-	namespace EGNOS_RUNNABLE 
+	namespace EGNOS_RUNNABLE
 	{
+		
+
+		void compareIonexFiles(	std::string ReferenceIonexFileNamewPath,
+								std::string TargetIonexFileNamewPath,
+								std::string IonexFileNamewPath_Out);
+
+		void processEMS(std::string EDAS_FileNamewPath = "",
+			std::string Output_IonexFileNamewPath = "",
+			std::string Output_IonexFileNamewPathLast = "",
+			std::string Output_IonexFileNamewPath_Detailed = "",
+			EGNOSMapType mapType = EGNOS::europe5x5_tec,
+			bool interPolationOn = true,
+			double updateIntervalinSeconds = 0);
+	};
+		
+	namespace EGNOS_RUNNABLE_UTILITY
+	{
+
+		std::vector<gpstk::IonexData> createDifferenceDataBlock(gpstk::IonexHeader header,
+																gpstk::IonexStore refreceStore,
+																gpstk::IonexStore targetStore,
+																gpstk::CommonTime &epoch,
+																int mapID);
+
 		string createStrFileIndex(int index);
 
-		void processEMS(std::string EDAS_FileNamewPath,
-						std::string EDAS_FileNamewPath_LastMap,
-						std::string Output_IonexFileNamewPath,
-						std::string Output_IonexFileNamewPath_Detailed = "",
-						EGNOSMapType mapType = EGNOS::europe5x5_tec,
-						bool interPolationOn = true);
+		bool checkArgs(std::string EDAS_FileNamewPath,
+			std::string Output_IonexFileNamewPath,
+			std::string Output_IonexFileNamewPathLast,
+			std::string Output_IonexFileNamewPath_Detailed,
+			EGNOS::EGNOSMapType mapType,
+			bool interPolationOn,
+			unsigned int updateIntervalinSeconds);
+
+		std::string EGNOSMapType2String(EGNOS::EGNOSMapType mapType);
+		int calcDim(int lat1, int lat2, double dlat);
 	};
-	
+
 };
