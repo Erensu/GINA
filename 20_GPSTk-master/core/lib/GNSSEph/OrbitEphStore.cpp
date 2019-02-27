@@ -220,6 +220,15 @@ namespace gpstk
                message = string("duplicate Toe");
                return ret;
             }
+			//--- Workaround begin
+			else if (eph->ctToe > it->second->ctToe) {
+				// Replace existing
+				ret = eph->clone();
+				toet[eph->beginValid] = ret;
+				updateTimeLimits(ret);
+				return ret;
+			}
+			//--- Workaround end
             else {
                // Found matching beginValid but different Toe - This shouldn't happen
                string str = "Unexpected matching beginValid time but not Toe, for "
@@ -286,6 +295,9 @@ namespace gpstk
          return ret;
       }
       catch(Exception& e) { GPSTK_RETHROW(e) }
+	  catch (...) {
+		  std::cout << "Unexpected error in OrbitEphStore::addEphemeris method" << std::endl;
+	  }
 
    }  // end OrbitEph* OrbitEphStore::addEphemeris(const OrbitEph* eph)
 
