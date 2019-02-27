@@ -10,8 +10,8 @@ using namespace std;
 
 int main(int argc, char **argv) {
 	
-	string obsFile = ROOT "\\70_EGNOS_Project\\files\\rinex_data\\brux0200.16o";
-	string ephFile = ROOT "\\70_EGNOS_Project\\files\\rinex_data\\brux0200.16n";
+	string obsFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
+	string ephFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
 
 	mainNavigationSolution(obsFile, ephFile);
 
