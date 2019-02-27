@@ -1,0 +1,23 @@
+     1.0            IONOSPHERE MAPS     GPS                 IONEX VERSION / TYPE
+GINA 1.0            GINA Project        12-02-2019 13:35:30 PGM / RUN BY / DATE 
+TEC values in 10e-1 [TEC] 9999, if no value available       COMMENT             
+Infrastructure: Robert Bosch Kft., Budapest                 DESCRIPTION         
+Creator: Balazs Lupsic                                      DESCRIPTION         
+Contact adress: balazs.lupsic@hu.bosch.com                  DESCRIPTION         
+Contact adress: balazs.lupsic@gmail.com                     DESCRIPTION         
+  2019     2    11    15    19    43                        EPOCH OF FIRST MAP  
+  2019     2    11    15    19    43                        EPOCH OF LAST MAP   
+     0                                                      INTERVAL            
+     1                                                      # OF MAPS IN FILE   
+   TBD                                                      MAPPING FUNCTION    
+     0.0                                                    ELEVATION CUTOFF    
+TEC is obtained from EGNOS                                  OBSERVABLES USED    
+  6371.4                                                    BASE RADIUS         
+     2                                                      MAP DIMENSION       
+   350.0 350.0   0.0                                        HGT1 / HGT2 / DHGT  
+    90.0  10.0  -5.0                                        LAT1 / LAT2 / DLAT  
+   -60.0  60.0   5.0                                        LON1 / LON2 / DLON  
+    -1                                                      EXPONENT            
+                                                            START OF AUX DATA   
+                                                            END OF AUX DATA     
+                                                            END OF HEADER       
