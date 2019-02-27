@@ -1,5 +1,6 @@
 
 #include "navMain.hpp"
+#include "SaasTropModel.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -17,7 +18,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData)
 
 	// Object for GG-type tropospheric model (Goad and Goodman, 1974)
 	// Default constructor => default values for model
-	GGTropModel ggTropModel;
+	SaasTropModel ggTropModel;
 
 	// Pointer to one of the two available tropospheric models. It points
 	// to the void model by default

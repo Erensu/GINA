@@ -62,6 +62,8 @@ add_subdirectory (10_MathPckgs)
 #########
 #################################################################
 
+option( BUILD_EXT_EXAMPLE "HELP: BUILD_EXT_EXAMPLE: SWITCH, Default = OFF, GPSTK/ext/apps folder will be added - 1st exercise" OFF )
+
 #add_subdirectory (20_GPSTk-master)
 file( GLOB_RECURSE GPSTK_CORE_INC_FILES "20_GPSTk-master/core/lib/*.hpp" )
 file( GLOB_RECURSE GPSTK_EXT_INC_FILES "20_GPSTk-master/ext/lib/*.h" "20_GPSTk-master/ext/lib/*.hpp" )
@@ -116,9 +118,9 @@ set (EXTRA_LIBS ${EXTRA_LIBS} IMUSimulatorLibrary)
 
 # GNSS Competence Team's Projects
 ##############################################################
-option( GNSS_Competence_Team_Project_1 "HELP: BUILD_EXC1: SWITCH, Default = ON, Build the GNSS Competence Team - 1st exercise" OFF )
-option( GNSS_Competence_Team_Project_2 "HELP: BUILD_EXC1: SWITCH, Default = ON, Build the GNSS Competence Team - 2nd exercise" OFF )
-option( GNSS_Competence_Team_Project_3 "HELP: BUILD_EXC1: SWITCH, Default = ON, Build the GNSS Competence Team - 3rd exercise" OFF )
+option( GNSS_Competence_Team_Project_1 "HELP: BUILD_EXC1: SWITCH, Default = OFF, Build the GNSS Competence Team - 1st exercise" OFF )
+option( GNSS_Competence_Team_Project_2 "HELP: BUILD_EXC1: SWITCH, Default = OFF, Build the GNSS Competence Team - 2nd exercise" OFF )
+option( GNSS_Competence_Team_Project_3 "HELP: BUILD_EXC1: SWITCH, Default = OFF, Build the GNSS Competence Team - 3rd exercise" OFF )
 add_subdirectory (40_GNSS_Competence_Team) 
 
 add_subdirectory (69_GINA)

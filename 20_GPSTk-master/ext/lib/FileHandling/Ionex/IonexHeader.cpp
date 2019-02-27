@@ -479,14 +479,7 @@ namespace gpstk
       }
 
          // time arguments consistency
-	  double interval0;
-	  if (numMaps == 1) {
-		  interval0 = (lastEpoch - firstEpoch) / (numMaps);
-	  }
-	  else {
-		  interval0 = (lastEpoch - firstEpoch) / (numMaps - 1.0);
-	  }
-      
+      double interval0( (lastEpoch - firstEpoch) / (numMaps -1.0) );
       if (interval != static_cast<int>(interval0))
       {
          FFStreamError e("Inconsistent time arguments.");

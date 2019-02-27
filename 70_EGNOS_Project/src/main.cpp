@@ -9,7 +9,8 @@ using namespace std;
 #include "IonexStore.hpp"
 
 int main(int argc, char **argv) {
-	
+
+	gpstk::Triple rtv;
 	string obsFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
 	string ephFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
 

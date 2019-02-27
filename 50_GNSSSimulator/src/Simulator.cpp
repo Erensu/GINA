@@ -7,6 +7,7 @@
 #include "Navigation_examples.h"
 #include "Test_Trajectory_Class.hpp"
 #include "test_PseudoRangeCalculator.h"
+#include "NeillTropModel.hpp"
 
 #include GINA_PARSER_TrajectoryData_hpp
 #include GINA_PARSER_TrajectoryStream_hpp

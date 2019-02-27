@@ -327,34 +327,20 @@ namespace gpstk
       IonexMap::const_iterator itm = inxMaps.find(t);
       try
       {
-		 if (inxMaps.size() == 1) {
-			 InvalidRequest e("IonexStore::getIonexValue() ... Invalid time!");
-			 GPSTK_THROW(e);
-		 }
 
-         if( itm != inxMaps.end())              // exact match of t
+         if( itm != inxMaps.end() )              // exact match of t
          {
-			 ++itm;
-			 if ( itm != inxMaps.end()) {
-				 (--itm);
-				 // get the current map
-				 itm = inxMaps.lower_bound(t);
-				 // store current and next epoch
-				 T[0] = itm->first;
-				 T[1] = (++itm)->first;
-			 }
-			 else {
-				 (--itm);
-				 // get the next valid map
-				 itm = inxMaps.lower_bound(t);
-				 // store the next and previous epoch
-				 T[1] = itm->first;
-				 T[0] = (--itm)->first;
-			 
-			 }
+
+               // get the current map
+            itm = inxMaps.lower_bound(t);
+               // store current and next epoch
+            T[0] = itm->first;
+            T[1] = (++itm)->first;
+
          }
          else                                   // t is between two maps
          {
+
                // get the next valid map
             itm = inxMaps.lower_bound(t);
                // store the next and previous epoch
