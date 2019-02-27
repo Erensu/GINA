@@ -10,6 +10,11 @@ using namespace std;
 
 int main(int argc, char **argv) {
 	
+	string obsFile = ROOT "\\70_EGNOS_Project\\files\\rinex_data\\brux0200.16o";
+	string ephFile = ROOT "\\70_EGNOS_Project\\files\\rinex_data\\brux0200.16n";
+
+	mainNavigationSolution(obsFile, ephFile);
+
 	// This part is under construction
 	//////////////////////////////////////////
 	//td::string ionexFile1 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
@@ -78,11 +83,14 @@ int main(int argc, char **argv) {
 	//std::string IonexFileNamewPath_1 = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
 	//std::string IonexFileNamewPath_2 = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
 										  //"\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\Ionex_from_h15_Europe\\Grid5x5\\ionex_files"
-	std::string IonexFileNamewPath_1 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
-	std::string IonexFileNamewPath_2 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
-	std::string IonexFileNamewPath_Out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\TestIonexStoreOut.19i";
-
+	//std::string IonexFileNamewPath_1 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
+	//std::string IonexFileNamewPath_2 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
+	//std::string IonexFileNamewPath_Out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\TestIonexStoreOut.19i";
+	
+	/*
 	EGNOS::EGNOS_RUNNABLE::compareIonexFiles(IonexFileNamewPath_1, IonexFileNamewPath_2, IonexFileNamewPath_Out);
+	*/
+
 	//////////////////////////////////////////
 
 	// Process EMS file

@@ -24,6 +24,8 @@
 #include "IonoCorrection.hpp"
 #include "EGNOS_Ionex_Converter.hpp"
 
+#include "navMain.hpp"
+
 using namespace std;
 namespace EGNOS 
 {
