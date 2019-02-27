@@ -338,6 +338,17 @@ namespace gpstk
          throw(InvalidRequest);
 
 
+	  /// The key to this map is IonexValType
+	  typedef std::map<IonexData::IonexValType, IonexData> IonexValTypeMap;
+
+
+	  /// The key to this map is the time
+	  typedef std::map<CommonTime, IonexValTypeMap> IonexMap;
+
+
+	  /// Map of IONEX maps
+	  IonexMap inxMaps;
+
    private:
 
 
@@ -350,16 +361,7 @@ namespace gpstk
       CommonTime initialTime, finalTime;
 
 
-         /// The key to this map is IonexValType
-      typedef std::map<IonexData::IonexValType, IonexData> IonexValTypeMap;
-
-
-         /// The key to this map is the time
-      typedef std::map<CommonTime, IonexValTypeMap> IonexMap;
-
-
-         /// Map of IONEX maps
-      IonexMap inxMaps;
+      
 
 
          /// The key of this map is the time (first epoch as in IonexHeader)
