@@ -1,11 +1,10 @@
 cmake_minimum_required (VERSION 2.91.0)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/99_CMake/definition.cmake) 
+include(${CMAKE_CURRENT_SOURCE_DIR}/99_Cmake/definition.cmake) 
+
 project (GINA)
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}")
-
-
 
 # The version number.
 set (Tutorial_VERSION_MAJOR 1)
@@ -29,13 +28,13 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # to the source code
 configure_file (
   "${PROJECT_SOURCE_DIR}/GINAConfig.h.in"
-  "${PROJECT_SOURCE_DIR}/99_CMake/GINAConfig.h"
+  "${PROJECT_SOURCE_DIR}/99_Cmake/GINAConfig.h"
   )
 
 # add the binary tree to the search path for include files
 # so that we will find GINAConfig.h
 include_directories ("${PROJECT_BINARY_DIR}")
-include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/99_CMake")
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/99_Cmake")
 
 #################
 # Math Packages #
@@ -99,13 +98,13 @@ set (GPSTK_LIBS ${GPSTK_LIBS} gpstk)
 #GINAPArser
 ##############################################################
 option( test_GINAParser "HELP: Build test of GINA Parser: SWITCH, Default = ON, Build the GINAPArser" OFF )
-add_subdirectory (68_GINAPArser) 
+add_subdirectory (68_GINAParser) 
 get_property(GINAPARSER_CORE_INC_DIRS DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/68_GINAParser" PROPERTY GINAPARSER_CORE_INC_DIRS)
 # message("Property for root directory root read from GNSSSIM_INCLUDE_DIRS: " ${GNSSSIM_INCLUDE_DIRS})
 
 #GNSSsimulator
 ##############################################################
-add_subdirectory (50_GNSSsimulator)
+add_subdirectory (50_GNSSSimulator)
 get_property(GNSSSIM_INCLUDE_DIRS DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/50_GNSSSimulator" PROPERTY GNSSSIM_INCLUDE_DIRS)
 # message("Property for root directory root read from GNSSSIM_INCLUDE_DIRS: " ${GNSSSIM_INCLUDE_DIRS})
  
