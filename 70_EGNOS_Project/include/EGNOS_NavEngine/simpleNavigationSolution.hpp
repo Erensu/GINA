@@ -7,6 +7,7 @@
 #include <vector>
 #include <array>
 
+// Classes for handling observations RINEX files (data)
 #include "Rinex3ObsHeader.hpp"
 #include "Rinex3ObsData.hpp"
 #include "Rinex3ObsStream.hpp"
@@ -23,8 +24,8 @@
 #include "RinexMetHeader.hpp"
 #include "RinexMetStream.hpp"
 
-// Class for handling tropospheric models
-#include "TropModel.hpp"
+// Class for handling tropospheric model
+#include "GGTropModel.hpp"
 
 // Class for storing "broadcast-type" ephemerides
 #include "GPSEphemerisStore.hpp"
