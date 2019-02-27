@@ -338,36 +338,37 @@ namespace gpstk
          throw(InvalidRequest);
 
 
+
+	  /** These fields set the overall span of time for which this object
+	  *  contains data.
+	  *
+	  * @warning There may be gaps in the data, i.e. the data may not be
+	  *          continuous.
+	  */
+	  CommonTime initialTime, finalTime;
+
+
+	  /// The key to this map is IonexValType
+	  typedef std::map<IonexData::IonexValType, IonexData> IonexValTypeMap;
+
+
+	  /// The key to this map is the time
+	  typedef std::map<CommonTime, IonexValTypeMap> IonexMap;
+
+
+	  /// Map of IONEX maps
+	  IonexMap inxMaps;
+
+
+	  /// The key of this map is the time (first epoch as in IonexHeader)
+	  typedef std::map<CommonTime, IonexHeader::SatDCBMap> IonexDCBMap;
+
+
+	  /// Map of DCB values (IonexHeader.firstEpoch, IonexHeader.svsmap)
+	  IonexDCBMap inxDCBMap;
+
    private:
 
-
-         /** These fields set the overall span of time for which this object
-          *  contains data.
-          *
-          * @warning There may be gaps in the data, i.e. the data may not be
-          *          continuous.
-          */
-      CommonTime initialTime, finalTime;
-
-
-         /// The key to this map is IonexValType
-      typedef std::map<IonexData::IonexValType, IonexData> IonexValTypeMap;
-
-
-         /// The key to this map is the time
-      typedef std::map<CommonTime, IonexValTypeMap> IonexMap;
-
-
-         /// Map of IONEX maps
-      IonexMap inxMaps;
-
-
-         /// The key of this map is the time (first epoch as in IonexHeader)
-      typedef std::map<CommonTime, IonexHeader::SatDCBMap> IonexDCBMap;
-
-
-         /// Map of DCB values (IonexHeader.firstEpoch, IonexHeader.svsmap)
-      IonexDCBMap inxDCBMap;
 
 
    }; // End of class 'IonexStore'
