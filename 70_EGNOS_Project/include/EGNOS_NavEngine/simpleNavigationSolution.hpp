@@ -61,12 +61,14 @@ namespace EGNOS_UTILITY {
 
 		std::vector<double> SimpleNavSolver::get_Result(void);
 		void print_Result(void);
-		bool calculatePosition(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv);
+		bool calculatePosition(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv, gpstk::TropModel *pTropModel);
 
 		void set_bcestore(GPSEphemerisStore &in_bcestore);
-		void setSimpleNaviagtionCalculator(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv);
+		void setSimpleNaviagtionCalculator(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv, gpstk::TropModel *pTropModel);
 		
 	private:
+
+		gpstk::TropModel *pTropModel;
 		GPSEphemerisStore bcestore;
 		gpstk::CommonTime gpsTime;
 
@@ -78,14 +80,14 @@ namespace EGNOS_UTILITY {
 		static const double wie_e;
 		static const double c_mps;
 
-		bool get_satPos(gpstk::CommonTime &gpstime, int satId, std::array<double, 3> &pos);
-		bool get_satClock(gpstk::CommonTime &gpstime, int satId, double &clockbias);
-		bool get_satRelCorr(gpstk::CommonTime &gpstime, int satId, double &relcorr);
+		double SimpleNavSolver::calculateTropoDelay(gpstk::Position SV, gpstk::Position  RX);
 
+		gpstk::Xvt getSatXvt(gpstk::CommonTime &gpstime, int satId);
+	
 		void reset(void);
-		double updatePosition(void);
-		void correctwSagnacEffect(double deltat, std::array<double, 3> &old_pos, std::array<double, 3> &new_pos);
-		double calculateDistance(std::array<double, 4> &rover, std::array<double, 3> &sat);
+		double updatePosition(int iterNumber);
+		void correctwSagnacEffect(double deltat, gpstk::Xvt &old_pos, gpstk::Xvt &new_pos);
+		double calculateDistance(std::array<double, 4> &rover, gpstk::Xvt &sat);
 		double Norm(Eigen::VectorXd x);
 	};
 

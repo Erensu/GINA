@@ -195,7 +195,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData)
 				////////////////////////////////
 
 				// Calculate position
-				if (egnosNavSolver.calculatePosition(rod.time, prnVec, rangeVec)) {
+				if (egnosNavSolver.calculatePosition(rod.time, prnVec, rangeVec, tropModelPtr)) {
 					// Print result
 					egnosNavSolver.print_Result();
 				}

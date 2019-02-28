@@ -28,13 +28,33 @@ namespace EGNOS_UTILITY{
 		std::cout << "Clock bias: " << roverPos[3] << endl;
 	}
 
-	bool SimpleNavSolver::calculatePosition(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv) {
+	double SimpleNavSolver::calculateTropoDelay(gpstk::Position SV, gpstk::Position  RX) {
+	
+		// must test RX for reasonableness to avoid corrupting TropModel
+		Position R(RX), S(SV);
+		double tc = R.getHeight(), elev = R.elevation(SV);
+
+		if (elev < 0.0 || tc > 10000.0 || tc < -1000) {
+
+		tc = 0.0;
+		}
+		else { 
+
+			tc = pTropModel->correction(R, S, gpsTime); 
+		}
+		
+		return tc;
+	}
+
+	bool SimpleNavSolver::calculatePosition(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv, gpstk::TropModel *pTropModel) {
 
 		int iterNumber = 0;
 		bool validResult = true;
-		setSimpleNaviagtionCalculator(time, vid, prv);
+		setSimpleNaviagtionCalculator(time, vid, prv, pTropModel);
+	
+		
 
-		while (updatePosition() > EGNOS_UTILITY_CONVERGENCE_LIMIT) {
+		while (updatePosition(iterNumber) > EGNOS_UTILITY_CONVERGENCE_LIMIT) {
 			if (iterNumber > 25) {
 				validResult = false;
 				break;
@@ -45,11 +65,11 @@ namespace EGNOS_UTILITY{
 		return validResult;
 	}
 
-	double SimpleNavSolver::updatePosition(void) {
+	double SimpleNavSolver::updatePosition(int iterNumber) {
 
 		double rho = 0;
 
-		std::array<double, 3> satPos, temp_satPos;
+		gpstk::Xvt satPos, temp_satPos;
 		double temp_satClock, temp_satRelCorr;
 		gpstk::CommonTime time_of_transmission, time_of_arrival;
 		double travelTime = 0.0, travelTime_old = 0.0;
@@ -68,8 +88,12 @@ namespace EGNOS_UTILITY{
 				continue;
 			}
 
-			// Get i. satelite position at given time
-			if (get_satPos(this->gpsTime, gpsSatIds[i], satPos) == false) {
+			try
+			{
+				satPos = getSatXvt(this->gpsTime, gpsSatIds[i]);
+			}
+			catch (const std::exception& e)
+			{
 				continue;
 			}
 
@@ -81,9 +105,7 @@ namespace EGNOS_UTILITY{
 			geometryDistance(i) = 0;
 
 			// Correct with earth roation
-			temp_satPos[0] = satPos[0];
-			temp_satPos[1] = satPos[1];
-			temp_satPos[2] = satPos[2];
+			temp_satPos = satPos;
 
 			time_of_arrival = gpsTime;
 			time_of_transmission = gpsTime;
@@ -94,40 +116,43 @@ namespace EGNOS_UTILITY{
 				travelTime_old = travelTime;
 				travelTime = temp_dist / c_mps;
 
-				if (get_satPos(time_of_transmission, gpsSatIds[i], satPos) == false) {
+				try
+				{
+					satPos = getSatXvt(time_of_transmission, gpsSatIds[i]);
+				}
+				catch (const std::exception& e)
+				{
 					continue;
 				}
-			
 
 				time_of_transmission = time_of_arrival - travelTime;				
-				get_satRelCorr(time_of_transmission, gpsSatIds[i], temp_satRelCorr);
-				get_satClock( time_of_transmission, gpsSatIds[i], temp_satClock);
 
-				if (get_satPos(time_of_transmission, gpsSatIds[i], satPos) == false) {
+				try
+				{
+					satPos = getSatXvt(time_of_transmission, gpsSatIds[i]);
+				}
+				catch (const std::exception& e)
+				{
 					continue;
 				}
-
 
 			correctwSagnacEffect(time_of_transmission - time_of_arrival, satPos, temp_satPos);
 
-			satPos[0] = temp_satPos[0];
-			satPos[1] = temp_satPos[1];
-			satPos[2] = temp_satPos[2];
+			satPos = temp_satPos;
+			//calculateTropoDelay(gpstk::Position SV, gpstk::Position  RX)
 
 			// Geometry distance
 			geometryDistance(i) = calculateDistance(roverPos, satPos);
 
 			// Correct the PR with clock correction
-			get_satClock(time_of_transmission, gpsSatIds[i], temp_satClock);
-			get_satRelCorr(time_of_transmission, gpsSatIds[i], temp_satRelCorr);
-			PRObservations(i) += (temp_satClock + temp_satRelCorr) * c_mps;
+			PRObservations(i) += (satPos.clkbias + satPos.relcorr) * c_mps;
 
 			// Set up design matrix
 			rho = calculateDistance(roverPos, satPos);
 
-			designMatrix(i, 0) = (roverPos[0] - satPos[0]) / rho;
-			designMatrix(i, 1) = (roverPos[1] - satPos[1]) / rho;
-			designMatrix(i, 2) = (roverPos[2] - satPos[2]) / rho;
+			designMatrix(i, 0) = (roverPos[0] - satPos.x[0]) / rho;
+			designMatrix(i, 1) = (roverPos[1] - satPos.x[1]) / rho;
+			designMatrix(i, 2) = (roverPos[2] - satPos.x[2]) / rho;
 			designMatrix(i, 3) = 1.0;
 		}
 
@@ -156,9 +181,10 @@ namespace EGNOS_UTILITY{
 		gpsSatIds.clear();
 		gpsPrs.clear();
 		roverPos.fill(0);
+		pTropModel = NULL;
 	}
 
-	void SimpleNavSolver::correctwSagnacEffect(double deltat, std::array<double, 3> &old_pos, std::array<double, 3> &new_pos) {
+	void SimpleNavSolver::correctwSagnacEffect(double deltat, gpstk::Xvt &old_pos, gpstk::Xvt &new_pos) {
 
 		Eigen::Matrix3d rotMatrix = Eigen::Matrix3d::Zero();
 
@@ -167,21 +193,21 @@ namespace EGNOS_UTILITY{
 						0,					 0,						1;
 
 		Eigen::Vector3d posV;
-		posV << old_pos[0], old_pos[1], old_pos[2];
+		posV << old_pos.x[0], old_pos.x[1], old_pos.x[2];
 
 		posV = rotMatrix*posV;
 
-		new_pos[0] = posV(0);
-		new_pos[1] = posV(1);
-		new_pos[2] = posV(2);
+		new_pos.x[0] = posV(0);
+		new_pos.x[1] = posV(1);
+		new_pos.x[2] = posV(2);
 
 	}
 
-	double SimpleNavSolver::calculateDistance(std::array<double, 4> &rover, std::array<double, 3> &sat) {
+	double SimpleNavSolver::calculateDistance(std::array<double, 4> &rover, gpstk::Xvt &sat) {
 
 		double dist = 0;
 		for (int a = 0; a < 3; a++) {
-			dist += pow((rover[a] - sat[a]), 2);
+			dist += pow((rover[a] - sat.x[a]), 2);
 		}
 
 		return sqrt(dist);
@@ -206,7 +232,7 @@ namespace EGNOS_UTILITY{
 
 	};
 
-	void SimpleNavSolver::setSimpleNaviagtionCalculator(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv) {
+	void SimpleNavSolver::setSimpleNaviagtionCalculator(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv, gpstk::TropModel *pTropModel) {
 
 		this->reset();
 	
@@ -223,35 +249,7 @@ namespace EGNOS_UTILITY{
 
 	}
 
-	bool SimpleNavSolver::get_satPos(gpstk::CommonTime &gpstime, int satId, std::array<double,3> &pos) {
-
-		SatID id;
-		id.id = satId;
-		id.system = SatID::SatelliteSystem::systemGPS;
-
-
-		Xvt xvt;
-
-		try {
-
-			xvt = bcestore.getXvt(id, gpstime);
-			pos[0] = xvt.x[0];
-			pos[1] = xvt.x[1];
-			pos[2] = xvt.x[2];
-
-			return true;
-		}
-		catch (Exception& e) {
-
-			pos[0] = 0;
-			pos[1] = 0;
-			pos[2] = 0;
-
-			return false;
-		}
-	}
-
-	bool SimpleNavSolver::get_satClock(gpstk::CommonTime &gpstime, int satId, double &clockbias) {
+	gpstk::Xvt SimpleNavSolver::getSatXvt(gpstk::CommonTime &gpstime, int satId) {
 
 		SatID id;
 		id.id = satId;
@@ -262,39 +260,10 @@ namespace EGNOS_UTILITY{
 		try {
 
 			xvt = bcestore.getXvt(id, gpstime);
-			clockbias = xvt.getClockBias();
-
-			return true;
+			return xvt;
 		}
 		catch (Exception& e) {
-
-			//cerr << e << endl;
-
-			return false;
-		}
-
-	}
-
-	bool SimpleNavSolver::get_satRelCorr(gpstk::CommonTime &gpstime, int satId, double &relcorr) {
-
-		SatID id;
-		id.id = satId;
-		id.system = SatID::SatelliteSystem::systemGPS;
-
-		Xvt xvt;
-
-		try {
-
-			xvt = bcestore.getXvt(id, gpstime);
-			relcorr = xvt.relcorr;
-
-			return true;
-		}
-		catch (Exception& e) {
-
-			//cerr << e << endl;
-
-			return false;
+			throw domain_error("Sat position cannot be calculated");
 		}
 	}
 
