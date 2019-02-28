@@ -40,7 +40,7 @@ namespace EGNOS_UTILITY{
 
 		if (elev < 0.0 || tc > 10000.0 || tc < -1000) {
 
-		tc = 0.0;
+			tc = 0.0;
 		}
 		else { 
 
@@ -198,7 +198,10 @@ namespace EGNOS_UTILITY{
 
 		gpsSatIds.clear();
 		gpsPrs.clear();
-		roverPos.fill(0);
+		roverPos[0] = 6300000;
+		roverPos[1] = 0;
+		roverPos[2] = 0;
+		roverPos[3] = 0;
 		pTropModel = NULL;
 	}
 
@@ -254,6 +257,7 @@ namespace EGNOS_UTILITY{
 
 		this->reset();
 	
+		this->pTropModel = pTropModel;
 		this->gpsTime = time;
 
 		for (int i = 0; i < vid.size(); i++) { // TODO checker. size of vid and prv shall be the same

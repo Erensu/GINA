@@ -1,6 +1,7 @@
 
 #include "navMain.hpp"
 #include "SaasTropModel.hpp"
+#include "NeillTropModel.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -18,11 +19,13 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData)
 
 	// Object for GG-type tropospheric model (Goad and Goodman, 1974)
 	// Default constructor => default values for model
-	SaasTropModel ggTropModel;
+	SaasTropModel saasTropModel;
+	NeillTropModel neilTropModel;
 
 	// Pointer to one of the two available tropospheric models. It points
 	// to the void model by default
-	TropModel *tropModelPtr = &noTropModel;
+	TropModel *tropModelPtr2gpstk = &neilTropModel;
+	TropModel *tropModelPtr2EGNOS = &neilTropModel;
 
 	// This verifies the ammount of command-line parameters given and
 	// prints a help message, if necessary
@@ -164,7 +167,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData)
 										prnVec,
 										rangeVec,
 										bcestore,
-										tropModelPtr);
+										tropModelPtr2gpstk);
 
 				// Note: Given that the default constructor sets public
 				// attribute "Algebraic" to FALSE, a linearized least squares
@@ -195,7 +198,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData)
 				////////////////////////////////
 
 				// Calculate position
-				if (egnosNavSolver.calculatePosition(rod.time, prnVec, rangeVec, tropModelPtr)) {
+				if (egnosNavSolver.calculatePosition(rod.time, prnVec, rangeVec, tropModelPtr2EGNOS)) {
 					// Print result
 					egnosNavSolver.print_Result();
 				}

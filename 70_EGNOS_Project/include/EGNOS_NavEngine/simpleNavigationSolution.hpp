@@ -68,13 +68,13 @@ namespace EGNOS_UTILITY {
 		
 	private:
 
-		gpstk::TropModel *pTropModel;
+		gpstk::TropModel *pTropModel = NULL;
 		GPSEphemerisStore bcestore;
 		gpstk::CommonTime gpsTime;
 
 		vector<int> gpsSatIds;
 		vector<double> gpsPrs;
-		std::array<double, 4> roverPos = {0,0,0,0};
+		std::array<double, 4> roverPos = {6300000,0,0,0};
 		
 
 		static const double wie_e;
