@@ -28,9 +28,13 @@ namespace EGNOS_UTILITY{
 		std::cout << "Clock bias: " << roverPos[3] << endl;
 	}
 
-	double SimpleNavSolver::calculateTropoDelay(gpstk::Position SV, gpstk::Position  RX) {
+	double SimpleNavSolver::calculateTropoDelay(gpstk::CommonTime &time, gpstk::Xvt &SV, gpstk::Xvt  &RX) {
 	
 		// must test RX for reasonableness to avoid corrupting TropModel
+		if (pTropModel == NULL) {
+			throw domain_error("Tropo model ptr is NULL");
+		}
+
 		Position R(RX), S(SV);
 		double tc = R.getHeight(), elev = R.elevation(SV);
 
@@ -40,7 +44,7 @@ namespace EGNOS_UTILITY{
 		}
 		else { 
 
-			tc = pTropModel->correction(R, S, gpsTime); 
+			tc = pTropModel->correction(R, S, time);
 		}
 		
 		return tc;
@@ -53,14 +57,21 @@ namespace EGNOS_UTILITY{
 		setSimpleNaviagtionCalculator(time, vid, prv, pTropModel);
 	
 		
-
-		while (updatePosition(iterNumber) > EGNOS_UTILITY_CONVERGENCE_LIMIT) {
+		double norm;
+		// do at least twice so that
+		// trop and iono model gets evaluated
+		do{
+			norm = updatePosition(iterNumber);
+			if (norm < EGNOS_UTILITY_CONVERGENCE_LIMIT && iterNumber > 0) {
+				break;
+			}
 			if (iterNumber > 25) {
 				validResult = false;
 				break;
 			}
+
 			iterNumber++;
-		};
+		}while (1);
 	
 		return validResult;
 	}
@@ -115,16 +126,6 @@ namespace EGNOS_UTILITY{
 
 				travelTime_old = travelTime;
 				travelTime = temp_dist / c_mps;
-
-				try
-				{
-					satPos = getSatXvt(time_of_transmission, gpsSatIds[i]);
-				}
-				catch (const std::exception& e)
-				{
-					continue;
-				}
-
 				time_of_transmission = time_of_arrival - travelTime;				
 
 				try
@@ -137,15 +138,32 @@ namespace EGNOS_UTILITY{
 				}
 
 			correctwSagnacEffect(time_of_transmission - time_of_arrival, satPos, temp_satPos);
-
 			satPos = temp_satPos;
-			//calculateTropoDelay(gpstk::Position SV, gpstk::Position  RX)
+
+			gpstk::Xvt RX;
+			RX.x[0] = roverPos[0];
+			RX.x[1] = roverPos[1];
+			RX.x[2] = roverPos[2];
+
+			double tc = 0;
+			try
+			{
+				tc = calculateTropoDelay(gpsTime, satPos, RX);
+			}
+			catch (const std::exception&)
+			{
+				tc = 0;
+			}
+			
 
 			// Geometry distance
 			geometryDistance(i) = calculateDistance(roverPos, satPos);
 
 			// Correct the PR with clock correction
 			PRObservations(i) += (satPos.clkbias + satPos.relcorr) * c_mps;
+
+			// Correct the PR with tropo correction
+			PRObservations(i) -= tc;
 
 			// Set up design matrix
 			rho = calculateDistance(roverPos, satPos);

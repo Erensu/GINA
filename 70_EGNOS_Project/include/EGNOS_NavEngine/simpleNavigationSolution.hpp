@@ -80,7 +80,7 @@ namespace EGNOS_UTILITY {
 		static const double wie_e;
 		static const double c_mps;
 
-		double SimpleNavSolver::calculateTropoDelay(gpstk::Position SV, gpstk::Position  RX);
+		double SimpleNavSolver::calculateTropoDelay(gpstk::CommonTime &time, gpstk::Xvt &SV, gpstk::Xvt  &RX);
 
 		gpstk::Xvt getSatXvt(gpstk::CommonTime &gpstime, int satId);
 	
