@@ -31,7 +31,8 @@ namespace EGNOS
 {
 	namespace EGNOS_RUNNABLE
 	{
-		
+
+		void runEGNOSIonoCorrectionModel(std::string EDAS_FileNamewPath);
 
 		void compareIonexFiles(	std::string ReferenceIonexFileNamewPath,
 								std::string TargetIonexFileNamewPath,

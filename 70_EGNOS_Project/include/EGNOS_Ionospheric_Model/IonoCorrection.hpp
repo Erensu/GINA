@@ -49,10 +49,9 @@ namespace EGNOS {
 	public:
 
 		virtual ~IonoModel() {};
-		virtual double getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) const = 0;
+		virtual IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) = 0;
 
 	};
-
 
 	class SlantIonoDelay
 	{
@@ -60,7 +59,6 @@ namespace EGNOS {
 
 		static const double SlantIonoDelay::Re;
 		static const double SlantIonoDelay::hI;
-
 		
 		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon);
 
@@ -250,23 +248,26 @@ namespace EGNOS {
 
 	class EGNOSIonoCorrectionModel:public IonoModel
 	{
+		
 	public:
 
 		EGNOSIonoCorrectionModel() {};
 		~EGNOSIonoCorrectionModel() {delete ptrIonoMapStore;};
 
-
-
 		void load(std::string EDAS_FileNamewPath);
 		gpstk::IonexStore convertMap2IonexStore(void);
+		gpstk::CommonTime getFirstEpoch(void);
+		gpstk::CommonTime getLastEpoch(void);
 
-		double getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) const;
+		IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth);
 
 
-		int updateIntervalinSeconds = 0; // If this is zero, means we add new IGPMap to Store whenever we got an update.
+		int updateIntervalinSeconds = 0;	// If this is zero, means we add new IGPMap to Store whenever we got an update.
 		bool debugInfo = false;
-
+		
 	private:
+		// TODO update this feature
+		bool interpolateinTime = true;		// if false, means we use the closest value in time. if true we interpolate in time
 
 		IGPMapStore *ptrIonoMapStore = NULL;
 		VerticalIonoDelayInterpolator interPol;

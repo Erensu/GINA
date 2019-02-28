@@ -1,5 +1,6 @@
 #include "Runnables.hpp"
 
+#include "Position.hpp"
 
 namespace EGNOS 
 {
@@ -7,6 +8,43 @@ namespace EGNOS
 	{
 	#define TEC_IN_METER 0.162372
 		
+		void runEGNOSIonoCorrectionModel(std::string EDAS_FileNamewPath) {
+		
+			EGNOSIonoCorrectionModel egnosIono;
+			egnosIono.load(EDAS_FileNamewPath);
+
+			gpstk::CommonTime firstEpoch = egnosIono.getFirstEpoch();
+			gpstk::CommonTime lastEpoch = egnosIono.getLastEpoch();
+			double timeIntervall = lastEpoch - firstEpoch;
+
+			gpstk::Position RX(45.0,0.0,0.0, gpstk::Position::CoordinateSystem::Geodetic);
+
+			gpstk::CommonTime epoch = firstEpoch + 6 * timeIntervall/10;
+			double elevation = 30;
+			double azimuth = 0;
+
+			IonCorrandVar ic;
+			for (size_t i = 0; i < 36; i++)
+			{
+				azimuth = 10 * i;
+				try
+				{
+					cout << "Azimuth: " << azimuth << std::endl;
+					cout << "Elevation: " << elevation << std::endl;
+
+					ic = egnosIono.getCorrection(epoch, RX, elevation, azimuth);
+
+					cout << "Iono Correction in meter: " << ic.CorrinMeter << endl;
+					cout << "Iono Variance in meter square: " << ic.Variance << endl;
+					cout << endl;
+				}
+				catch (const std::exception& e)
+				{
+					std::cout << e.what() << endl;
+					cout << endl;
+				}
+			}
+		}
 
 		void compareIonexFiles(	std::string ReferenceIonexFileNamewPath,
 								std::string TargetIonexFileNamewPath,

@@ -122,11 +122,11 @@ namespace EGNOS {
 		}
 
 		IGPCoordinate keyword;
-		keyword.lat = lat;
-		keyword.lon = lon;
+		keyword.lat = round(lat * 1000.0) / 1000.0;
+		keyword.lon = round(lon * 1000.0) / 1000.0;
 
 		restrictLonginDegree(keyword.lon);
-
+		
 		std::map<IGPCoordinate, IonosphericGridPoint>::const_iterator it;
 
 		it = this->Map.find(keyword);

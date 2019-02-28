@@ -7,6 +7,8 @@
 #include "IGPMap.hpp"
 #include "EGNOS_Ionex_Converter.hpp"
 
+#include <math.h>
+
 #define TEC_IN_METER 0.162372
 #define MAX_RANGE_FOR_INTERPOLATION 90
 
@@ -21,38 +23,48 @@ namespace EGNOS {
 
 #pragma region SlantIonoDelay
 
-	double SlantIonoDelay::getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon) {
+	double SlantIonoDelay::getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon){
 
-		double F;
+		double F = 1;
 		setRoverPosition(data.RoverPos.rlat, data.RoverPos.rlon, data.RoverPos.rheight);
 		setazimuthOfSatId(data.SatVisibility.azimuthOfSatId, data.SatVisibility.elevationOfSatId);
 
 		calculatePP(lat, lon);
-		calculateSlantFactor();
+
+		lat = lat * 180 / M_PI;
+		lon = std::fmod(lon * 180 / M_PI,180);
+		F = calculateSlantFactor();
 
 		return F;
 	}
 
+	void SlantIonoDelay::setRoverPosition(double lat, double lon, double height) {
+
+		this->rlat = lat * M_PI / 180.0;
+		this->rlon = lon * M_PI / 180.0;
+		this->rheight = height;
+	}
+
 	void SlantIonoDelay::setazimuthOfSatId(double az, double el) {
 
-		this->azimuthOfSatId = az;
-		this->elevationOfSatId = el;
+		this->azimuthOfSatId = az * M_PI /180.0;
+		this->elevationOfSatId = el * M_PI / 180.0;
 	}
 
 	void SlantIonoDelay::calculatePP(double &lat, double &lon) {
 
 		double centralAngle;
 
-		centralAngle = M_PI - this->elevationOfSatId - asin(((Re + this->rheight) / (Re + hI)) * cos(this->elevationOfSatId));
+		centralAngle = M_PI/2 - this->elevationOfSatId - asin(((Re + this->rheight) / (Re + hI)) * cos(this->elevationOfSatId));
 
 		this->ppLat = asin(sin(this->rlat) * cos(centralAngle) + cos(this->rlat) * sin(centralAngle) * cos(this->azimuthOfSatId));
-
 
 		if (
 			(this->rlat > 70 * M_PI / 360 && tan(centralAngle) * cos(this->azimuthOfSatId) > tan(M_PI / 2 - this->rlat)) ||
 			(this->rlat > -70 * M_PI / 360 && -tan(centralAngle) * cos(this->azimuthOfSatId) > tan(M_PI / 2 - this->rlat))
 			) {
-			ppLon = this->rlon + M_PI - asin(sin(centralAngle) * sin(this->azimuthOfSatId) / cos(this->ppLat));
+			ppLon = this->rlon + M_PI - asin(sin(centralAngle) * sin(this->azimuthOfSatId) / cos(this->ppLat)); 
+
 		}
 		else {
 			ppLon = this->rlon + asin(sin(centralAngle) * sin(this->azimuthOfSatId) / cos(this->ppLat));
@@ -68,7 +80,7 @@ namespace EGNOS {
 
 		F = 1 / ( sqrt( 1 - pow((( Re * cos(elevationOfSatId)) / (Re + hI)), 2)));
 
-		return 0;
+		return F;
 	}
 
 #pragma endregion
@@ -80,14 +92,6 @@ namespace EGNOS {
 		this->ionoPP = original->ionoPP;
 		this->incrementOfSearchWindowforHorizontalInterPolator = incrementOfSearchWindowforHorizontalInterPolator;
 	}
-
-	void SlantIonoDelay::setRoverPosition(double lat, double lon, double height) {
-	
-		this->rlat = lat;
-		this->rlon = lon;
-		this->rheight = height;
-	}
-
 	
 	double VerticalIonoDelayInterpolator::interpolation4point(	double xpp, double ypp,
 																double ionoDelay1,
@@ -276,7 +280,6 @@ namespace EGNOS {
 			{
 			}
 		}
-		
 		
 		throw std::domain_error("Interppolation is not possible"); 
 
@@ -2372,35 +2375,129 @@ namespace EGNOS {
 		return ionexStore;
 	}
 
-	double EGNOSIonoCorrectionModel::getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) const {
+	IonCorrandVar EGNOSIonoCorrectionModel::getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) {
 	
 
-		std::vector<gpstk::CommonTime> availableEpochs = this->ptrIonoMapStore-> getEpochTimes();
+		std::vector<gpstk::CommonTime> availableEpochs = this->ptrIonoMapStore->getEpochTimes();
 
 		if (availableEpochs.size() < 2) {
 			throw domain_error("Store has zero or just one element");
 		}
 
-		if (epoch < availableEpochs[0] || epoch > availableEpochs[availableEpochs.size() - 1]) {
+		if (epoch < availableEpochs.front() || epoch > availableEpochs.back()) {
 			throw domain_error("Epoch cannot be found");
 		}
 
-		IGPMap iMap_early, iMap_late;
-		gpstk::CommonTime epoch_early, epoch_late;
+		SlantIonoDelay_Input inputData;
+		IonosphericGridPoint igpPP;
 
-		for (size_t i = 1; i < availableEpochs.size()-1; i++){
+		inputData.RoverPos.rlat = RX.geodeticLatitude();
+		inputData.RoverPos.rlon = RX.longitude();
+		inputData.RoverPos.rheight = RX.height();
+		inputData.SatVisibility.elevationOfSatId = elevation;
+		inputData.SatVisibility.azimuthOfSatId = azimuth;
 
-			if (epoch >= availableEpochs[i] && epoch <= availableEpochs[i + 1]) {
-				iMap_early = this->ptrIonoMapStore->getIGPMap(availableEpochs[i]);
-				iMap_late  = this->ptrIonoMapStore->getIGPMap(availableEpochs[i+1]);
-				epoch_early = availableEpochs[i];
-				epoch_late = availableEpochs[i + 1];
-			}
+		double F = 1;
+		try
+		{
+			F = this->slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
 		}
+		catch (const std::exception& e)
+		{
+			std::string errMessage = e.what();
+			errMessage = errMessage + "\n" + "Iono pierce point is uncalculable";
+			throw domain_error(errMessage);
+		}
+		
+		std::cout << "PP lat lon: " << igpPP.lat << " " << igpPP.lon << std::endl;
 
-		//this->interPol.interpolate(epoch, iMap_early, IonosphericGridPoint &newPP) ;
+		IonCorrandVar corr;
 
-		return 0;
+		if (interpolateinTime == true) {
+
+			IGPMap iMap_early, iMap_late;
+			gpstk::CommonTime epoch_early, epoch_late;
+
+			bool mapsAreFound = false;
+			for (size_t i = 1; i < availableEpochs.size() - 1; i++) {
+
+
+				if (epoch >= availableEpochs[i] && epoch <= availableEpochs[i + 1]) {
+					iMap_early = this->ptrIonoMapStore->getIGPMap(availableEpochs[i]);
+					iMap_late = this->ptrIonoMapStore->getIGPMap(availableEpochs[i + 1]);
+					epoch_early = availableEpochs[i];
+					epoch_late = availableEpochs[i + 1];
+					mapsAreFound = true;
+					break;
+				}
+			}
+			
+			if (mapsAreFound == false) {
+				throw domain_error("IGPMaps are not reachable");
+			}
+
+			IonCorrandVar corr_early;
+			IonCorrandVar corr_late;
+			try
+			{
+				corr_early = this->interPol.interpolate(epoch_early, iMap_early, igpPP);
+				corr_late = this->interPol.interpolate(epoch_late, iMap_late, igpPP);
+			}
+			catch (const std::exception& e)
+			{
+				std::string errMessage = e.what();
+				errMessage = errMessage + "\n" + "Both or one of the IGPMaps are not interpolable in the given location";
+				throw domain_error(errMessage);
+			}
+			
+			double deltaT = epoch_late - epoch_early;
+			double timeFromEarly = epoch - epoch_early;
+			double timeToLate = epoch_late - epoch;
+	
+			if (deltaT < 1) {
+				corr.CorrinMeter = corr_early.CorrinMeter;
+				corr.Variance = corr_early.Variance;
+			}
+			else {
+				corr.CorrinMeter = corr_early.CorrinMeter * (1 - timeFromEarly / deltaT) + corr_late.CorrinMeter * (1 - timeToLate / deltaT);
+				corr.Variance = corr_early.Variance * (1 - timeFromEarly / deltaT) + corr_late.Variance * (1 - timeToLate / deltaT);
+			}
+			
+		}
+		else {
+			IGPMap iMap_early;
+			gpstk::CommonTime epoch_early, epoch_late;
+
+			for (size_t i = 1; i < availableEpochs.size() - 1; i++) {
+
+
+				if (epoch >= availableEpochs[i] && epoch <= availableEpochs[i + 1]) {
+					iMap_early = this->ptrIonoMapStore->getIGPMap(availableEpochs[i]);
+					epoch_early = availableEpochs[i];
+				}
+			}
+
+			IonCorrandVar corr_early = this->interPol.interpolate(epoch_early, iMap_early, igpPP);
+
+			corr.CorrinMeter = corr_early.CorrinMeter;
+			corr.Variance = corr_early.Variance;
+		}
+	
+		// Update with slant factor
+		corr.CorrinMeter = F * corr.CorrinMeter;
+		corr.Variance = F * corr.Variance;
+		return corr;
+	}
+
+	gpstk::CommonTime EGNOSIonoCorrectionModel::getFirstEpoch(void) {
+		std::vector<gpstk::CommonTime> availableEpochs = this->ptrIonoMapStore->getEpochTimes();
+
+		return availableEpochs.front();
+	}
+
+	gpstk::CommonTime EGNOSIonoCorrectionModel::getLastEpoch(void) {
+		std::vector<gpstk::CommonTime> availableEpochs = this->ptrIonoMapStore->getEpochTimes();
+		return availableEpochs.back();
 	}
 
 

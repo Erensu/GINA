@@ -10,11 +10,21 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-	gpstk::Triple rtv;
+	// Run EGNOSIonoCorrectionModel class and its features
+	//////////////////////////////////////////
+
+	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15.ems";
+	EGNOS::EGNOS_RUNNABLE::runEGNOSIonoCorrectionModel(EDAS_FileNamewPath);
+	//////////////////////////////////////////
+
+	/*gpstk::Triple rtv;
+	//////////////////////////////////////////
+
 	string obsFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
 	string ephFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
 
-	mainNavigationSolution(obsFile, ephFile);
+	mainNavigationSolution(obsFile, ephFile);*/
+	//////////////////////////////////////////
 
 	// This part is under construction
 	//////////////////////////////////////////
