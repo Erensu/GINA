@@ -8,6 +8,8 @@
 #include "IonexStream.hpp"
 #include "IonexHeader.hpp"
 #include "IonexData.hpp"
+#include "IonexStore.hpp"
+
 #include "CivilTime.hpp"
 
 namespace EGNOS {
@@ -43,6 +45,15 @@ namespace EGNOS {
 		SlantIonoDelay_SatVisibility SatVisibility;
 	}SlantIonoDelay_Input;
 
+	class IonoModel {
+	public:
+
+		virtual ~IonoModel() {};
+		virtual double getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) const = 0;
+
+	};
+
+
 	class SlantIonoDelay
 	{
 	public:
@@ -51,14 +62,14 @@ namespace EGNOS {
 		static const double SlantIonoDelay::hI;
 
 		
-		double getSlantFactor(SlantIonoDelay_Input data);
+		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon);
 
 	private:
 
 		void setRoverPosition(double lat, double lon, double height);
 		void setazimuthOfSatId(double az, double el);
 
-		void calculatePP(void);
+		void calculatePP(double &lat, double &lon);
 		double calculateSlantFactor(void);
 
 		double rlat;
@@ -236,4 +247,30 @@ namespace EGNOS {
 			int numSVs = 0;
 
 	};
+
+	class EGNOSIonoCorrectionModel:public IonoModel
+	{
+	public:
+
+		EGNOSIonoCorrectionModel() {};
+		~EGNOSIonoCorrectionModel() {delete ptrIonoMapStore;};
+
+
+
+		void load(std::string EDAS_FileNamewPath);
+		gpstk::IonexStore convertMap2IonexStore(void);
+
+		double getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) const;
+
+
+		int updateIntervalinSeconds = 0; // If this is zero, means we add new IGPMap to Store whenever we got an update.
+		bool debugInfo = false;
+
+	private:
+
+		IGPMapStore *ptrIonoMapStore = NULL;
+		VerticalIonoDelayInterpolator interPol;
+		SlantIonoDelay slantCalculator;
+	};
+
 };

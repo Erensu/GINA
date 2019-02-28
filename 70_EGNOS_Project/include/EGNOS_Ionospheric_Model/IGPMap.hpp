@@ -102,6 +102,8 @@ namespace EGNOS {
 			IonosphericGridPoint getIGP(gpstk::CommonTime &epoch, double lat, double lon) const;
 			IonexCompatibleMap* clone() const { return new IGPMapStore(*this); };
 
+			IGPMapStore* copy() const { return new IGPMapStore(*this); };
+
 			void addMap(gpstk::CommonTime &time, IGPMap &igp);
 			
 			IGPMap getIGPMap(gpstk::CommonTime &epoch);

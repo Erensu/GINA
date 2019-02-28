@@ -249,9 +249,6 @@ namespace EGNOS_UTILITY{
 		bcestore = in_bcestore;
 	}
 
-	void setIonoModel(IonoModel* ionoModel) {
-
-	};
 
 	void SimpleNavSolver::setSimpleNaviagtionCalculator(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv, gpstk::TropModel *pTropModel) {
 

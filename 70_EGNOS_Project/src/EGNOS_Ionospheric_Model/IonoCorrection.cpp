@@ -1,6 +1,12 @@
 
 #include "IonoCorrection.hpp"
 
+#include "EGNOS_EMS_Data.hpp"
+#include "EGNOS_EMS_Stream.hpp"
+
+#include "IGPMap.hpp"
+#include "EGNOS_Ionex_Converter.hpp"
+
 #define TEC_IN_METER 0.162372
 #define MAX_RANGE_FOR_INTERPOLATION 90
 
@@ -15,13 +21,13 @@ namespace EGNOS {
 
 #pragma region SlantIonoDelay
 
-	double SlantIonoDelay::getSlantFactor(SlantIonoDelay_Input data) {
+	double SlantIonoDelay::getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon) {
 
 		double F;
 		setRoverPosition(data.RoverPos.rlat, data.RoverPos.rlon, data.RoverPos.rheight);
 		setazimuthOfSatId(data.SatVisibility.azimuthOfSatId, data.SatVisibility.elevationOfSatId);
 
-		calculatePP();
+		calculatePP(lat, lon);
 		calculateSlantFactor();
 
 		return F;
@@ -33,7 +39,7 @@ namespace EGNOS {
 		this->elevationOfSatId = el;
 	}
 
-	void SlantIonoDelay::calculatePP(void) {
+	void SlantIonoDelay::calculatePP(double &lat, double &lon) {
 
 		double centralAngle;
 
@@ -51,6 +57,9 @@ namespace EGNOS {
 		else {
 			ppLon = this->rlon + asin(sin(centralAngle) * sin(this->azimuthOfSatId) / cos(this->ppLat));
 		}
+
+		lat = ppLat;
+		lon = ppLon;
 	}
 
 	double SlantIonoDelay::calculateSlantFactor(void) {
@@ -2246,6 +2255,155 @@ namespace EGNOS {
 
 		return typestr;
 	}
+#pragma endregion
+
+#pragma region EGNOSIonoCorrectionModel
+
+	void EGNOSIonoCorrectionModel::load(std::string EDAS_FileNamewPath) {
+	
+		delete ptrIonoMapStore;
+
+		EGNOS_EMS_Parser::EGNOS_EMS_Stream EMSStream(EDAS_FileNamewPath.c_str());
+
+		EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
+
+		EGNOS::IonosphericDelayCorrectionsMessageParser IonoGridPointParser;
+		EGNOS::IonosphericGridPointMasksMessageParser IonoMaskParser;
+
+		EGNOS::IGPMapStore igpMapStore;
+
+		gpstk::CommonTime CurrentDataTime;
+		gpstk::CommonTime LastUpdateTime;
+
+
+		EGNOS::IGPMap IonoMap;
+		EGNOS::VerticalIonoDelayInterpolator egnosInterPol;
+		EGNOS::IGPMediator IgpMediator;
+
+		
+		bool weHad18 = false;
+		bool weHad26 = false;
+
+		int updateIndex = 0;
+		while (EMSStream >> EData) {
+
+			try {
+				CurrentDataTime = EData.messageTime;
+			}
+			catch (...) {
+				if (debugInfo == true) {
+					cout << "Time conversion failed so we skipped this epoch. Civil Time: " << EData.messageTime.asString() << endl;
+				}
+				continue;
+			}
+
+
+			if (EData.messageId == 18) {
+
+				IonoMaskParser += EData.message;
+				weHad18 = true;
+			}
+
+			if (EData.messageId == 26) {
+
+				IonoGridPointParser += EData.message;
+				weHad26 = true;
+			}
+
+			if (weHad18 || weHad26) {
+
+				bool newData = false;
+
+				IgpMediator.updateTime(CurrentDataTime);
+				IgpMediator.setIGPCandidates(IonoGridPointParser.getIonosphericGridPoint());
+				IgpMediator.updateIGPCandidate(IonoMaskParser);
+
+				newData = IonoMap.updateMap(IgpMediator);
+
+				if (newData == true) {
+
+					if (updateIntervalinSeconds > 0) {
+
+						if (CurrentDataTime > (LastUpdateTime + updateIntervalinSeconds)) {
+
+							LastUpdateTime = CurrentDataTime;
+
+							igpMapStore.addMap(CurrentDataTime, IonoMap);
+
+							if (debugInfo == true) {
+								gpstk::CivilTime clock(CurrentDataTime);
+								cout << "Time: " << clock.asString() << ": IGP Map was updated and added to IGPMapStore" << endl;
+							}
+						}
+
+					}
+					else {
+						igpMapStore.addMap(CurrentDataTime, IonoMap);
+
+						if (debugInfo == true) {
+							gpstk::CivilTime clock(CurrentDataTime);
+							cout << "Time: " << clock << ": IGP Map was updated and added to IGPMapStore" << endl;
+						}
+						
+					}
+
+					
+
+				}
+
+				weHad26 = false;
+				weHad18 = false;
+			}
+		}
+
+		EMSStream.close();
+		
+		this->ptrIonoMapStore = igpMapStore.copy();
+
+		return;
+	
+	}
+
+	gpstk::IonexStore EGNOSIonoCorrectionModel::convertMap2IonexStore(void) {
+	
+		IGPMap2IonexData ionexConverter;
+		gpstk::IonexStore ionexStore = ionexConverter.convert(*(this->ptrIonoMapStore));
+
+		return ionexStore;
+	}
+
+	double EGNOSIonoCorrectionModel::getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) const {
+	
+
+		std::vector<gpstk::CommonTime> availableEpochs = this->ptrIonoMapStore-> getEpochTimes();
+
+		if (availableEpochs.size() < 2) {
+			throw domain_error("Store has zero or just one element");
+		}
+
+		if (epoch < availableEpochs[0] || epoch > availableEpochs[availableEpochs.size() - 1]) {
+			throw domain_error("Epoch cannot be found");
+		}
+
+		IGPMap iMap_early, iMap_late;
+		gpstk::CommonTime epoch_early, epoch_late;
+
+		for (size_t i = 1; i < availableEpochs.size()-1; i++){
+
+			if (epoch >= availableEpochs[i] && epoch <= availableEpochs[i + 1]) {
+				iMap_early = this->ptrIonoMapStore->getIGPMap(availableEpochs[i]);
+				iMap_late  = this->ptrIonoMapStore->getIGPMap(availableEpochs[i+1]);
+				epoch_early = availableEpochs[i];
+				epoch_late = availableEpochs[i + 1];
+			}
+		}
+
+		//this->interPol.interpolate(epoch, iMap_early, IonosphericGridPoint &newPP) ;
+
+		return 0;
+	}
+
+
 #pragma endregion
 
 };

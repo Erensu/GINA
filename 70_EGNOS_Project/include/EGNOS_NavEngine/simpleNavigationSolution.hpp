@@ -44,14 +44,6 @@ namespace EGNOS_UTILITY {
 
 #define EGNOS_UTILITY_CONVERGENCE_LIMIT 1E-5
 
-	class IonoModel {
-	public:
-
-		virtual ~IonoModel() {};
-		virtual double getIonoDelay(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation) const = 0;
-		virtual double clone(void) const = 0;
-	};
-
 	class SimpleNavSolver
 	{
 	public:
