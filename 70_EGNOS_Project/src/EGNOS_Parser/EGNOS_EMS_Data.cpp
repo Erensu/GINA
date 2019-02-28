@@ -15,12 +15,13 @@ namespace EGNOS_EMS_Parser
 
 		strm << this->svId << " ";
 
-		strm << this->int2string(this->messageTime.year - EMS_YEAR_OFFSET) << " ";
-		strm << this->int2string(this->messageTime.month) << " ";
-		strm << this->int2string(this->messageTime.day) << " ";
-		strm << this->int2string(this->messageTime.hour) << " ";
-		strm << this->int2string(this->messageTime.minute) << " ";
-		strm << this->int2string(this->messageTime.second) << " ";
+		gpstk::CivilTime civTime = this->messageTime;
+		strm << this->int2string(civTime.year - EMS_YEAR_OFFSET) << " ";
+		strm << this->int2string(civTime.month) << " ";
+		strm << this->int2string(civTime.day) << " ";
+		strm << this->int2string(civTime.hour) << " ";
+		strm << this->int2string(civTime.minute) << " ";
+		strm << this->int2string(civTime.second) << " ";
 		strm << this->messageId << " ";
 		strm << this->bitset2hexstring();
 
@@ -116,13 +117,24 @@ namespace EGNOS_EMS_Parser
 			// Set SvId
 			svId = stoi(satId, nullptr);
 			
-			// Set civil time
-			messageTime.year = EMS_YEAR_OFFSET + stoi(year, nullptr);
-			messageTime.month = stoi(month, nullptr);
-			messageTime.day = stoi(day, nullptr);
-			messageTime.hour = stoi(hour, nullptr);
-			messageTime.minute = stoi(minute, nullptr);
-			messageTime.second = stoi(second, nullptr);
+			// Set time
+			gpstk::CivilTime civTime;
+			civTime.year = EMS_YEAR_OFFSET + stoi(year, nullptr);
+			civTime.month = stoi(month, nullptr);
+			civTime.day = stoi(day, nullptr);
+			civTime.hour = stoi(hour, nullptr);
+			civTime.minute = stoi(minute, nullptr);
+			civTime.second = stoi(second, nullptr);
+
+			// EMS is in GPS time
+			if (civTime.hour == 24 && civTime.minute == 0 && civTime.second == 0) {
+				civTime.hour = 23;
+				civTime.minute = 59;  
+				civTime.second = 59.999;
+			}
+
+			civTime.setTimeSystem(gpstk::TimeSystem::GPS);
+			this->messageTime = civTime;
 			
 		}
 		catch (std::exception &e)

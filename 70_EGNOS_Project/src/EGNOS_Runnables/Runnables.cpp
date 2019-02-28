@@ -20,30 +20,36 @@ namespace EGNOS
 			gpstk::Position RX(45.0,0.0,0.0, gpstk::Position::CoordinateSystem::Geodetic);
 
 			gpstk::CommonTime epoch = firstEpoch + 6 * timeIntervall/10;
-			double elevation = 30;
+			double elevation = 0;
+			double elevation_base = 5;
 			double azimuth = 0;
 
 			IonCorrandVar ic;
-			for (size_t i = 0; i < 36; i++)
+			for (size_t i = 0; i < 18; i++)
 			{
-				azimuth = 10 * i;
-				try
+				elevation = elevation_base + 5 * i;
+				for (size_t i = 0; i < 36; i++)
 				{
-					cout << "Azimuth: " << azimuth << std::endl;
-					cout << "Elevation: " << elevation << std::endl;
+					azimuth = 10 * i;
+					try
+					{
+						cout << "Azimuth: " << azimuth << std::endl;
+						cout << "Elevation: " << elevation << std::endl;
 
-					ic = egnosIono.getCorrection(epoch, RX, elevation, azimuth);
+						ic = egnosIono.getCorrection(epoch, RX, elevation, azimuth);
 
-					cout << "Iono Correction in meter: " << ic.CorrinMeter << endl;
-					cout << "Iono Variance in meter square: " << ic.Variance << endl;
-					cout << endl;
-				}
-				catch (const std::exception& e)
-				{
-					std::cout << e.what() << endl;
-					cout << endl;
+						cout << "Iono Correction in meter: " << ic.CorrinMeter << endl;
+						cout << "Iono Variance in meter square: " << ic.Variance << endl;
+						cout << endl;
+					}
+					catch (const std::exception& e)
+					{
+						std::cout << e.what() << endl;
+						cout << endl;
+					}
 				}
 			}
+			
 		}
 
 		void compareIonexFiles(	std::string ReferenceIonexFileNamewPath,

@@ -55,7 +55,7 @@ namespace EGNOS {
 
 		double centralAngle;
 
-		centralAngle = M_PI/2 - this->elevationOfSatId - asin(((Re + this->rheight) / (Re + hI)) * cos(this->elevationOfSatId));
+		centralAngle = M_PI/2 - this->elevationOfSatId - asin(( Re / (Re + hI)) * cos(this->elevationOfSatId));
 
 		this->ppLat = asin(sin(this->rlat) * cos(centralAngle) + cos(this->rlat) * sin(centralAngle) * cos(this->azimuthOfSatId));
 
@@ -78,7 +78,7 @@ namespace EGNOS {
 	
 		double F;
 
-		F = 1 / ( sqrt( 1 - pow((( Re * cos(elevationOfSatId)) / (Re + hI)), 2)));
+		F = std::pow( 1 - pow( ( Re * cos(elevationOfSatId)) / (Re + hI) , 2) , -0.5);
 
 		return F;
 	}
@@ -2275,14 +2275,12 @@ namespace EGNOS {
 
 		EGNOS::IGPMapStore igpMapStore;
 
-		gpstk::CommonTime CurrentDataTime;
-		gpstk::CommonTime LastUpdateTime;
-
+		gpstk::CommonTime CurrentDataTime(gpstk::TimeSystem::GPS);
+		gpstk::CommonTime LastUpdateTime(gpstk::TimeSystem::GPS);
 
 		EGNOS::IGPMap IonoMap;
 		EGNOS::VerticalIonoDelayInterpolator egnosInterPol;
 		EGNOS::IGPMediator IgpMediator;
-
 		
 		bool weHad18 = false;
 		bool weHad26 = false;
@@ -2409,7 +2407,7 @@ namespace EGNOS {
 			throw domain_error(errMessage);
 		}
 		
-		std::cout << "PP lat lon: " << igpPP.lat << " " << igpPP.lon << std::endl;
+		//std::cout << "PP lat lon: " << igpPP.lat << " " << igpPP.lon << std::endl;
 
 		IonCorrandVar corr;
 

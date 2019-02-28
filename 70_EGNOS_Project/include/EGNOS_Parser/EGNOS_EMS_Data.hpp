@@ -57,7 +57,7 @@ namespace EGNOS_EMS_Parser
 				gpstk::StringUtils::StringException);
 
 		
-		gpstk::CivilTime messageTime;
+		gpstk::CommonTime messageTime;
 
 		std::bitset<256> message;
 		unsigned int messageId;

@@ -27,4 +27,4 @@
 
 #include "simpleNavigationSolution.hpp"
 
-int mainNavigationSolution(std::string& obsData, std::string &ephData);
+int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData);

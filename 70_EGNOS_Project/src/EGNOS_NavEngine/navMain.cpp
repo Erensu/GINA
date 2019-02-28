@@ -6,7 +6,7 @@
 using namespace std;
 using namespace gpstk;
 
-int mainNavigationSolution(std::string& obsData, std::string &ephData)
+int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData)
 {
 
 	// Declaration of objects for storing ephemerides and handling RAIM
@@ -39,7 +39,14 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData)
 		exit(-1);
 	}*/
 
-	EGNOS_UTILITY::SimpleNavSolver egnosNavSolver;
+	EGNOS::EGNOS_UTILITY::SimpleNavSolver egnosNavSolver;
+	EGNOS::EGNOSIonoCorrectionModel egnosIonoModel;
+	EGNOS::IonoModel *ionoModel = NULL; //&egnosIonoModel;
+
+	egnosIonoModel.updateIntervalinSeconds = 60;
+	//egnosIonoModel.load(EMSData);
+
+	std::cout << "IonoModel is loaded "<< std::endl;
 
 	try
 	{
@@ -198,7 +205,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData)
 				////////////////////////////////
 
 				// Calculate position
-				if (egnosNavSolver.calculatePosition(rod.time, prnVec, rangeVec, tropModelPtr2EGNOS)) {
+				if (egnosNavSolver.calculatePosition(rod.time, prnVec, rangeVec, tropModelPtr2EGNOS, ionoModel)) {
 					// Print result
 					egnosNavSolver.print_Result();
 				}
