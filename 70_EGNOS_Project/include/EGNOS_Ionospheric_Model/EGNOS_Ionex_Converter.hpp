@@ -23,7 +23,7 @@ namespace EGNOS {
 
 	private:
 
-		int IGPMap2IonexData::calcDim(int lat1, int lat2, double dlat);
+		int calcDim(int lat1, int lat2, double dlat);
 	};
 
 };

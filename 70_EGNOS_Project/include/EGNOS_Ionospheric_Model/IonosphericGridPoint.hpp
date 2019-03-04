@@ -39,7 +39,7 @@ namespace EGNOS {
 		static const double IonosphericGridPoint::GIVEI_Variance[16];
 
 		IonosphericGridPoint(void) {this->valid = false;};
-		IonosphericGridPoint::IonosphericGridPoint(const IonosphericGridPoint &obj) { this->copy(obj); };
+		IonosphericGridPoint(const IonosphericGridPoint &obj) { this->copy(obj); };
 		IonosphericGridPoint& operator=(const IonosphericGridPoint& other);
 
 		void setReferenceTime(gpstk::CommonTime time);

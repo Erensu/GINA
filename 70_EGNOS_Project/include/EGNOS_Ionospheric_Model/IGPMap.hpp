@@ -48,9 +48,9 @@ namespace EGNOS {
 		public:
 
 			void updateTime(gpstk::CommonTime &time);
-			std::vector<IonosphericGridPoint> IGPMediator::getIGPCandidates(void);
-			void IGPMediator::setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs);
-			void IGPMediator::updateIGPCandidate(const IonosphericGridPointMasksMessageParser & const IGPMessageParser);
+			std::vector<IonosphericGridPoint> getIGPCandidates(void);
+			void setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs);
+			void updateIGPCandidate(const IonosphericGridPointMasksMessageParser & const IGPMessageParser);
 
 			gpstk::CommonTime getReferencetime(void) {return currentDataTime;};
 
@@ -111,7 +111,7 @@ namespace EGNOS {
 		private:
 			int numberOfMap = 0;
 
-			void IGPMapStore::updateTime(gpstk::CommonTime &t);
+			void updateTime(gpstk::CommonTime &t);
 			gpstk::CommonTime initialTime, finalTime;
 
 			/// The key to this map is the time

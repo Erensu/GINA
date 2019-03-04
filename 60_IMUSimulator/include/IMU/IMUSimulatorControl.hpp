@@ -100,10 +100,10 @@ namespace IMUSimulator {
 		double time, startTime, endTime, deltaT;
 		int startWN, endWN, WN;
 	
-		unsigned char IMUControl::setFirstStep(void);
-		unsigned char IMUControl::timeIncrease(double&, double);
-		unsigned char IMUControl::errorCheck(void);
-		unsigned char IMUControl::breakCondition(void);
+		unsigned char setFirstStep(void);
+		unsigned char timeIncrease(double&, double);
+		unsigned char errorCheck(void);
+		unsigned char breakCondition(void);
 
 		void generatetrajectory(IMUSimulator::IMUSignalGenerator& imuGenerator,
 								IMUSimulator::strapdown_ecef& str_e,

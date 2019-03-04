@@ -94,7 +94,7 @@ namespace EGNOS {
 		VerticalIonoDelayInterpolator(VerticalIonoDelayInterpolator* original);
 		~VerticalIonoDelayInterpolator(void) {};
 
-		IonCorrandVar VerticalIonoDelayInterpolator::interpolate(gpstk::CommonTime &epoch, IGPMapBase& Map, IonosphericGridPoint& newPP);
+		IonCorrandVar interpolate(gpstk::CommonTime &epoch, IGPMapBase& Map, IonosphericGridPoint& newPP);
 		IonosphericGridPoint getHorizontallyInterpolatedVertices(IGPMapBase& Map, double lat, double lon, double increment);
 
 		double getTEC(IonexCompatibleMap *Map, gpstk::CommonTime &epoch, double lat, double lon);

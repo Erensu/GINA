@@ -22,12 +22,12 @@ namespace IMUSimulator {
 			IMUSignalGenerator(void);
 			void addError(void);
 			Measure_IMU calculate(Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d);
-			Measure_IMU IMUSignalGenerator::calculate(double[3], double[3], Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d);
+			Measure_IMU calculate(double[3], double[3], Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d);
 
 		private:
 
-			void IMUSignalGenerator::update_gravitiy(double, double, double);
-			Eigen::Matrix3d IMUSignalGenerator::pos2Cne_RAD(double& lat, double& lon);
+			void update_gravitiy(double, double, double);
+			Eigen::Matrix3d pos2Cne_RAD(double& lat, double& lon);
 
 	};
 
