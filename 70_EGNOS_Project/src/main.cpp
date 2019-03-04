@@ -8,7 +8,16 @@ using namespace std;
 #include "IonexData.hpp"
 #include "IonexStore.hpp"
 
+#include "RTKPOST_Data.hpp"
+#include "RTKPOST_Stream.hpp"
+
 int main(int argc, char **argv) {
+
+	// Run RTKPOST parser
+	//////////////////////////////////////////
+	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE.pos";
+
+	//////////////////////////////////////////
 
 	// Run EGNOSIonoCorrectionModel class and its features
 	//////////////////////////////////////////
@@ -20,10 +29,10 @@ int main(int argc, char **argv) {
 	// Run mainNavigationSolution
 	//////////////////////////////////////////
 
-	string obsFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
+	/*string obsFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
 	string ephFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
 	string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
-	mainNavigationSolution(obsFile, ephFile, EDAS_FileNamewPath);
+	mainNavigationSolution(obsFile, ephFile, EDAS_FileNamewPath);*/
 	//////////////////////////////////////////
 
 	// This part is under construction

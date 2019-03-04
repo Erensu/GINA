@@ -1,5 +1,5 @@
 
-#include "IMUControl.h"
+#include "IMUSimulatorControl.hpp"
 
 
 namespace IMUSimulator {

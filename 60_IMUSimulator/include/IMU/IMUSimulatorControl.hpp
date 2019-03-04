@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include "IMUSignalGenerator.h"
+#include "IMUSimulatorSignalGenerator.hpp"
 #include "strapdown_ecef.h"
 
 #include "I_GINA_writer.hpp"

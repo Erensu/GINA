@@ -30,7 +30,7 @@ namespace GINAParser {
 	    return ret;
 	}
 
-	TrajectoryData TrajectoryStore::findPosition(gpstk::GPSWeekSecond time) {
+	TrajectoryData& TrajectoryStore::findPosition(gpstk::GPSWeekSecond time) {
 		TrajectoryData trajData;
 		TrajectoryData ret;
 		TrajectoryMap::iterator it;

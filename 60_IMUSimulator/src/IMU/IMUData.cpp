@@ -1,5 +1,5 @@
 
-#include "IMUData.h"
+#include "IMUSimulatorData.hpp"
 
 namespace IMUSimulator {
 

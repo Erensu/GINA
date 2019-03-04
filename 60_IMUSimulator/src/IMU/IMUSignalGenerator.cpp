@@ -1,5 +1,5 @@
 
-#include "IMUSignalGenerator.h"
+#include "IMUSimulatorSignalGenerator.hpp"
 
 namespace IMUSimulator {
 

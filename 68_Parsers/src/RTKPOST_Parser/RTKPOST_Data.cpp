@@ -1,19 +1,20 @@
 
-#include "EGNOS_EMS_Data.hpp"
+#include "RTKPOST_Data.hpp"
 
-#define EMS_YEAR_OFFSET 2000
 
-namespace EGNOS_EMS_Parser
+namespace RTKPOST_Parser
 {
 	using namespace std;
 
-	void EGNOS_EMS_Data::reallyPutRecord(gpstk::FFStream& ffs) const
+	void RTKPOST_Pos_Data::reallyPutRecord(gpstk::FFStream& ffs) const
 		throw(std::exception, gpstk::FFStreamError,
 			gpstk::StringUtils::StringException) {
 
-		EGNOS_EMS_Stream& strm = dynamic_cast<EGNOS_EMS_Stream&>(ffs);
+		RTKPOST_Pos_Stream& strm = dynamic_cast<RTKPOST_Pos_Stream&>(ffs);
 
-		strm << this->svId << " ";
+
+		throw domain_error("");
+		/*strm << this->svId << " ";
 
 		gpstk::CivilTime civTime = this->messageTime;
 		strm << this->int2string(civTime.year - EMS_YEAR_OFFSET) << " ";
@@ -25,14 +26,13 @@ namespace EGNOS_EMS_Parser
 		strm << this->messageId << " ";
 		strm << this->bitset2hexstring();
 
-		strm << endl;
+		strm << endl;*/
 		strm.lineNumber++;
 	}
 
-	std::string EGNOS_EMS_Data::bitset2hexstring(void) const {
+	std::string RTKPOST_Pos_Data::bitset2hexstring(void) const {
 
-		std::bitset<256> temp = this->message;
-		string bin = this->reverseStr(temp.to_string());
+		string bin = this->reverseStr(this->message.to_string());
 		string hex;
 		for (size_t i = 0; i <= bin.length()-4; i+=4)
 		{
@@ -42,7 +42,7 @@ namespace EGNOS_EMS_Parser
 		return hex;
 	}
 
-	std::string EGNOS_EMS_Data::int2string(unsigned int number) const {
+	std::string RTKPOST_Pos_Data::int2string(unsigned int number) const {
 		std::string s = std::to_string(number);
 
 		if (number < 10) {
@@ -56,11 +56,11 @@ namespace EGNOS_EMS_Parser
 		}
 	}
 
-	void EGNOS_EMS_Data::reallyGetRecord(gpstk::FFStream& ffs)
+	void RTKPOST_Pos_Data::reallyGetRecord(gpstk::FFStream& ffs)
 		throw(std::exception, gpstk::FFStreamError,
 			gpstk::StringUtils::StringException) {
 
-		EGNOS_EMS_Stream& strm = dynamic_cast<EGNOS_EMS_Stream&>(ffs);
+		RTKPOST_Pos_Stream& strm = dynamic_cast<RTKPOST_Pos_Stream&>(ffs);
 		this->strm = &strm;
 
 		this->reset();
@@ -73,20 +73,20 @@ namespace EGNOS_EMS_Parser
 		return;
 	}
 
-	double EGNOS_EMS_Data::getGPSWeek(void) {
+	double RTKPOST_Pos_Data::getGPSWeek(void) {
 		// Set common time
 		gpstk::CommonTime temp(messageTime);
 		gpstk::GPSWeekSecond GPSTime(temp);
 		return GPSTime.getWeek();
 	}
 
-	double EGNOS_EMS_Data::getGPSToW(void) {
+	double RTKPOST_Pos_Data::getGPSToW(void) {
 		gpstk::CommonTime temp(messageTime);
 		gpstk::GPSWeekSecond GPSTime(temp);
 		return GPSTime.getSOW();
 	}
 
-	void EGNOS_EMS_Data::reset(void) {
+	void RTKPOST_Pos_Data::reset(void) {
 
 		messageTime.reset();
 		message.reset();
@@ -94,7 +94,7 @@ namespace EGNOS_EMS_Parser
 		svId = 0;
 	}
 	
-	void EGNOS_EMS_Data::parseLine(std::string& currentLine)
+	void RTKPOST_Pos_Data::parseLine(std::string& currentLine)
 		throw(gpstk::StringUtils::StringException, gpstk::FFStreamError)
 	{
 		try
@@ -105,37 +105,6 @@ namespace EGNOS_EMS_Parser
 				
 			ss >> satId >> year >> month >> day >> hour >> minute >> second >> msgId >> std::hex >> hex_message;
 
-			// Set raw message in binary form
-			// We have to reverse the binary string before bc of the properties of bitset.
-			string bin = this->HexStrToBin(hex_message);
-			this->reverseStr(bin);
-			std::bitset<256> message_temp(bin);
-			message = message_temp;
-
-			// Set message Id
-			messageId = stoi(msgId, nullptr);
-
-			// Set SvId
-			svId = stoi(satId, nullptr);
-			
-			// Set time
-			gpstk::CivilTime civTime;
-			civTime.year = EMS_YEAR_OFFSET + stoi(year, nullptr);
-			civTime.month = stoi(month, nullptr);
-			civTime.day = stoi(day, nullptr);
-			civTime.hour = stoi(hour, nullptr);
-			civTime.minute = stoi(minute, nullptr);
-			civTime.second = stoi(second, nullptr);
-
-			// EMS is in GPS time
-			if (civTime.hour == 24 && civTime.minute == 0 && civTime.second == 0) {
-				civTime.hour = 23;
-				civTime.minute = 59;  
-				civTime.second = 59.999;
-			}
-
-			civTime.setTimeSystem(gpstk::TimeSystem::GPS);
-			this->messageTime = civTime;
 			
 		}
 		catch (std::exception &e)
@@ -148,7 +117,7 @@ namespace EGNOS_EMS_Parser
 
 
 
-	std::string EGNOS_EMS_Data::HexCharToBin(char c) {
+	std::string RTKPOST_Pos_Data::HexCharToBin(char c) {
 		switch (c) {
 		case '0': return "0000";
 		case '1': return "0001";
@@ -169,7 +138,7 @@ namespace EGNOS_EMS_Parser
 		}
 	}
 
-	char EGNOS_EMS_Data::getHexCharacter(std::string str) const
+	char RTKPOST_Pos_Data::getHexCharacter(std::string str) const
 	{
 		if (str.compare("1111") == 0) return 'F';
 		else if (str.compare("1110") == 0) return 'E';
@@ -204,7 +173,7 @@ namespace EGNOS_EMS_Parser
 	}
 
 
-	std::string EGNOS_EMS_Data::HexStrToBin(const std::string & hs) {
+	std::string RTKPOST_Pos_Data::HexStrToBin(const std::string & hs) {
 		std::string bin;
 		for (auto c : hs) {
 			bin += this->HexCharToBin(c);
@@ -212,7 +181,7 @@ namespace EGNOS_EMS_Parser
 		return bin;
 	}
 
-	std::string EGNOS_EMS_Data::reverseStr(std::string& str) const
+	std::string RTKPOST_Pos_Data::reverseStr(std::string& str) const
 	{
 		std::string str_out;
 		int n = str.length();

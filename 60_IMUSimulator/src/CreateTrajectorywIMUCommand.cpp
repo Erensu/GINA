@@ -1,6 +1,6 @@
 
 #include "CreateTrajectorywIMUCommand.hpp"
-#include "IMUControl.h"
+#include "IMUSimulatorControl.hpp"
 
 void IMUCommandForTrajectory(std::string trajFileNamewPath, std::string imuFileNamewPath, std::string imuCommandFileNamewPath) {
 

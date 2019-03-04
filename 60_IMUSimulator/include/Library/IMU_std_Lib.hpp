@@ -13,14 +13,13 @@
 #include "lib_Frames.h"
 
 #include "Trajectory.h"
-#include "IMUSignalGenerator.h"
-#include "IMUStore.h"
+#include "IMUSimulatorSignalGenerator.hpp"
+#include "IMUSimulatorStore.hpp"
 
 //Own includes
 #include "Trajectory.h"
-#include "IMUSignalGenerator.h"
-#include "IMUStore.h"
-#include "IMUData.h"
+#include "IMUSimulatorStore.hpp"
+#include "IMUSimulatorData.hpp"
 
 #include "TrajectoryData.hpp"
 
