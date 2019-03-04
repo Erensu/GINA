@@ -81,12 +81,12 @@ namespace GINAParser
 		double getGPSWeek(void);
 		double getGPSToW(void);
 
-		static const string TrajectoryData::startofDataTag;
+		static const string startofDataTag;
 		
 	private:
 		TrajectoryStream* strm;
 
-		void TrajectoryData::parseLine(std::string& currentLine) 
+		void parseLine(std::string& currentLine)
 			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);
 
 	};  // class RinexNavData

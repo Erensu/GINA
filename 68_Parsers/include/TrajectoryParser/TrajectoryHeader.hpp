@@ -42,10 +42,10 @@ namespace GINAParser {
 			isFormatGNSSSIM = 3
 		} formatSpec;
 
-		bool TrajectoryHeader::isPosFormatSet;
-		bool TrajectoryHeader::isHeaderEnd;
-		bool TrajectoryHeader::firstLineisRead;
-		bool TrajectoryHeader::valid;
+		bool isPosFormatSet;
+		bool isHeaderEnd;
+		bool firstLineisRead;
+		bool valid;
 		gpstk::Position::CoordinateSystem coorSys;
 		gpstk::TimeSystem timeSys;
 		gpstk::Position startPosition;

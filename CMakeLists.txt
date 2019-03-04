@@ -4,6 +4,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/99_Cmake/definition.cmake)
 
 project (GINA)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_VERBOSE_MAKEFILE on)
+
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # The version number.

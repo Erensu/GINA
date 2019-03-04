@@ -29,8 +29,8 @@ namespace gnsssimulator
 		bool operator!=(const TrajectoryData& ) const;
 		
 		TrajectoryData& operator+=(gpstk::Position&);
-		TrajectoryData& TrajectoryData::operator=(gpstk::Position&);
-		TrajectoryData& TrajectoryData::operator=(GINAParser::TrajectoryData&);
+		TrajectoryData& operator=(gpstk::Position&);
+		TrajectoryData& operator=(GINAParser::TrajectoryData&);
 
 		gpstk::Position::CoordinateSystem coorSys = gpstk::Position::CoordinateSystem::Unknown;
 		gpstk::Position pos;

@@ -71,14 +71,14 @@ namespace EGNOS_EMS_Parser
 	private:
 		EGNOS_EMS_Stream* strm;
 
-		std::string EGNOS_EMS_Data::HexCharToBin(char c);
-		std::string EGNOS_EMS_Data::HexStrToBin(const std::string & hs);
-		std::string EGNOS_EMS_Data::reverseStr(std::string& str) const;
-		std::string EGNOS_EMS_Data::int2string(unsigned int number) const;
-		char EGNOS_EMS_Data::getHexCharacter(std::string str) const;
-		std::string EGNOS_EMS_Data::bitset2hexstring(void) const;
+		std::string HexCharToBin(char c);
+		std::string HexStrToBin(const std::string & hs);
+		std::string reverseStr(std::string& str) const;
+		std::string int2string(unsigned int number) const;
+		char getHexCharacter(std::string str) const;
+		std::string bitset2hexstring(void) const;
 
-		void EGNOS_EMS_Data::parseLine(std::string& currentLine)
+		void parseLine(std::string& currentLine)
 			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);
 
 	};  // class 
