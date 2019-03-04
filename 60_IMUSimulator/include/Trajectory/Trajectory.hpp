@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IMUSIMULATOR_TRAJECTORY_HPP
+#define IMUSIMULATOR_TRAJECTORY_HPP
 
 #include "geoparam_wgs84.hpp"
 #include "strapdown_ecef.hpp"
@@ -41,3 +42,5 @@ namespace IMUSimulator {
 			void transform2missingCoordinateFrame(CoordiateFrame, TimeFrame);
 	};
 }
+
+#endif

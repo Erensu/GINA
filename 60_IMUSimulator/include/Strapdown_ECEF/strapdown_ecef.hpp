@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IMUSIMULATOR_STRAPDOWN_ECEF_HPP
+#define IMUSIMULATOR_STRAPDOWN_ECEF_HPP
 
 #include "geoparam_wgs84.hpp"
 #include "std_IMUSimulator.hpp"
@@ -63,3 +64,5 @@ namespace IMUSimulator {
 			
 	};
 }
+
+#endif

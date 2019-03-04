@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IMUSIMULATOR_POSITION_DATA_HPP
+#define IMUSIMULATOR_POSITION_DATA_HPP
 
 #include "std_IMUSimulator.hpp"
 #include <iostream>
@@ -47,3 +48,5 @@ namespace IMUSimulator {
 	};
 
 }
+
+#endif

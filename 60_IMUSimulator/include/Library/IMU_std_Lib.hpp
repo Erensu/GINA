@@ -1,4 +1,6 @@
-#pragma once
+#ifndef IMUSIMULATOR_STD_LIB_HPP
+#define IMUSIMULATOR_STD_LIB_HPP
+
 #include "GINAConfig.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -67,3 +69,5 @@ void generatetrajectory(IMUSimulator::IMUSignalGenerator&,
 
 GINAParser::TrajectoryData convert2GINAcompatible(IMUSimulator::PositionData&);
 GINAParser::IMUData convert2GINAcompatible(IMUSimulator::Measure_IMU&);
+
+#endif

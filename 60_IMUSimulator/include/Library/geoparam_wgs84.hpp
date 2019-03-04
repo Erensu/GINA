@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IMUSIMULATOR_GEOPARAM_WGS84_HPP
+#define IMUSIMULATOR_GEOPARAM_WGS84_HPP
 
 #include <string>
 #include <vector>
@@ -51,3 +52,5 @@ namespace IMUSimulator {
 
 
 }
+
+#endif

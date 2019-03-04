@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IMUSIMULATOR_LIB_FRAMES_HPP
+#define IMUSIMULATOR_LIB_FRAMES_HPP
 
 #include "std_IMUSimulator.hpp"
 
@@ -20,3 +21,5 @@ namespace IMUSimulator{
 
 	}
 }
+
+#endif

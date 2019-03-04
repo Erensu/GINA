@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IMUSIMULATOR_STD_IMUSIMULATOR_HPP
+#define IMUSIMULATOR_STD_IMUSIMULATOR_HPP
 
 #include <Eigen/Dense>
 
@@ -30,3 +31,5 @@ namespace IMUSimulator {
 	}Measure_IMU;
 
 }
+
+#endif
