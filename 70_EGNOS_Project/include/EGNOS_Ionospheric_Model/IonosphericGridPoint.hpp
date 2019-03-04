@@ -35,8 +35,8 @@ namespace EGNOS {
 			DEGRADATAION_MODEL_USED = 1
 		}VarianceCalculation;
 
-		static const double IonosphericGridPoint::GIVEI_Meters[16];
-		static const double IonosphericGridPoint::GIVEI_Variance[16];
+		static const double GIVEI_Meters[16];
+		static const double GIVEI_Variance[16];
 
 		IonosphericGridPoint(void) {this->valid = false;};
 		IonosphericGridPoint(const IonosphericGridPoint &obj) { this->copy(obj); };

@@ -20,13 +20,13 @@ namespace EGNOS {
 	{
 	public:
 
-		static const int IonosphericMaskBands::S75N85[28];
-		static const int IonosphericMaskBands::S55N55[23];
-		static const int IonosphericMaskBands::S75N75[27];
-		static const int IonosphericMaskBands::S85N75[28];
-		static const int IonosphericMaskBands::W180E175[72];
-		static const int IonosphericMaskBands::W180E170[36];
-		static const int IonosphericMaskBands::W180E150[12];
+		static const int S75N85[28];
+		static const int S55N55[23];
+		static const int S75N75[27];
+		static const int S85N75[28];
+		static const int W180E175[72];
+		static const int W180E170[36];
+		static const int W180E150[12];
 
 		static const int IonosphericMaskBands::W170E160[12];
 		static const VerticalBandPart vBands[72];

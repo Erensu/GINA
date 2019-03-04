@@ -57,8 +57,8 @@ namespace EGNOS {
 	{
 	public:
 
-		static const double SlantIonoDelay::Re;
-		static const double SlantIonoDelay::hI;
+		static const double Re;
+		static const double hI;
 		
 		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon);
 
