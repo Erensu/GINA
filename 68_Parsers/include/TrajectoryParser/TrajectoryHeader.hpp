@@ -62,21 +62,21 @@ namespace GINAParser {
 
 		//TrajectoryStream strm;
 
-		static const int TrajectoryHeader::numberofLineinHeader;
-		static const string TrajectoryHeader::startofHeaderGinaTag;
-		static const string TrajectoryHeader::secondLineOfGINATrajectoryTag;
-		static const string TrajectoryHeader::creatorOfFileTag;
-		static const string TrajectoryHeader::timeofCreationTag;
-		static const string TrajectoryHeader::positionTypeLLHTag;
-		static const string TrajectoryHeader::positionTypeECEFTag;
-		static const string TrajectoryHeader::timeSystemDefinitionTag;
-		static const string TrajectoryHeader::startTimeTag;
-		static const string TrajectoryHeader::endTimeTag;
-		static const string TrajectoryHeader::startPositionTag;
-		static const string TrajectoryHeader::startVelocityTag;
-		static const string TrajectoryHeader::startAttitudeTag;
-		static const string TrajectoryHeader::EpochIntervalTag;
-		static const string TrajectoryHeader::endOfHeaderTag;
+		static const int numberofLineinHeader;
+		static const string startofHeaderGinaTag;
+		static const string secondLineOfGINATrajectoryTag;
+		static const string creatorOfFileTag;
+		static const string timeofCreationTag;
+		static const string positionTypeLLHTag;
+		static const string positionTypeECEFTag;
+		static const string timeSystemDefinitionTag;
+		static const string startTimeTag;
+		static const string endTimeTag;
+		static const string startPositionTag;
+		static const string startVelocityTag;
+		static const string startAttitudeTag;
+		static const string EpochIntervalTag;
+		static const string endOfHeaderTag;
 
 
 	protected:
