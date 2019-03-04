@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IMU_HEADER_HPP
+#define IMU_HEADER_HPP
 
 #include "IMUBase.hpp"
 #include "CommonTime.hpp"
@@ -139,5 +140,4 @@ namespace GINAParser {
 
 }  // End of namespace gpstk
 
-
-
+#endif

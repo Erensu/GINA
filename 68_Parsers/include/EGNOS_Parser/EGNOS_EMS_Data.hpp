@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EGNOS_EMS_DATA_HPP
+#define EGNOS_EMS_DATA_HPP
 
 #include <bitset>
 #include "StringUtils.hpp"
@@ -86,5 +87,5 @@ namespace EGNOS_EMS_Parser
 		//@}
 } // namespace
 
-
+#endif
 

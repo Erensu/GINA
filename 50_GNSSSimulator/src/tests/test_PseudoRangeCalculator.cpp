@@ -1,6 +1,6 @@
 #include "GINAConfig.h"
 
-#include "test_PseudoRangeCalculator.h"
+#include "test_PseudoRangeCalculator.hpp"
 #include <string>
 #include "SatID.hpp"
 

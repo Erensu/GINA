@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GNSSSIMULATOR_SIMULATOR_HPP
+#define GNSSSIMULATOR_SIMULATOR_HPP
+
 #include <string>
 #include <vector>
 #include <map>
@@ -10,8 +12,8 @@
 //Own includes
 #include "GNSSSimulator_TrajectoryData.hpp"
 #include "GNSSSimulator_TrajectoryStore.hpp"
-#include "PRsolution.h"
-#include "utils.h"
+#include "PRsolution.hpp"
+#include "utils.hpp"
 
 //GPSTK includes
 #include "Exception.hpp"
@@ -57,3 +59,5 @@
 #include "GPSEphemerisStore.hpp"
 #include "GPSEphemeris.hpp"
 #include "PRSolution2.hpp"
+
+#endif

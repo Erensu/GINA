@@ -1,6 +1,6 @@
 #pragma once
 
-#include "std_IMUSimulator.h"
+#include "std_IMUSimulator.hpp"
 
 namespace IMUSimulator{
 	namespace Lib {

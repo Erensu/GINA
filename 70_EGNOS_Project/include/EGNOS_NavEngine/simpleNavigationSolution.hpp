@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EGNOS_SIMPLE_NAVIGATION_SOLUTION_HPP
+#define EGNOS_SIMPLE_NAVIGATION_SOLUTION_HPP
 
 #include <Eigen/Dense>
 
@@ -90,3 +91,5 @@ namespace EGNOS {
 
 	};
 };
+
+#endif

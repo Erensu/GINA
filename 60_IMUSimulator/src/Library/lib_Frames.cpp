@@ -1,6 +1,6 @@
 
-#include "lib_Frames.h"
-#include "geoparam_wgs84.h"
+#include "lib_Frames.hpp"
+#include "geoparam_wgs84.hpp"
 #include "Position.hpp"
 #include "WGS84Ellipsoid.hpp"
 

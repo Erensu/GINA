@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EGNOS_EMS_STREAM_HPP
+#define EGNOS_EMS_STREAM_HPP
 
 #include "FFTextStream.hpp"
 
@@ -33,3 +34,4 @@ namespace EGNOS_EMS_Parser {
 
 }
 
+#endif

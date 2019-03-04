@@ -8,16 +8,16 @@
 
 #include <Eigen/Dense>
 
-#include "strapdown_ecef.h"
-#include "geoparam_wgs84.h"
-#include "lib_Frames.h"
+#include "strapdown_ecef.hpp"
+#include "geoparam_wgs84.hpp"
+#include "lib_Frames.hpp"
 
-#include "Trajectory.h"
+#include "Trajectory.hpp"
 #include "IMUSimulatorSignalGenerator.hpp"
 #include "IMUSimulatorStore.hpp"
 
 //Own includes
-#include "Trajectory.h"
+#include "Trajectory.hpp"
 #include "IMUSimulatorStore.hpp"
 #include "IMUSimulatorData.hpp"
 

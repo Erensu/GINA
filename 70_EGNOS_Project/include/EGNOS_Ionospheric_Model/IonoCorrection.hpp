@@ -1,4 +1,6 @@
-#pragma once
+#ifndef EGNOS_IONOCORRECTION_HPP
+#define EGNOS_IONOCORRECTION_HPP
+
 #include <stdlib.h>
 
 #define _USE_MATH_DEFINES
@@ -275,3 +277,5 @@ namespace EGNOS {
 	};
 
 };
+
+#endif

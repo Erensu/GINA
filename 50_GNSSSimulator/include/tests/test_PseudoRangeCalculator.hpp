@@ -1,6 +1,8 @@
-#pragma once
-#include "PseudoRangeCalculator.h"
-#include "utils.h"
+#ifndef TEST_PSEUDORANGE_CALCULATOR_HPP
+#define TEST_PSEUDORANGE_CALCULATOR_HPP
+
+#include "PseudoRangeCalculator.hpp"
+#include "utils.hpp"
 #include "PRSolution2.hpp"
 #include "PRSolution.hpp"
 #include "IonoModel.hpp"
@@ -19,3 +21,6 @@ int PseudoRangeCalculator_test6(void);
 	and Iono corr.
 */
 int PseudoRangeCalculator_test7(void);
+
+
+#endif

@@ -1,6 +1,6 @@
 
-#include "Trajectory.h"
-#include "lib_Frames.h"
+#include "Trajectory.hpp"
+#include "lib_Frames.hpp"
 
 
 namespace IMUSimulator {

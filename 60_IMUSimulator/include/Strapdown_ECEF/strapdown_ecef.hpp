@@ -1,9 +1,9 @@
 #pragma once
 
-#include "geoparam_wgs84.h"
-#include "std_IMUSimulator.h"
+#include "geoparam_wgs84.hpp"
+#include "std_IMUSimulator.hpp"
 
-#include "PositionData.h"
+#include "PositionData.hpp"
 
 #include <Eigen/Dense>
 

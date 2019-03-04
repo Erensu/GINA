@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GNSSSIMULATOR_UTILS_HPP
+#define GNSSSIMULATOR_UTILS_HPP
 
 #include <iostream>
 #include "SystemTime.hpp"
@@ -39,3 +40,5 @@ private:
 	//Rinex3ObsStream outStream;
 
 };
+
+#endif

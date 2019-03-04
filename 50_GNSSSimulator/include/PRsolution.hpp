@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PRSOLUTION_HPP
+#define PRSOLUTION_HPP
 
 #include "GNSSSimulator_TrajectoryStore.hpp"
 
@@ -74,3 +75,5 @@ private:
 
 };
 }
+
+#endif

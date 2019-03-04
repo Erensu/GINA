@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef PSEUDORANGE_CALCULATOR_HPP
+#define PSEUDORANGE_CALCULATOR_HPP
 
 #include <random>
 
@@ -69,8 +70,6 @@ private:
 	TropModel* trpmdl;
 	IonoModel* ionomdl;
 
-	
-
-
 };
 
+#endif

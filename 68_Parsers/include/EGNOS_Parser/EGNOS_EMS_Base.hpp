@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EGNOS_EMS_BASE_HPP
+#define EGNOS_EMS_BASE_HPP
 
 #include "FFData.hpp"
 
@@ -29,3 +30,5 @@ namespace EGNOS_EMS_Parser {
 	};
 		//@}
 }
+
+#endif

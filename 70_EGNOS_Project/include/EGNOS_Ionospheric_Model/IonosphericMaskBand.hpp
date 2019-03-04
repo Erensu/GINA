@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EGNOS_IONOSPHERIC_MASK_BAND_HPP
+#define EGNOS_IONOSPHERIC_MASK_BAND_HPP
 
 namespace EGNOS {
 
@@ -40,3 +41,5 @@ namespace EGNOS {
 
 	};
 }
+
+#endif

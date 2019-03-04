@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IONOSPHERIC_GRID_POINT_HPP
+#define IONOSPHERIC_GRID_POINT_HPP
 
 #include <bitset>
 #include <vector> 
@@ -160,3 +161,5 @@ namespace EGNOS {
 		void addMessage(const std::bitset<250> &message);
 	};
 }
+
+#endif

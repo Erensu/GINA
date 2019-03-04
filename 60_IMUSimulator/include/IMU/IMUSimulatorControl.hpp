@@ -1,8 +1,9 @@
-#pragma once
+#ifndef IMUSIMULATOR_CONTROL_HPP
+#define IMUSIMULATOR_CONTROL_HPP
 
 #include <Eigen/Dense>
 #include "IMUSimulatorSignalGenerator.hpp"
-#include "strapdown_ecef.h"
+#include "strapdown_ecef.hpp"
 
 #include "I_GINA_writer.hpp"
 #include "IMUControlData.hpp"
@@ -117,3 +118,5 @@ namespace IMUSimulator {
 	};
 
 }
+
+#endif

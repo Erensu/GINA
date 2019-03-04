@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IMU_CONTROL_STREAM_HPP
+#define IMU_CONTROL_STREAM_HPP
 
 #include "FFTextStream.hpp"
 #include "IMUControlHeader.hpp"
@@ -38,3 +39,4 @@ namespace GINAParser {
 
 }
 
+#endif

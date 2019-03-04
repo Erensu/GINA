@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TRAJECTORY_HEADER_HPP
+#define TRAJECTORY_HEADER_HPP
 
 #include "TrajectoryBase.hpp"
 #include "CommonTime.hpp"
@@ -139,5 +140,4 @@ namespace GINAParser {
 
 }  // End of namespace gpstk
 
-
-
+#endif

@@ -1,4 +1,4 @@
-#include "PRsolution.h"
+#include "PRsolution.hpp"
 
 gnsssimulator::PRsolution::PRsolution()
 {

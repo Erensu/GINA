@@ -9,7 +9,7 @@
 #include <ctime>
 #include <math.h>
 
-#include "std_IMUSimulator.h"
+#include "std_IMUSimulator.hpp"
 
 #ifndef DEG2RAD
 #define DEG2RAD 0.017453292519943295769222

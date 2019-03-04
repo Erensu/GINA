@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EGNOS_RUNNABLES_HPP
+#define EGNOS_RUNNABLES_HPP
 
 #include <math.h>
 #include <stdio.h>
@@ -71,3 +72,5 @@ namespace EGNOS
 	};
 
 };
+
+#endif

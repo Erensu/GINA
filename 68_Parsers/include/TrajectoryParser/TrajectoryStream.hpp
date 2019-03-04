@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TRAJECTORY_STREAN_HPP
+#define TRAJECTORY_STREAN_HPP
 
 #include "FFTextStream.hpp"
 #include "TrajectoryHeader.hpp"
@@ -38,3 +39,4 @@ namespace GINAParser {
 
 }
 
+#endif

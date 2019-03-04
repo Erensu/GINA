@@ -1,10 +1,10 @@
-#include "strapdown_ecef.h"
-#include "std_IMUSimulator.h"
+#include "strapdown_ecef.hpp"
+#include "std_IMUSimulator.hpp"
 
 #include "Position.hpp"
 #include "WGS84Ellipsoid.hpp"
 
-#include "lib_Frames.h"
+#include "lib_Frames.hpp"
 
 namespace IMUSimulator {
 

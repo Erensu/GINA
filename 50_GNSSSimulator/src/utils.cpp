@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "utils.hpp"
 #include "GINAConfig.h"
 
 gnsssim_utils::gnsssim_utils()

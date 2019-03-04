@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RTKPOST_STREAM_HPP
+#define RTKPOST_STREAM_HPP
 
 #include "FFTextStream.hpp"
 
@@ -33,3 +34,4 @@ namespace RTKPOST_Parser {
 
 }
 
+#endif

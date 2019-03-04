@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TRAJECTORY_STORE_HPP
+#define TRAJECTORY_STORE_HPP
 
 #include <iostream>
 #include <map>
@@ -31,3 +32,5 @@ namespace GINAParser {
 	};
 
 }
+
+#endif

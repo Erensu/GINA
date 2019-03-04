@@ -1,8 +1,9 @@
-#pragma once
+#ifndef IMUSIMULATOR_SIGNAL_GENERATOR_HPP
+#define IMUSIMULATOR_SIGNAL_GENERATOR_HPP
 
-#include "std_IMUSimulator.h"
-#include "geoparam_wgs84.h"
-#include "lib_Frames.h"
+#include "std_IMUSimulator.hpp"
+#include "geoparam_wgs84.hpp"
+#include "lib_Frames.hpp"
 
 #include <iostream>
 #include <vector>
@@ -37,3 +38,5 @@ namespace IMUSimulator {
 
 
 }
+
+#endif

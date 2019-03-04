@@ -1,9 +1,9 @@
 #pragma once
 
-#include "geoparam_wgs84.h"
-#include "strapdown_ecef.h"
-#include "PositionData.h"
-#include "std_IMUSimulator.h"
+#include "geoparam_wgs84.hpp"
+#include "strapdown_ecef.hpp"
+#include "PositionData.hpp"
+#include "std_IMUSimulator.hpp"
 #include <iostream>
 #include <vector>
 

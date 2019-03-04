@@ -3,10 +3,10 @@
 
 #include "GINAConfig.h"
 
-#include "Simulator.h"
-#include "Navigation_examples.h"
+#include "Simulator.hpp"
+#include "Navigation_examples.hpp"
 #include "Test_Trajectory_Class.hpp"
-#include "test_PseudoRangeCalculator.h"
+#include "test_PseudoRangeCalculator.hpp"
 #include "NeillTropModel.hpp"
 
 #include "TrajectoryData.hpp"

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IMU_BASE_HPP
+#define IMU_BASE_HPP
 
 #include "FFData.hpp"
 
@@ -29,3 +30,5 @@ namespace GINAParser {
 	};
 		//@}
 }
+
+#endif

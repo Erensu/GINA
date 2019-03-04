@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef TRAJECTORY_DATA_HPP
+#define TRAJECTORY_DATA_HPP
 
 #include <list>
 
@@ -94,5 +94,5 @@ namespace GINAParser
 		//@}
 } // namespace
 
-
+#endif
 

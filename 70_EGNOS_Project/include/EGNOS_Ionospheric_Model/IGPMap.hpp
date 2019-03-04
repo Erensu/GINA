@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EGNOS_IGPMAP_HPP
+#define EGNOS_IGPMAP_HPP
 
 #include <stdlib.h>
 #include <iterator> 
@@ -121,3 +122,5 @@ namespace EGNOS {
 			IGPMapMap igpMaps;
 	};
 };
+
+#endif

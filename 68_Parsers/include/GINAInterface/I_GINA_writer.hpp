@@ -1,4 +1,6 @@
-#pragma once
+#ifndef I_GINA_WRITER_HPP
+#define I_GINA_WRITER_HPP
+
 namespace GINAParser {
 
 	class I_IMUControlData {
@@ -51,3 +53,5 @@ namespace GINAParser {
 	};
 
 }
+
+#endif

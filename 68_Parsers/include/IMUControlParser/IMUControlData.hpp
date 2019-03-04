@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef IMU_CONTROL_DATA_HPP
+#define IMU_CONTROL_DATA_HPP
 
 #include <list>
 
@@ -99,5 +99,4 @@ namespace GINAParser
 		//@}
 } // namespace
 
-
-
+#endif

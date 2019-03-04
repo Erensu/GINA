@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RTKPOST_DATA_HPP
+#define RTKPOST_DATA_HPP
 
 #include <bitset>
 #include "StringUtils.hpp"
@@ -88,3 +89,4 @@ namespace RTKPOST_Parser
 
 
 
+#endif

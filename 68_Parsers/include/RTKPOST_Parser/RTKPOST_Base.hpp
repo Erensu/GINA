@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RTKPOST_BASE_HPP
+#define RTKPOST_BASE_HPP
 
 #include "FFData.hpp"
 
@@ -29,3 +30,5 @@ namespace RTKPOST_Parser {
 	};
 		//@}
 }
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GNSSSIMULATOR_TRAJECTORY_DATA_HPP
+#define GNSSSIMULATOR_TRAJECTORY_DATA_HPP
 
 #include "GINAConfig.h"
 
@@ -42,5 +43,5 @@ namespace gnsssimulator
 
 } 
 
-
+#endif
 

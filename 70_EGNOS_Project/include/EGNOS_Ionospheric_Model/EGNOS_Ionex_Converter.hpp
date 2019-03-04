@@ -1,4 +1,7 @@
-#pragma once
+#ifndef EGNOS_IONEX_CONVERTER_HPP
+#define EGNOS_IONEX_CONVERTER_HPP
+
+
 
 #include "IonexStream.hpp"
 #include "IonexHeader.hpp"
@@ -27,3 +30,5 @@ namespace EGNOS {
 	};
 
 };
+
+#endif // !1

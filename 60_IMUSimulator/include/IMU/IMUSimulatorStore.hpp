@@ -1,6 +1,7 @@
-#pragma once
+#ifndef IMUSIMULATOR_STORE_HPP
+#define IMUSIMULATOR_STORE_HPP
 
-#include "std_IMUSimulator.h"
+#include "std_IMUSimulator.hpp"
 
 #include <iostream>
 #include <vector>
@@ -47,3 +48,5 @@ namespace IMUSimulator {
 	};
 
 }
+
+#endif

@@ -22,7 +22,7 @@
 //
 //============================================================================
 
-#include "Navigation_examples.h"
+#include "Navigation_examples.hpp"
 
 #include "RinexNavBase.hpp"
 #include "RinexNavData.hpp"
