@@ -1,4 +1,4 @@
-
+﻿
 #include "EGNOS_EMS_Stream.hpp"
 
 namespace EGNOS_EMS_Parser {

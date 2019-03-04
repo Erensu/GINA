@@ -1,4 +1,4 @@
-#ifndef EGNOS_SIMPLE_NAVIGATION_SOLUTION_HPP
+﻿#ifndef EGNOS_SIMPLE_NAVIGATION_SOLUTION_HPP
 #define EGNOS_SIMPLE_NAVIGATION_SOLUTION_HPP
 
 #include <Eigen/Dense>
@@ -55,7 +55,7 @@ namespace EGNOS {
 			SimpleNavSolver(void) {};
 			~SimpleNavSolver(void) {};
 
-			std::vector<double> SimpleNavSolver::get_Result(void);
+			std::vector<double> get_Result(void);
 			void print_Result(void);
 			bool calculatePosition(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv, gpstk::TropModel *pTropModel, IonoModel *ionoModel);
 
@@ -76,8 +76,8 @@ namespace EGNOS {
 			static const double wie_e;
 			static const double c_mps;
 
-			double SimpleNavSolver::calculateTropoDelay(gpstk::CommonTime &time, gpstk::Xvt &SV, gpstk::Xvt  &RX);
-			double SimpleNavSolver::calculateIonoDelay(gpstk::CommonTime &time, gpstk::Xvt &SV, gpstk::Xvt  &RX);
+			double calculateTropoDelay(gpstk::CommonTime &time, gpstk::Xvt &SV, gpstk::Xvt  &RX);
+			double calculateIonoDelay(gpstk::CommonTime &time, gpstk::Xvt &SV, gpstk::Xvt  &RX);
 
 			gpstk::Xvt getSatXvt(gpstk::CommonTime &gpstime, int satId);
 

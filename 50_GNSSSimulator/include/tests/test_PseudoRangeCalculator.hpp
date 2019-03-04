@@ -1,4 +1,4 @@
-#ifndef TEST_PSEUDORANGE_CALCULATOR_HPP
+﻿#ifndef TEST_PSEUDORANGE_CALCULATOR_HPP
 #define TEST_PSEUDORANGE_CALCULATOR_HPP
 
 #include "PseudoRangeCalculator.hpp"

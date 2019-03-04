@@ -1,4 +1,4 @@
-
+﻿
 #include "IMUSimulatorStore.hpp"
 
 namespace IMUSimulator {
@@ -73,7 +73,7 @@ namespace IMUSimulator {
 	std::ostream& operator<<(std::ostream& os, IMUStore& imuStore) {
 
 		for (std::vector<Measure_IMU>::iterator it = imuStore.measurement.begin(); it != imuStore.measurement.end(); ++it) {
-			os << *it;
+			//os << *it;
 		}
 
 		return os;
@@ -82,7 +82,7 @@ namespace IMUSimulator {
 	void IMUStore::printf(std::ostream& os) {
 
 		for (std::vector<Measure_IMU>::iterator it = measurement.begin(); it != measurement.end(); ++it) {
-			os << *it;
+			//os << *it;
 		}
 	}
 

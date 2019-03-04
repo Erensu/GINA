@@ -1,4 +1,4 @@
-#ifndef IMU_DATA_HPP
+﻿#ifndef IMU_DATA_HPP
 #define IMU_DATA_HPP
 
 #include <list>
@@ -78,13 +78,13 @@ namespace GINAParser
 		double getGPSWeek(void);
 		double getGPSToW(void);
 
-		static const string IMUData::startofDataTag;
+		static const string startofDataTag;
 		IMUData& operator=(I_IMUData&);
 		
 	private:
 		IMUStream* strm;
 
-		void IMUData::parseLine(std::string& currentLine)
+		void parseLine(std::string& currentLine)
 			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);
 
 	};  // class RinexNavData

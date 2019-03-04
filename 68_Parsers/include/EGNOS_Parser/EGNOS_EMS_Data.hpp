@@ -1,4 +1,4 @@
-#ifndef EGNOS_EMS_DATA_HPP
+﻿#ifndef EGNOS_EMS_DATA_HPP
 #define EGNOS_EMS_DATA_HPP
 
 #include <bitset>

@@ -1,4 +1,4 @@
-
+﻿
 file( GLOB_RECURSE GINAPARSER_CORE_SRC_FILES "src/*.cpp" "src/*.c" )
 file( GLOB_RECURSE GINAPARSER_CORE_INC_FILES "include/*.h" "include/*.hpp" )
 file( GLOB_RECURSE GINAPARSER_TEST_SRC_FILES "tests/*.cpp" "tests/*.c" )

@@ -1,4 +1,4 @@
-
+﻿
 #include "EGNOS_EMS_Data.hpp"
 
 #define EMS_YEAR_OFFSET 2000
@@ -31,8 +31,8 @@ namespace EGNOS_EMS_Parser
 
 	std::string EGNOS_EMS_Data::bitset2hexstring(void) const {
 
-		std::bitset<256> temp = this->message;
-		string bin = this->reverseStr(temp.to_string());
+		string temp = this->message.to_string();
+		string bin = this->reverseStr(temp);
 		string hex;
 		for (size_t i = 0; i <= bin.length()-4; i+=4)
 		{

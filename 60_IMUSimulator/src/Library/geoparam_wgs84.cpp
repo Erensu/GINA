@@ -1,4 +1,4 @@
-#include "geoparam_wgs84.hpp"
+﻿#include "geoparam_wgs84.hpp"
 
 #include "Position.hpp"
 #include "GPSWeekSecond.hpp"

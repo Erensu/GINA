@@ -1,4 +1,4 @@
-#ifndef I_GINA_WRITER_HPP
+﻿#ifndef I_GINA_WRITER_HPP
 #define I_GINA_WRITER_HPP
 
 namespace GINAParser {

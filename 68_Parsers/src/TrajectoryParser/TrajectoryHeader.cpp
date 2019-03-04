@@ -1,4 +1,4 @@
-
+﻿
 #include "TrajectoryHeader.hpp"
 #include "TrajectoryStream.hpp"
 

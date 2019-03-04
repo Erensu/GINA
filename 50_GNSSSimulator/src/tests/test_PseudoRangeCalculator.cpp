@@ -1,4 +1,4 @@
-#include "GINAConfig.h"
+﻿#include "GINAConfig.h"
 
 #include "test_PseudoRangeCalculator.hpp"
 #include <string>

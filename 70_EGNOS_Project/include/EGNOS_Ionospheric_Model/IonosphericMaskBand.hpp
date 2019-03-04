@@ -1,4 +1,4 @@
-#ifndef EGNOS_IONOSPHERIC_MASK_BAND_HPP
+﻿#ifndef EGNOS_IONOSPHERIC_MASK_BAND_HPP
 #define EGNOS_IONOSPHERIC_MASK_BAND_HPP
 
 namespace EGNOS {
@@ -29,7 +29,7 @@ namespace EGNOS {
 		static const int W180E170[36];
 		static const int W180E150[12];
 
-		static const int IonosphericMaskBands::W170E160[12];
+		static const int W170E160[12];
 		static const VerticalBandPart vBands[72];
 		static const HorizontalBandPart hBands[10];
 

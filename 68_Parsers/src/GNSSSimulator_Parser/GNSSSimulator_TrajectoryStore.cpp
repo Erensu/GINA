@@ -1,4 +1,4 @@
-#include "GNSSSimulator_TrajectoryStore.hpp"
+﻿#include "GNSSSimulator_TrajectoryStore.hpp"
 
 namespace gnsssimulator {
 	TrajectoryStore::TrajectoryStore()

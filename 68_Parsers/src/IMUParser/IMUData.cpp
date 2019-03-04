@@ -1,4 +1,4 @@
-
+﻿
 #include "IMUData.hpp"
 
 namespace GINAParser

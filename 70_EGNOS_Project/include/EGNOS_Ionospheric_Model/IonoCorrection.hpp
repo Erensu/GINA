@@ -1,4 +1,4 @@
-#ifndef EGNOS_IONOCORRECTION_HPP
+﻿#ifndef EGNOS_IONOCORRECTION_HPP
 #define EGNOS_IONOCORRECTION_HPP
 
 #include <stdlib.h>
@@ -120,7 +120,7 @@ namespace EGNOS {
 		IonCorrandVar grid10x10Interpolator(IGPMapBase& Map);
 		IonCorrandVar grid10x10InterpolatorwHorizontalInterpolation(IGPMapBase& Map);
 		
-		void VerticalIonoDelayInterpolator::getPolarVertices(VerticesOfSquare &table, IGPMapBase &Map);
+		void getPolarVertices(VerticesOfSquare &table, IGPMapBase &Map);
 		void getVerticesOf5x5Square(VerticesOfSquare& table, IGPMapBase& Map);
 		void getVerticesOf5x10Square(VerticesOfSquare& table, IGPMapBase& Map);
 		void getVerticesOf10x10Square(VerticesOfSquare& table, IGPMapBase& Map);
@@ -158,8 +158,8 @@ namespace EGNOS {
 
 	class IonexCreator
 	{
-		static const int IonexCreator::maxValue;
-		static const int IonexCreator::invalidValue;
+		static const int maxValue;
+		static const int invalidValue;
 
 		typedef enum{
 			TEC,

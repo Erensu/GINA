@@ -1,11 +1,10 @@
-// Simulator.cpp : Defines the entry point for the console application.
+ï»¿// Simulator.cpp : Defines the entry point for the console application.
 //
 
 #include "GINAConfig.h"
 
 #include "Simulator.hpp"
 #include "Navigation_examples.hpp"
-#include "Test_Trajectory_Class.hpp"
 #include "test_PseudoRangeCalculator.hpp"
 #include "NeillTropModel.hpp"
 
@@ -113,7 +112,7 @@ int GNSSSimulator_Process(void) {
 
 		IonoModel ionoModel;
 		psdRangeCalc.getIonoVals(ionoParams);	//Put the 4+4 Ion values into the vector
-		ionoModel.setModel(ionoParams.data(), ionoParams.data() + 4);		//.data() tömb pointert ad vissza a vektorból
+		ionoModel.setModel(ionoParams.data(), ionoParams.data() + 4);		//.data() tÃ¶mb pointert ad vissza a vektorbÃ³l
 
 
 

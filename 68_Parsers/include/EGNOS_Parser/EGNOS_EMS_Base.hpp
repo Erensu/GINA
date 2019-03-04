@@ -1,4 +1,4 @@
-#ifndef EGNOS_EMS_BASE_HPP
+﻿#ifndef EGNOS_EMS_BASE_HPP
 #define EGNOS_EMS_BASE_HPP
 
 #include "FFData.hpp"

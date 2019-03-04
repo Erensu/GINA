@@ -1,4 +1,4 @@
-#ifndef TRAJECTORY_HEADER_HPP
+﻿#ifndef TRAJECTORY_HEADER_HPP
 #define TRAJECTORY_HEADER_HPP
 
 #include "TrajectoryBase.hpp"

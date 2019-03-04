@@ -1,4 +1,4 @@
-#include "TrajectoryStore.hpp"
+﻿#include "TrajectoryStore.hpp"
 
 namespace GINAParser {
 	TrajectoryStore::TrajectoryStore()

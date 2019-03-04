@@ -1,4 +1,4 @@
-
+﻿
 #include "RTKPOST_Data.hpp"
 
 
@@ -32,14 +32,14 @@ namespace RTKPOST_Parser
 
 	std::string RTKPOST_Pos_Data::bitset2hexstring(void) const {
 
-		string bin = this->reverseStr(this->message.to_string());
+		/*string bin = this->reverseStr(this->message.to_string());
 		string hex;
 		for (size_t i = 0; i <= bin.length()-4; i+=4)
 		{
 			hex += this->getHexCharacter(bin.substr(i, 4));
-		}
+		}*/
 
-		return hex;
+		return "0";
 	}
 
 	std::string RTKPOST_Pos_Data::int2string(unsigned int number) const {

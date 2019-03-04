@@ -1,4 +1,4 @@
-
+﻿
 #include "IonosphericGridPoint.hpp"
 #include "CivilTime.hpp"
 
@@ -318,7 +318,7 @@ namespace EGNOS {
 		currentRecievedIODI = NO_IODI_SET;
 	}
 
-	void const IonosphericGridPointMasksMessageParser::updateIGP(IonosphericGridPoint & const igp) const{
+	void const IonosphericGridPointMasksMessageParser::updateIGP(IonosphericGridPoint & igp) const{
 
 		if (igp.getGIVEI() == INVALID_GIVEI_NUMBER) {
 			igp.valid = false;
@@ -433,7 +433,7 @@ namespace EGNOS {
 		currentRecievedIODI = NO_IODI_SET;
 	}
 
-	const std::vector<IonosphericGridPoint> const & IonosphericDelayCorrectionsMessageParser::getIonosphericGridPoint(void) const {
+	const std::vector<IonosphericGridPoint> & IonosphericDelayCorrectionsMessageParser::getIonosphericGridPoint(void) const {
 	
 		return ionoPoints;
 	}

@@ -1,4 +1,4 @@
-
+﻿
 file( GLOB_RECURSE IMU_CORE_SRC_FILES "src/*.cpp" "src/*.c" )
 file( GLOB_RECURSE IMU_CORE_INC_FILES "include/*.h" "include/*.hpp" )
 

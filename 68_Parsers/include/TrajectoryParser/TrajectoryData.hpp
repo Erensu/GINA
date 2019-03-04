@@ -1,4 +1,4 @@
-#ifndef TRAJECTORY_DATA_HPP
+﻿#ifndef TRAJECTORY_DATA_HPP
 #define TRAJECTORY_DATA_HPP
 
 #include <list>

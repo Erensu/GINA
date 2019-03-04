@@ -1,4 +1,4 @@
-#ifndef IMUSIMULATOR_DATA_HPP
+﻿#ifndef IMUSIMULATOR_DATA_HPP
 #define IMUSIMULATOR_DATA_HPP
 
 #include "std_IMUSimulator.hpp"
@@ -31,7 +31,7 @@ namespace IMUSimulator {
 
 		IMUData& operator=(GINAParser::IMUData&);
 		IMUData& operator=(Measure_IMU&);
-		Measure_IMU& IMUData::operator=(IMUData&);
+		Measure_IMU& operator=(IMUData&);
 
 		double getAccX(void) const;
 		double getAccY(void) const;

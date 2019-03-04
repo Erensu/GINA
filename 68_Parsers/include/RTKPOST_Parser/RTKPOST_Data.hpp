@@ -1,4 +1,4 @@
-#ifndef RTKPOST_DATA_HPP
+﻿#ifndef RTKPOST_DATA_HPP
 #define RTKPOST_DATA_HPP
 
 #include <bitset>
@@ -72,14 +72,14 @@ namespace RTKPOST_Parser
 	private:
 		RTKPOST_Pos_Stream* strm;
 
-		std::string RTKPOST_Pos_Data::HexCharToBin(char c);
-		std::string RTKPOST_Pos_Data::HexStrToBin(const std::string & hs);
-		std::string RTKPOST_Pos_Data::reverseStr(std::string& str) const;
-		std::string RTKPOST_Pos_Data::int2string(unsigned int number) const;
-		char RTKPOST_Pos_Data::getHexCharacter(std::string str) const;
-		std::string RTKPOST_Pos_Data::bitset2hexstring(void) const;
+		std::string HexCharToBin(char c);
+		std::string HexStrToBin(const std::string & hs);
+		std::string reverseStr(std::string& str) const;
+		std::string int2string(unsigned int number) const;
+		char getHexCharacter(std::string str) const;
+		std::string bitset2hexstring(void) const;
 
-		void RTKPOST_Pos_Data::parseLine(std::string& currentLine)
+		void parseLine(std::string& currentLine)
 			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);
 
 	};  // class 

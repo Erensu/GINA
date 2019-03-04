@@ -1,4 +1,4 @@
-#ifndef IMUSIMULATOR_STRAPDOWN_ECEF_HPP
+﻿#ifndef IMUSIMULATOR_STRAPDOWN_ECEF_HPP
 #define IMUSIMULATOR_STRAPDOWN_ECEF_HPP
 
 #include "geoparam_wgs84.hpp"
@@ -33,7 +33,7 @@ namespace IMUSimulator {
 			strapdown_ecef(double[3], double[3], double[3]);
 
 			void update(Eigen::Vector3d&, Eigen::Vector3d&, Eigen::Vector3d&, Eigen::Vector3d&, Eigen::Vector3d&, double);
-			void strapdown_ecef::update(Measure_IMU&, double);
+			void update(Measure_IMU&, double);
 			void update(Eigen::Vector3d&, Eigen::Vector3d&, double);
 
 			void setParams(Eigen::Vector3d&, Eigen::Vector3d&, Eigen::Vector3d&);
@@ -52,15 +52,15 @@ namespace IMUSimulator {
 			friend  strapdown_ecef& operator>>(strapdown_ecef&, PositionData&);
 
 		private:
-			Eigen::Matrix3d strapdown_ecef::skew(const Eigen::Vector3d&) const;
-			Eigen::Vector3d strapdown_ecef::transform_ecef2llh_DEG(const Eigen::Vector3d&) const;
-			Eigen::Vector3d strapdown_ecef::transform_ecef2llh_DEG(const double[3]) const;
-			Eigen::Vector3d strapdown_ecef::transform_ecef2llh_RAD(const Eigen::Vector3d&) const;
-			Eigen::Matrix3d strapdown_ecef::pos2Cne_RAD(const double&, const double&) const;
-			Eigen::Matrix3d strapdown_ecef::pos2Cne_RAD(const Eigen::Vector3d&) const;
-			Eigen::Matrix3d strapdown_ecef::pos2Cne_ECEF(const Eigen::Vector3d&) const;
-			Eigen::Matrix3d strapdown_ecef::getCbe(void) const;
-			Eigen::Matrix3d strapdown_ecef::calculateCbe(const Eigen::Vector3d, const Eigen::Vector3d) const;
+			Eigen::Matrix3d skew(const Eigen::Vector3d&) const;
+			Eigen::Vector3d transform_ecef2llh_DEG(const Eigen::Vector3d&) const;
+			Eigen::Vector3d transform_ecef2llh_DEG(const double[3]) const;
+			Eigen::Vector3d transform_ecef2llh_RAD(const Eigen::Vector3d&) const;
+			Eigen::Matrix3d pos2Cne_RAD(const double&, const double&) const;
+			Eigen::Matrix3d pos2Cne_RAD(const Eigen::Vector3d&) const;
+			Eigen::Matrix3d pos2Cne_ECEF(const Eigen::Vector3d&) const;
+			Eigen::Matrix3d getCbe(void) const;
+			Eigen::Matrix3d calculateCbe(const Eigen::Vector3d, const Eigen::Vector3d) const;
 			
 	};
 }

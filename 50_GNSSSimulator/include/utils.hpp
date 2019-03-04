@@ -1,4 +1,4 @@
-#ifndef GNSSSIMULATOR_UTILS_HPP
+﻿#ifndef GNSSSIMULATOR_UTILS_HPP
 #define GNSSSIMULATOR_UTILS_HPP
 
 #include <iostream>

@@ -1,4 +1,4 @@
-
+﻿
 #include "RTKPOST_Stream.hpp"
 
 namespace RTKPOST_Parser {

@@ -1,4 +1,4 @@
-
+﻿
 file(GLOB_RECURSE EGNOS_SRC "src/*.cpp")
 file(GLOB_RECURSE EGNOS_INCL "include/*.h" "include/*.hpp")
 

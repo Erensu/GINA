@@ -1,4 +1,4 @@
-#ifndef EGNOS_EMS_STREAM_HPP
+﻿#ifndef EGNOS_EMS_STREAM_HPP
 #define EGNOS_EMS_STREAM_HPP
 
 #include "FFTextStream.hpp"

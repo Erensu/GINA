@@ -1,4 +1,4 @@
-#ifndef TEST_TRAJECTORY_CLASS_HPP
+﻿#ifndef TEST_TRAJECTORY_CLASS_HPP
 #define TEST_TRAJECTORY_CLASS_HPP
 
 void Test_Trajectory_4(void);

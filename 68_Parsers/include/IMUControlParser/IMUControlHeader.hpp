@@ -1,4 +1,4 @@
-#ifndef IMU_CONTROL_HEADER_HPP
+﻿#ifndef IMU_CONTROL_HEADER_HPP
 #define IMU_CONTROL_HEADER_HPP
 
 #include "IMUControlBase.hpp"
@@ -37,10 +37,10 @@ namespace GINAParser {
 		//virtual void dump(std::ostream& s) const;
 
 	
-		bool IMUControlHeader::isPosFormatSet;
-		bool IMUControlHeader::isHeaderEnd;
-		bool IMUControlHeader::firstLineisRead;
-		bool IMUControlHeader::valid;
+		bool isPosFormatSet;
+		bool isHeaderEnd;
+		bool firstLineisRead;
+		bool valid;
 		gpstk::Position::CoordinateSystem coorSys;
 		gpstk::TimeSystem timeSys;
 		gpstk::Position startPosition;
@@ -55,21 +55,21 @@ namespace GINAParser {
 
 		//TrajectoryStream strm;
 
-		static const int IMUControlHeader::numberofLineinHeader;
-		static const string IMUControlHeader::startofHeaderGinaTag;
-		static const string IMUControlHeader::secondLineOfIMUTrajectoryTag;
-		static const string IMUControlHeader::creatorOfFileTag;
-		static const string IMUControlHeader::timeofCreationTag;
-		static const string IMUControlHeader::positionTypeLLHTag;
-		static const string IMUControlHeader::positionTypeUnknownTag;
-		static const string IMUControlHeader::positionTypeECEFTag;
-		static const string IMUControlHeader::timeSystemDefinitionTag;
-		static const string IMUControlHeader::startTimeTag;
-		static const string IMUControlHeader::endTimeTag;
-		static const string IMUControlHeader::startPositionTag;
-		static const string IMUControlHeader::startVelocityTag;
-		static const string IMUControlHeader::startAttitudeTag;
-		static const string IMUControlHeader::endOfHeaderTag;
+		static const int numberofLineinHeader;
+		static const string startofHeaderGinaTag;
+		static const string secondLineOfIMUTrajectoryTag;
+		static const string creatorOfFileTag;
+		static const string timeofCreationTag;
+		static const string positionTypeLLHTag;
+		static const string positionTypeUnknownTag;
+		static const string positionTypeECEFTag;
+		static const string timeSystemDefinitionTag;
+		static const string startTimeTag;
+		static const string endTimeTag;
+		static const string startPositionTag;
+		static const string startVelocityTag;
+		static const string startAttitudeTag;
+		static const string endOfHeaderTag;
 
 
 	protected:

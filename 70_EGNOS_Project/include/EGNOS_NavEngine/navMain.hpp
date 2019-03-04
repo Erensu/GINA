@@ -1,4 +1,4 @@
-#ifndef EGNOS_NAV_MAIN_HPP
+﻿#ifndef EGNOS_NAV_MAIN_HPP
 #define EGNOS_NAV_MAIN_HPP
 
 #include "simpleNavigationSolution.hpp"

@@ -1,4 +1,4 @@
-
+﻿
 #include "GINAConfig.h"
 
 #include "CreateTrajectorywIMUGenerator.hpp"

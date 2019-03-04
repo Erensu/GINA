@@ -1,4 +1,4 @@
-#ifndef IMU_STORE_HPP
+﻿#ifndef IMU_STORE_HPP
 #define IMU_STORE_HPP
 
 #include <iostream>
@@ -15,13 +15,13 @@ namespace GINAParser {
 		gpstk::Position::CoordinateSystem coorSys = gpstk::Position::CoordinateSystem::Unknown;
 
 		IMUData& addPosition(IMUData);
-		IMUData findPosition(gpstk::GPSWeekSecond);
+		IMUData& findPosition(gpstk::GPSWeekSecond);
 		/* Return epochs as a vector from the Trajectoryfile.
 		*/
-		vector<gpstk::GPSWeekSecond> listTime(void); // TODO tudja kilist�zni a benne levo idoket.
+		vector<gpstk::GPSWeekSecond> listTime(void); // TODO tudja kilistázni a benne levo idoket.
 
-		bool IMUStore::operator==(const IMUStore& other) const;
-		bool IMUStore::operator!=(const IMUStore& other) const;
+		bool operator==(const IMUStore& other) const;
+		bool operator!=(const IMUStore& other) const;
 
 	protected:
 		bool isCoorSystemSet = false;

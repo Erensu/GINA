@@ -1,4 +1,4 @@
-#ifndef EGNOS_IGPMAP_HPP
+﻿#ifndef EGNOS_IGPMAP_HPP
 #define EGNOS_IGPMAP_HPP
 
 #include <stdlib.h>
@@ -50,8 +50,8 @@ namespace EGNOS {
 
 			void updateTime(gpstk::CommonTime &time);
 			std::vector<IonosphericGridPoint> getIGPCandidates(void);
-			void setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs);
-			void updateIGPCandidate(const IonosphericGridPointMasksMessageParser & const IGPMessageParser);
+			void setIGPCandidates(const std::vector<IonosphericGridPoint> & candidateIGPs);
+			void updateIGPCandidate(const IonosphericGridPointMasksMessageParser & IGPMessageParser);
 
 			gpstk::CommonTime getReferencetime(void) {return currentDataTime;};
 

@@ -1,4 +1,4 @@
-
+﻿
 #include "IMUSimulatorData.hpp"
 
 namespace IMUSimulator {

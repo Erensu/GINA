@@ -1,4 +1,4 @@
-
+﻿
 #include "IonosphericMaskBand.hpp"
 
 
@@ -129,7 +129,7 @@ namespace EGNOS {
 			return false;
 		}
 		if ( 0 <= band && band <= 8) {
-			for (size_t i = 0; i < 8; i++)
+			for (int i = 0; i < 8; i++)
 			{
 				if ((this->vBands[8 * band + i].startBit <= bitpos) && (bitpos <= this->vBands[8 * band + i].startBit + this->vBands[8 * band + i].sizeOfArray - 1)){
 					lon = this->vBands[8 * band + i].longitude;
@@ -145,7 +145,7 @@ namespace EGNOS {
 			return false;
 		}
 		else{
-			for (size_t i = 0; i < 5; i++)
+			for (int i = 0; i < 5; i++)
 			{
 				if ((this->hBands[5 * (band-9) + i].startBit <= bitpos) && (bitpos <= this->hBands[5 * (band - 9) + i].startBit + this->hBands[5 * (band - 9) + i].sizeOfArray - 1)) {
 					lat = this->hBands[5 * (band - 9) + i].lattitude;

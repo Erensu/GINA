@@ -1,4 +1,4 @@
-#ifndef IMU_HEADER_HPP
+﻿#ifndef IMU_HEADER_HPP
 #define IMU_HEADER_HPP
 
 #include "IMUBase.hpp"
@@ -39,10 +39,10 @@ namespace GINAParser {
 		//virtual void dump(std::ostream& s) const;
 
 	
-		bool IMUHeader::isPosFormatSet;
-		bool IMUHeader::isHeaderEnd;
-		bool IMUHeader::firstLineisRead;
-		bool IMUHeader::valid;
+		bool isPosFormatSet;
+		bool isHeaderEnd;
+		bool firstLineisRead;
+		bool valid;
 		gpstk::Position::CoordinateSystem coorSys;
 		gpstk::TimeSystem timeSys;
 		gpstk::Position startPosition;
@@ -58,22 +58,22 @@ namespace GINAParser {
 
 		//TrajectoryStream strm;
 
-		static const int IMUHeader::numberofLineinHeader;
-		static const string IMUHeader::startofHeaderGinaTag;
-		static const string IMUHeader::secondLineOfIMUTrajectoryTag;
-		static const string IMUHeader::creatorOfFileTag;
-		static const string IMUHeader::timeofCreationTag;
-		static const string IMUHeader::positionTypeLLHTag;
-		static const string IMUHeader::positionTypeUnknownTag;
-		static const string IMUHeader::positionTypeECEFTag;
-		static const string IMUHeader::timeSystemDefinitionTag;
-		static const string IMUHeader::startTimeTag;
-		static const string IMUHeader::endTimeTag;
-		static const string IMUHeader::startPositionTag;
-		static const string IMUHeader::startVelocityTag;
-		static const string IMUHeader::startAttitudeTag;
-		static const string IMUHeader::EpochIntervalTag;
-		static const string IMUHeader::endOfHeaderTag;
+		static const int numberofLineinHeader;
+		static const string startofHeaderGinaTag;
+		static const string secondLineOfIMUTrajectoryTag;
+		static const string creatorOfFileTag;
+		static const string timeofCreationTag;
+		static const string positionTypeLLHTag;
+		static const string positionTypeUnknownTag;
+		static const string positionTypeECEFTag;
+		static const string timeSystemDefinitionTag;
+		static const string startTimeTag;
+		static const string endTimeTag;
+		static const string startPositionTag;
+		static const string startVelocityTag;
+		static const string startAttitudeTag;
+		static const string EpochIntervalTag;
+		static const string endOfHeaderTag;
 
 
 	protected:

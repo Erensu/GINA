@@ -1,4 +1,4 @@
-#ifndef IONOSPHERIC_GRID_POINT_HPP
+﻿#ifndef IONOSPHERIC_GRID_POINT_HPP
 #define IONOSPHERIC_GRID_POINT_HPP
 
 #include <bitset>

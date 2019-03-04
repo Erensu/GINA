@@ -1,4 +1,4 @@
-#ifndef IMUSIMULATOR_CONTROL_HPP
+﻿#ifndef IMUSIMULATOR_CONTROL_HPP
 #define IMUSIMULATOR_CONTROL_HPP
 
 #include <Eigen/Dense>
@@ -92,7 +92,7 @@ namespace IMUSimulator {
 		// PositionData& IMUControl::getPositionData(void) const; TODO: This cannot be done bc during the return the copy constoructure of the PositionData will be called and the usable one already occupied by Position_IMU& operator=(PositionData&); I cannot define PositionData& operator=(PositionData&); bc if it only differs by the return type it is not enough.
 
 		Measure_IMU getMeasurement(void) const;
-		bool IMUControl::getMeasurement(Measure_IMU&) const;
+		bool getMeasurement(Measure_IMU&) const;
 
 	private:
 

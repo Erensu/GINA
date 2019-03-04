@@ -1,4 +1,4 @@
-#include "IMUStore.hpp"
+﻿#include "IMUStore.hpp"
 
 namespace GINAParser {
 	IMUStore::IMUStore()
@@ -39,7 +39,7 @@ namespace GINAParser {
 	    return ret;
 	}
 
-	IMUData IMUStore::findPosition(gpstk::GPSWeekSecond time) {
+	IMUData& IMUStore::findPosition(gpstk::GPSWeekSecond time) {
 		IMUData trajData;
 		IMUData ret;
 		IMUMap::iterator it;

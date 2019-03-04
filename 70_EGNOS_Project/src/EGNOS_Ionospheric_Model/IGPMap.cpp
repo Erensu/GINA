@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IGPMap.hpp"
 #include <algorithm>
@@ -7,7 +7,7 @@ namespace EGNOS {
 
 #pragma region IGPMediator
 
-	void IGPMediator::updateIGPCandidate(const IonosphericGridPointMasksMessageParser & const IGPMessageParser) {
+	void IGPMediator::updateIGPCandidate(const IonosphericGridPointMasksMessageParser & IGPMessageParser) {
 
 		for (int i = 0; i < candidateIGPs.size(); i++) {
 
@@ -16,7 +16,7 @@ namespace EGNOS {
 		}
 	}
 
-	void IGPMediator::setIGPCandidates(const std::vector<IonosphericGridPoint> & const candidateIGPs) { 
+	void IGPMediator::setIGPCandidates(const std::vector<IonosphericGridPoint> & candidateIGPs) {
 
 		this->candidateIGPs = candidateIGPs; 
 	}

@@ -1,4 +1,4 @@
-
+﻿
 #include "TrajectoryStream.hpp"
 
 namespace GINAParser {

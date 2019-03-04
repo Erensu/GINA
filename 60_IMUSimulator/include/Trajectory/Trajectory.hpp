@@ -1,4 +1,4 @@
-#ifndef IMUSIMULATOR_TRAJECTORY_HPP
+﻿#ifndef IMUSIMULATOR_TRAJECTORY_HPP
 #define IMUSIMULATOR_TRAJECTORY_HPP
 
 #include "geoparam_wgs84.hpp"

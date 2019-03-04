@@ -1,4 +1,4 @@
-
+﻿
 #include "IMUSimulatorSignalGenerator.hpp"
 
 namespace IMUSimulator {

@@ -1,4 +1,4 @@
-
+﻿
 #include "TrajectoryData.hpp"
 #include "GNSSSimulator_TrajectoryData.hpp"
 #include "GNSSSimulator_TrajectoryStore.hpp"

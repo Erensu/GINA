@@ -1,4 +1,4 @@
-#include "GNSSSimulator_TrajectoryData.hpp"
+﻿#include "GNSSSimulator_TrajectoryData.hpp"
 
 namespace gnsssimulator 
 {

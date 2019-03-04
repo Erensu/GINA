@@ -1,4 +1,4 @@
-#ifndef IMU_CONTROL_DATA_HPP
+﻿#ifndef IMU_CONTROL_DATA_HPP
 #define IMU_CONTROL_DATA_HPP
 
 #include <list>
@@ -85,13 +85,13 @@ namespace GINAParser
 
 		double getTimeStep(void) const;
 
-		static const string IMUControlData::startofDataTag;
+		static const string startofDataTag;
 		IMUControlData& operator=(const I_IMUControlData&);
 		
 	private:
 		IMUControlStream* strm;
 
-		void IMUControlData::parseLine(std::string& currentLine)
+		void parseLine(std::string& currentLine)
 			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);
 
 	};  // class RinexNavData

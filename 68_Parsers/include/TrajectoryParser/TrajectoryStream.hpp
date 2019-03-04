@@ -1,4 +1,4 @@
-#ifndef TRAJECTORY_STREAN_HPP
+﻿#ifndef TRAJECTORY_STREAN_HPP
 #define TRAJECTORY_STREAN_HPP
 
 #include "FFTextStream.hpp"

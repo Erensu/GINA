@@ -1,4 +1,4 @@
-#include "CreateTrajectorywIMUGenerator.hpp"
+﻿#include "CreateTrajectorywIMUGenerator.hpp"
 
 void IMUGeneratorForTrajectory(std::string trajFileNamewPath, std::string imuFileNamewPath) {
 

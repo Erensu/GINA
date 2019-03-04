@@ -1,4 +1,4 @@
-#ifndef RTKPOST_STREAM_HPP
+﻿#ifndef RTKPOST_STREAM_HPP
 #define RTKPOST_STREAM_HPP
 
 #include "FFTextStream.hpp"

@@ -1,4 +1,4 @@
-#ifndef IMU_STREAM_HPP
+﻿#ifndef IMU_STREAM_HPP
 #define IMU_STREAM_HPP
 
 #include "FFTextStream.hpp"

@@ -1,4 +1,4 @@
-#ifndef TRAJECTORY_BASE_HPP
+﻿#ifndef TRAJECTORY_BASE_HPP
 #define TRAJECTORY_BASE_HPP
 
 #include "FFData.hpp"

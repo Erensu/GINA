@@ -1,4 +1,4 @@
-#ifndef IMU_CONTROL_BASE_HPP
+﻿#ifndef IMU_CONTROL_BASE_HPP
 #define IMU_CONTROL_BASE_HPP
 
 #include "FFData.hpp"

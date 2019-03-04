@@ -1,4 +1,4 @@
-
+﻿
 #include "TrajectoryData.hpp"
 
 namespace GINAParser
