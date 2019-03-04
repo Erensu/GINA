@@ -9,9 +9,9 @@
 #include "test_PseudoRangeCalculator.h"
 #include "NeillTropModel.hpp"
 
-#include GINA_PARSER_TrajectoryData_hpp
-#include GINA_PARSER_TrajectoryStream_hpp
-#include GINA_PARSER_IMUData_hpp
+#include "TrajectoryData.hpp"
+#include "TrajectoryStream.hpp"
+#include "IMUData.hpp"
 
 const int ProcessRinex = 1;
 const int ProcessTrajectory = 1;

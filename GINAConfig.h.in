@@ -8,8 +8,4 @@
 
 #define ROOT "@ROOT_SRC_DIR@"
 
-#define GINA_PARSER_TrajectoryData_hpp "@GINA_PARSER_TrajectoryData@"
-#define GINA_PARSER_TrajectoryStream_hpp "@GINA_PARSER_TrajectoryStream@"
-#define GINA_PARSER_IMUData_hpp "@GINA_PARSER_IMUData@"
-
 #endif

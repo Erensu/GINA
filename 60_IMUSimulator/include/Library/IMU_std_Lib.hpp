@@ -22,7 +22,7 @@
 #include "IMUStore.h"
 #include "IMUData.h"
 
-#include GINA_PARSER_TrajectoryData_hpp
+#include "TrajectoryData.hpp"
 
 // GINAParser
 #include "IMUBase.hpp"

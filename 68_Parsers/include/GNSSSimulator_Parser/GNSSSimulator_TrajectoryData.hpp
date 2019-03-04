@@ -8,7 +8,7 @@
 #include "CommonTime.hpp"
 #include "RinexNavBase.hpp"
 #include "Position.hpp"
-#include GINA_PARSER_TrajectoryData_hpp
+#include "TrajectoryData.hpp"
 
 namespace gnsssimulator
 {

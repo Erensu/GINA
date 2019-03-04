@@ -13,12 +13,10 @@ set (Tutorial_VERSION_MINOR 0)
 # Set directory definitions in the GINAConfig.h
 set (ROOT_SRC_DIR "${CMAKE_SOURCE_DIR}")
 change_slash2double_backslash(ROOT_SRC_DIR)
-set (GINA_PARSER_TrajectoryData "${CMAKE_SOURCE_DIR}/68_Parsers/include/TrajectoryParser/TrajectoryData.hpp")
-change_slash2backslash(GINA_PARSER_TrajectoryData)
-set (GINA_PARSER_TrajectoryStream "${CMAKE_SOURCE_DIR}/68_Parsers/include/TrajectoryParser/TrajectoryStream.hpp") 
-change_slash2backslash(GINA_PARSER_TrajectoryStream)
-set (GINA_PARSER_IMUData "${CMAKE_SOURCE_DIR}/68_Parsers/include/IMUParser/IMUData.hpp")
-change_slash2backslash(GINA_PARSER_IMUData)
+
+
+
+
 
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
