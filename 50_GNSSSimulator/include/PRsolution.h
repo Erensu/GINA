@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TrajectoryStore.hpp"
+#include "GNSSSimulator_TrajectoryStore.hpp"
 
 #include <stdio.h>
 #include <iostream>

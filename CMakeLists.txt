@@ -13,11 +13,11 @@ set (Tutorial_VERSION_MINOR 0)
 # Set directory definitions in the GINAConfig.h
 set (ROOT_SRC_DIR "${CMAKE_SOURCE_DIR}")
 change_slash2double_backslash(ROOT_SRC_DIR)
-set (GINA_PARSER_TrajectoryData "${CMAKE_SOURCE_DIR}/68_GINAParser/include/TrajectoryParser/TrajectoryData.hpp")
+set (GINA_PARSER_TrajectoryData "${CMAKE_SOURCE_DIR}/68_Parsers/include/TrajectoryParser/TrajectoryData.hpp")
 change_slash2backslash(GINA_PARSER_TrajectoryData)
-set (GINA_PARSER_TrajectoryStream "${CMAKE_SOURCE_DIR}/68_GINAParser/include/TrajectoryParser/TrajectoryStream.hpp") 
+set (GINA_PARSER_TrajectoryStream "${CMAKE_SOURCE_DIR}/68_Parsers/include/TrajectoryParser/TrajectoryStream.hpp") 
 change_slash2backslash(GINA_PARSER_TrajectoryStream)
-set (GINA_PARSER_IMUData "${CMAKE_SOURCE_DIR}/68_GINAParser/include/IMUParser/IMUData.hpp")
+set (GINA_PARSER_IMUData "${CMAKE_SOURCE_DIR}/68_Parsers/include/IMUParser/IMUData.hpp")
 change_slash2backslash(GINA_PARSER_IMUData)
 
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
@@ -100,8 +100,8 @@ set (GPSTK_LIBS ${GPSTK_LIBS} gpstk)
 #GINAPArser
 ##############################################################
 option( test_GINAParser "HELP: Build test of GINA Parser: SWITCH, Default = ON, Build the GINAPArser" OFF )
-add_subdirectory (68_GINAParser) 
-get_property(GINAPARSER_CORE_INC_DIRS DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/68_GINAParser" PROPERTY GINAPARSER_CORE_INC_DIRS)
+add_subdirectory (68_Parsers) 
+get_property(GINAPARSER_CORE_INC_DIRS DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/68_Parsers" PROPERTY GINAPARSER_CORE_INC_DIRS)
 # message("Property for root directory root read from GNSSSIM_INCLUDE_DIRS: " ${GNSSSIM_INCLUDE_DIRS})
 
 #GNSSsimulator

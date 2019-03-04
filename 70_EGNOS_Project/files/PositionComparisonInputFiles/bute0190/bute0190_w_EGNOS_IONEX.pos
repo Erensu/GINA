@@ -1,0 +1,14 @@
+% program   : RTKPOST ver.2.4.3 b31
+% inp file  : C:\Users\lus2bp\Source\Repos\GINA\70_EGNOS_Project\files\PositionComparisonInputFiles\bute0190\bute0190.19o
+% inp file  : C:\Users\lus2bp\Source\Repos\GINA\70_EGNOS_Project\files\PositionComparisonInputFiles\bute0190\brdc0190.19n
+% inp file  : C:\Users\lus2bp\Source\Repos\GINA\70_EGNOS_Project\files\PositionComparisonInputFiles\bute0190\y2019_d019_136.ems
+% obs start : 2019/01/19 00:00:00.0 GPST (week2036 518400.0s)
+% obs end   : 2019/01/19 23:59:30.0 GPST (week2036 604770.0s)
+% pos mode  : single
+% elev mask : 10.0 deg
+% ionos opt : ionex tec
+% tropo opt : saastamoinen
+% ephemeris : broadcast
+%
+% (lat/lon/height=WGS84/ellipsoidal,Q=1:fix,2:float,3:sbas,4:dgps,5:single,6:ppp,ns=# of satellites)
+%  GPST                  latitude(deg) longitude(deg)  height(m)   Q  ns   sdn(m)   sde(m)   sdu(m)  sdne(m)  sdeu(m)  sdun(m) age(s)  ratio

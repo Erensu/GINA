@@ -9,8 +9,8 @@ addpath(genpath(folder));
 %  arg_list = argv ();
 %  ionex_file = arg_list{1};
 %else
-  ionex_file = '\EMS_136_2019_02_11_15\h15ems_ionex_Europe_5x5_IGPMap_All.19i';  %just for testing
-  plusFilePath2Pics = 'Ionex_from_h15_Europe\Grid5x5\pics';
+  ionex_file = '\PositionComparisonInputFiles\bute0190\TestIonexStoreOut.19i';  %just for testing
+  plusFilePath2Pics = 'IonexDifference\NotInterpolated';
 %end
 filewPath = which(ionex_file);
 
@@ -95,6 +95,9 @@ while ~feof(fin)
             end
           end
         end
+        if(isempty(tec_map))
+            continue;
+        end
   %short output of current map
         if strfind(type_of_data,'TEC')
           fprintf ('%d TEC MAP read %d %02d %02d %02d:%02d:%02d\n', n_maps, year, month, day, hour, minute, sec);
@@ -116,8 +119,8 @@ while ~feof(fin)
         title(colorbar,'TEC [TECU]')
         ylabel('Latitude [deg]')
         xlabel('Longitude [deg]')
-        axis([-60 60 10 85]);
-        caxis([0 10]);
+        axis([-60 60 10 90]);
+        caxis([0 100]);
         if strfind(type_of_data,'TEC')
           title (sprintf('Total Electron Content Map %d %02d %02d %02d:%02d:%02d', year, month, day, hour, minute, sec));
           print(map, fullfile(filepath,plusFilePath2Pics,sprintf(strcat(strrep(strcat(name,ext),'.','_'), '_iono%02d'), n_maps)),'-dpng');

@@ -2,8 +2,8 @@
 
 #include <random>
 
-#include "TrajectoryData.hpp"
-#include "TrajectoryStore.hpp"
+#include "GNSSSimulator_TrajectoryData.hpp"
+#include "GNSSSimulator_TrajectoryStore.hpp"
 
 #include "Rinex3NavHeader.hpp"
 #include "Rinex3NavData.hpp"

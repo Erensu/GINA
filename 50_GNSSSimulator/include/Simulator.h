@@ -8,11 +8,8 @@
 #include <ctime>
 
 //Own includes
-#include "TrajectoryBase.hpp"
-#include "TrajectoryData.hpp"
-#include "TrajectoryHeader.hpp"
-#include "TrajectoryStream.hpp"
-#include "TrajectoryStore.hpp"
+#include "GNSSSimulator_TrajectoryData.hpp"
+#include "GNSSSimulator_TrajectoryStore.hpp"
 #include "PRsolution.h"
 #include "utils.h"
 
