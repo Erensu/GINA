@@ -15,7 +15,37 @@ int main(int argc, char **argv) {
 
 	// Run RTKPOST parser
 	//////////////////////////////////////////
-	std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE.pos";
+	std::string EDAS_FileNamewPath_in = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE.pos";
+	std::string EDAS_FileNamewPath_out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE_out.pos";
+	std::string EDAS_FileNamewPath_out_out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE_out_out.pos";
+	RTKPOST_Parser::RTKPOST_Pos_Stream strm_in;
+	RTKPOST_Parser::RTKPOST_Pos_Stream strm_out;
+
+	strm_in.open(EDAS_FileNamewPath_in.c_str(), std::ios::in);
+	strm_out.open(EDAS_FileNamewPath_out.c_str(), std::ios::out);
+
+	RTKPOST_Parser::RTKPOST_Pos_Header header;
+	RTKPOST_Parser::RTKPOST_Pos_Data data;
+
+	strm_in >> header;
+	strm_out << header;
+
+	while (strm_in >> data) {
+		strm_out << data;
+	}
+	
+	
+	strm_in.close();
+	strm_out.close();
+
+	strm_in.open(EDAS_FileNamewPath_out.c_str(), std::ios::in);
+	strm_out.open(EDAS_FileNamewPath_out_out.c_str(), std::ios::out);
+
+	strm_in >> header;
+	strm_out << header;
+
+	strm_in.close();
+	strm_out.close();
 
 	//////////////////////////////////////////
 

@@ -2,6 +2,7 @@
 #define RTKPOST_STREAM_HPP
 
 #include "FFTextStream.hpp"
+#include "RTKPOST_Header.hpp"
 
 namespace RTKPOST_Parser {
 
@@ -21,8 +22,12 @@ namespace RTKPOST_Parser {
 		/// overrides open to reset the header
 		virtual void open(const char* fn, std::ios::openmode mode);
 
+		/// Header for this file.
+		RTKPOST_Pos_Header header;
+
 		/// Flag showing whether or not the header has been read.
-		bool dataStartRead= false;
+		bool headerRead = false;
+		//bool dataStartRead= false;
 		bool dataStartWritten = false;
 
 	private:
