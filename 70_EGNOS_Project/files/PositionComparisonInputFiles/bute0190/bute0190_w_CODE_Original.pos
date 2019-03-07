@@ -5,7 +5,7 @@
 % obs end   : 2019/01/19 23:59:30.0 GPST (week2036 604770.0s)
 % pos mode  : single
 % elev mask : 10.0 deg
-% ionos opt : ionex tecratio
+% ionos opt : ionex tec
 % tropo opt : saastamoinen
 % ephemeris : broadcast
 %
