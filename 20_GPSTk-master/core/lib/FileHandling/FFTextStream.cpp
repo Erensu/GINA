@@ -153,11 +153,16 @@ namespace gpstk
       try
       {
          std::getline(*this, line);
-
+		 
 		 if (eof()) {
 			throw std::domain_error("End of file");
 		 }
 
+		 if (line.size() == 0) {
+			 FFStreamError err("Empty row.");
+			 lineNumber++;
+			 GPSTK_THROW(err);
+		 }
             // Remove CR characters left over in the buffer from windows files
 		 while (*line.rbegin() == '\r') {
 			 line.erase(line.end() - 1);
