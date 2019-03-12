@@ -58,7 +58,6 @@ namespace RTKPOST_Parser
 			throw(std::exception, gpstk::FFStreamError,
 				gpstk::StringUtils::StringException);
 
-	
 		gpstk::CommonTime dataTime;
 		gpstk::Position pos;
 
@@ -68,7 +67,6 @@ namespace RTKPOST_Parser
 		double age = 0;
 		double ratio = 0;
 
-		
 	private:
 		RTKPOST_Pos_Stream* strm;
 

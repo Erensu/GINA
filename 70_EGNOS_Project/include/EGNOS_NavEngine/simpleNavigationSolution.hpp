@@ -38,6 +38,7 @@
 #include "GNSSconstants.hpp"
 
 #include "IonoCorrection.hpp"
+#include "RTKPOST_Data.hpp"
 
 namespace EGNOS {
 	namespace EGNOS_UTILITY {
@@ -61,7 +62,13 @@ namespace EGNOS {
 
 			void set_bcestore(GPSEphemerisStore &in_bcestore);
 			void setSimpleNaviagtionCalculator(gpstk::CommonTime &time, vector<SatID> &vid, vector<double> &prv, gpstk::TropModel *tropModel, IonoModel *ionoModel);
+			
+			void resetStartPosition(void);
 
+			RTKPOST_Parser::RTKPOST_Pos_Data getRTKPOST_data(void);
+
+			double elevetionMask = 10.0;
+			
 		private:
 			IonoModel *pIonoModel = NULL;
 			gpstk::TropModel *pTropModel = NULL;
@@ -70,8 +77,13 @@ namespace EGNOS {
 
 			vector<int> gpsSatIds;
 			vector<double> gpsPrs;
+			vector<int> gpsSatIds_original;
+			vector<double> gpsPrs_original;
 			std::array<double, 4> roverPos = { 6300000,0,0,0 };
 
+			Eigen::MatrixXd DOP_ecef = Eigen::MatrixXd(4, 4);
+			Eigen::MatrixXd Cov_ecef = Eigen::MatrixXd(3, 3);
+			Eigen::MatrixXd Cov_enu = Eigen::MatrixXd(3, 3);
 
 			static const double wie_e;
 			static const double c_mps;
@@ -80,12 +92,20 @@ namespace EGNOS {
 			double calculateIonoDelay(gpstk::CommonTime &time, gpstk::Xvt &SV, gpstk::Xvt  &RX);
 
 			gpstk::Xvt getSatXvt(gpstk::CommonTime &gpstime, int satId);
-
+			void applyElevationMask(void);
+			void checkElevation(void);
 			void reset(void);
-			double updatePosition(int iterNumber);
+			
+			double updatePosition(int iterNumber, bool tropoActive, bool ionoActive);
 			void correctwSagnacEffect(double deltat, gpstk::Xvt &old_pos, gpstk::Xvt &new_pos);
 			double calculateDistance(std::array<double, 4> &rover, gpstk::Xvt &sat);
 			double Norm(Eigen::VectorXd x);
+
+			void updateDOP(void);
+			void updateDOP(Eigen::MatrixXd& dop);
+			
+			Eigen::MatrixXd getECEF2ENUMatrix(double lat, double lon);
+
 		};
 
 

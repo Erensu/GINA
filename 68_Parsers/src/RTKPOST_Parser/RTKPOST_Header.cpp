@@ -100,7 +100,7 @@ namespace RTKPOST_Parser {
 		bool datumWritten = false;
 		bool coloumnWritten = false;
 
-		while (strm.lineNumber < numberOfLineRead) {
+		while (coloumnWritten == false) {
 
 			if (writeUnknownLines(ffs)) continue;
 			if (writeProgramInfoFound(ffs, programInfoWritten)) continue;
@@ -116,9 +116,6 @@ namespace RTKPOST_Parser {
 			if (writeEphemerisOptFound(ffs, ephemerisOptWritten)) continue;
 			if (writeTokenFound(ffs, tokenWritten)) continue;
 			if (writeColoumnFound(ffs, coloumnWritten)) continue;
-			if (writeProgramInfoFound(ffs, programInfoWritten)) continue;
-			if (writeProgramInfoFound(ffs, programInfoWritten)) continue;
-			if (writeProgramInfoFound(ffs, programInfoWritten)) continue;
 
 		}
 		

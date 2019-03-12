@@ -22,10 +22,10 @@ namespace EGNOS {
 
 		void SimpleNavSolver::print_Result(void) {
 
-			std::cout << "" << roverPos[0] << " ";
-			std::cout << " " << roverPos[1] << " ";
-			std::cout << " " << roverPos[2] << "	";
-			std::cout << "Clock bias: " << roverPos[3] << endl;
+			std::cerr << "" << roverPos[0] << " ";
+			std::cerr << " " << roverPos[1] << " ";
+			std::cerr << " " << roverPos[2] << "	";
+			std::cerr << "Clock bias: " << roverPos[3] << endl;
 		}
 
 		double SimpleNavSolver::calculateTropoDelay(gpstk::CommonTime &time, gpstk::Xvt &SV, gpstk::Xvt  &RX) {
@@ -36,7 +36,7 @@ namespace EGNOS {
 			}
 
 			Position R(RX), S(SV);
-			double tc = R.getHeight(), elev = R.elevation(SV);
+			double tc = R.getHeight(), elev = R.elevationGeodetic(SV);
 
 			if (elev < 0.0 || tc > 10000.0 || tc < -1000) {
 
@@ -94,7 +94,8 @@ namespace EGNOS {
 			// do at least twice so that
 			// trop and iono model gets evaluated
 			do {
-				norm = updatePosition(iterNumber);
+				norm = updatePosition(iterNumber, false, false);
+				applyElevationMask();
 				if (norm < EGNOS_UTILITY_CONVERGENCE_LIMIT && iterNumber > 0) {
 					break;
 				}
@@ -106,10 +107,64 @@ namespace EGNOS {
 				iterNumber++;
 			} while (1);
 
+			checkElevation();
 			return validResult;
 		}
 
-		double SimpleNavSolver::updatePosition(int iterNumber) {
+		void SimpleNavSolver::checkElevation(void) {
+		
+			gpstk::Xvt satPos;
+			double elev = 0;
+			for (size_t i = 0; i < gpsSatIds_original.size(); i++)
+			{
+				satPos = getSatXvt(gpsTime, gpsSatIds_original[i]);
+
+				gpstk::Xvt RX;
+				RX.x[0] = roverPos[0];
+				RX.x[1] = roverPos[1];
+				RX.x[2] = roverPos[2];
+
+				Position R(RX), S(satPos);
+				elev = R.elevationGeodetic(S);
+
+				if (elev < elevetionMask) {
+					cout << "Elevation angle: "<< elev << " Elevation mask: " << elevetionMask << endl;
+				}
+			}
+		}
+
+		void SimpleNavSolver::applyElevationMask(void) {
+		
+			gpsSatIds.clear();
+			gpsPrs.clear();
+
+			gpstk::Xvt satPos;
+			double elev = 0;
+			for (size_t i = 0; i < gpsSatIds_original.size(); i++)
+			{
+				satPos = getSatXvt(gpsTime, gpsSatIds_original[i]);
+
+				gpstk::Xvt RX;
+				RX.x[0] = roverPos[0];
+				RX.x[1] = roverPos[1];
+				RX.x[2] = roverPos[2];
+
+				Position R(RX), S(satPos);
+				elev = R.elevationGeodetic(S);
+
+				if (elev >= elevetionMask) {
+					gpsSatIds.push_back(gpsSatIds_original[i]);
+					gpsPrs.push_back(gpsPrs_original[i]);
+				}
+				else {
+					//cout << elev << endl;
+				}
+				
+			}
+
+		}
+
+		double SimpleNavSolver::updatePosition(int iterNumber, bool tropoActive, bool ionoActive) {
 
 			double rho = 0;
 
@@ -179,12 +234,18 @@ namespace EGNOS {
 				RX.x[2] = roverPos[2];
 
 				Position R(RX), S(satPos);
-				double elev = R.elevation(S);
+				double elev = R.elevationGeodetic(S);
 
 				double tc = 0;
 				try
 				{
-					tc = calculateTropoDelay(gpsTime, satPos, RX);
+					if (tropoActive == true) {
+						tc = calculateTropoDelay(gpsTime, satPos, RX);
+					}
+					else {
+						tc = 0;
+					}
+					
 				}
 				catch (const std::exception&)
 				{
@@ -194,7 +255,13 @@ namespace EGNOS {
 				double ic = 0;
 				try
 				{
-					ic = calculateIonoDelay(gpsTime, satPos, RX);
+					if (ionoActive == true) {
+						ic = calculateIonoDelay(gpsTime, satPos, RX);
+					}
+					else {
+						ic = 0;
+					}
+					
 				}
 				catch (const std::exception&)
 				{
@@ -227,6 +294,16 @@ namespace EGNOS {
 			covMatrix = designMatrix.transpose() * designMatrix;
 			covMatrix = covMatrix.inverse();
 
+			try
+			{
+				updateDOP(covMatrix);
+			}
+			catch (...)
+			{
+				updateDOP();
+			}
+			
+
 			// Set up observetion vector 
 			// Multiply Covariance matrix with A.' and PR residual matrix
 			y = PRObservations - geometryDistance;
@@ -243,14 +320,20 @@ namespace EGNOS {
 			return res_norm;
 		}
 
-		void SimpleNavSolver::reset(void) {
+		void SimpleNavSolver::resetStartPosition(void) {
 
-			gpsSatIds.clear();
-			gpsPrs.clear();
 			roverPos[0] = 6300000;
 			roverPos[1] = 0;
 			roverPos[2] = 0;
 			roverPos[3] = 0;
+		}
+
+		void SimpleNavSolver::reset(void) {
+
+			gpsSatIds.clear();
+			gpsPrs.clear();
+			gpsSatIds_original.clear();
+			gpsPrs_original.clear();
 			pTropModel = NULL;
 		}
 
@@ -310,12 +393,35 @@ namespace EGNOS {
 			for (int i = 0; i < vid.size(); i++) { // TODO checker. size of vid and prv shall be the same
 				if (vid[i].system == SatID::systemGPS) {
 					if (vid[i].id > 0 & prv[i] > 1000) {
-						gpsSatIds.push_back(vid[i].id);
-						gpsPrs.push_back(prv[i]);
+						gpsSatIds_original.push_back(vid[i].id);
+						gpsPrs_original.push_back(prv[i]);
 					}
 				}
 			}
 
+		}
+
+		RTKPOST_Parser::RTKPOST_Pos_Data SimpleNavSolver::getRTKPOST_data(void) {
+
+			RTKPOST_Parser::RTKPOST_Pos_Data data;
+			data.age = 0;
+			data.dataTime = gpsTime;
+			data.numberOfSvId = gpsPrs.size();
+			data.ratio = 0;
+			data.typeOfSolution = 5;		// 5 - single freq, basic solution
+			data.sde = sqrt(Cov_enu(0,0));
+			data.sdeu = Cov_enu(0, 2);
+			data.sdn = sqrt(Cov_enu(1, 1));
+			data.sdne = Cov_enu(0, 1);
+			data.sdu = sqrt(Cov_enu(2, 2));
+			data.sdun = Cov_enu(1, 2);
+		
+			gpstk::Position rovllh(roverPos[0], roverPos[1], roverPos[2],
+									gpstk::Position::CoordinateSystem::Cartesian,
+									NULL, ReferenceFrame::WGS84);
+			data.pos = rovllh;
+ 
+			return data;
 		}
 
 		gpstk::Xvt SimpleNavSolver::getSatXvt(gpstk::CommonTime &gpstime, int satId) {
@@ -334,6 +440,40 @@ namespace EGNOS {
 			catch (Exception& e) {
 				throw domain_error("Sat position cannot be calculated");
 			}
+		}
+
+		Eigen::MatrixXd SimpleNavSolver::getECEF2ENUMatrix(double lat, double lon) {
+		
+			Eigen::MatrixXd ecef2enu = Eigen::MatrixXd(3, 3);
+
+			double sLat = sin(lat);
+			double cLat = cos(lat);
+			double sLon = sin(lon);
+			double cLon = cos(lon);
+
+			ecef2enu <<		-sLat, -cLat*sLon,	cLat*cLon,
+							 cLat, -sLat*sLon,	sLat*cLon,
+							 0,		cLon,		sLon;
+
+			return ecef2enu;
+		}
+		void SimpleNavSolver::updateDOP(void){	
+			DOP_ecef = Eigen::MatrixXd::Identity(4, 4);
+			Cov_ecef = Eigen::MatrixXd::Identity(3, 3);	
+			Cov_enu = Eigen::MatrixXd::Identity(3, 3);	
+		};
+
+		void SimpleNavSolver::updateDOP(Eigen::MatrixXd& dop4x4) {
+
+			gpstk::Position rovllh(roverPos[0], roverPos[1], roverPos[2],
+				gpstk::Position::CoordinateSystem::Cartesian,  
+				NULL, ReferenceFrame::WGS84);
+
+			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(rovllh.geodeticLatitude(), rovllh.longitude());
+			
+			DOP_ecef = dop4x4;
+			Cov_ecef = dop4x4.block(0, 0, 3, 3);
+			Cov_enu = ecef2enu*Cov_ecef*ecef2enu.transpose();
 		}
 
 #pragma endregion

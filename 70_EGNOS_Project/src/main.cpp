@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 
 	// Run RTKPOST parser
 	//////////////////////////////////////////
-	std::string EDAS_FileNamewPath_in = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE.pos";
+	/*std::string EDAS_FileNamewPath_in = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE.pos";
 	std::string EDAS_FileNamewPath_out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE_out.pos";
 	std::string EDAS_FileNamewPath_out_out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE_out_out.pos";
 	RTKPOST_Parser::RTKPOST_Pos_Stream strm_in;
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 
 	strm_in.close();
 	strm_out.close();
-
+	*/
 	//////////////////////////////////////////
 
 	// Run EGNOSIonoCorrectionModel class and its features
@@ -59,10 +59,13 @@ int main(int argc, char **argv) {
 	// Run mainNavigationSolution
 	//////////////////////////////////////////
 
-	/*string obsFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
-	string ephFile = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
-	string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
-	mainNavigationSolution(obsFile, ephFile, EDAS_FileNamewPath);*/
+	string obsFile				= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
+	string ephFile				= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
+	string EDAS_FileNamewPath	= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
+	string RTKPOST_out			= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GINA_NoIono_NoTropo_elev-5_out.pos";
+	string error_log = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\ErrorLog.txt";
+
+	mainNavigationSolution(obsFile, ephFile, EDAS_FileNamewPath, RTKPOST_out, error_log);
 	//////////////////////////////////////////
 
 	// This part is under construction

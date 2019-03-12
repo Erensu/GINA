@@ -3,6 +3,6 @@
 
 #include "simpleNavigationSolution.hpp"
 
-int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData);
+int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData, std::string& rtkpost_out, std::string& errorFile);
 
 #endif

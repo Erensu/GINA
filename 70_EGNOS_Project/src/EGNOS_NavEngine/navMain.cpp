@@ -3,12 +3,24 @@
 #include "SaasTropModel.hpp"
 #include "NeillTropModel.hpp"
 
+#include "RTKPOST_Header.hpp"
+#include "RTKPOST_Stream.hpp"
+#include "RTKPOST_Data.hpp"
+
 using namespace std;
 using namespace gpstk;
 
-int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData)
+int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData, std::string& rtkpost_out, std::string& errorFile)
 {
+	if (errorFile.empty() != true) {
+		freopen(errorFile.c_str(), "w", stderr);
+	}
+	
+	
+	std::vector<RTKPOST_Parser::RTKPOST_Pos_Data> navData_RTKPOST;
 
+	
+	
 	// Declaration of objects for storing ephemerides and handling RAIM
 	GPSEphemerisStore bcestore; // This is now static
 	PRSolution2 raimSolver;
@@ -22,35 +34,34 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 	SaasTropModel saasTropModel;
 	NeillTropModel neilTropModel;
 
+	saasTropModel.setDayOfYear(19);
+	saasTropModel.setReceiverHeight(185);
+	saasTropModel.setReceiverLatitude(47.48);
+	saasTropModel.setReceiverLongitude(19.05);
+	saasTropModel.setWeather(18,1013.25,50);
+
 	// Pointer to one of the two available tropospheric models. It points
 	// to the void model by default
-	TropModel *tropModelPtr2gpstk = &neilTropModel;
-	TropModel *tropModelPtr2EGNOS = &neilTropModel;
-
-	// This verifies the ammount of command-line parameters given and
-	// prints a help message, if necessary
-	/*if ((argc < 3) || (argc > 4))
-	{
-		cerr << "Usage:" << endl;
-		cerr << "   " << argv[0].c_str()
-			<< " <RINEX Obs file>  <RINEX Nav file>  [<RINEX Met file>]"
-			<< endl;
-
-		exit(-1);
-	}*/
+	TropModel *tropModelPtr2gpstk = &noTropModel;
+	TropModel *tropModelPtr2EGNOS = &noTropModel;
 
 	EGNOS::EGNOS_UTILITY::SimpleNavSolver egnosNavSolver;
 	EGNOS::EGNOSIonoCorrectionModel egnosIonoModel;
 	EGNOS::IonoModel *ionoModel = NULL; //&egnosIonoModel;
+	egnosNavSolver.elevetionMask = -5;
 
 	egnosIonoModel.updateIntervalinSeconds = 60;
-	//egnosIonoModel.load(EMSData);
 
+	if (ionoModel != NULL) {
+		egnosIonoModel.load(EMSData);
+	}
+	
 	std::cout << "IonoModel is loaded "<< std::endl;
+	gpstk::FFTextStream debugStrm;
 
+	//debugStrm.open()
 	try
 	{
-
 		// Read nav file and store unique list of ephemerides
 		//Rinex3NavStream rnffs(argv[2].c_str());    // Open ephemerides data file
 		Rinex3NavStream rnffs(ephData.c_str());    // Open ephemerides data file
@@ -68,7 +79,6 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 			catch(Exception& e){
 				cerr << e;
 			}
-			
 		}
 
 		// Setting the criteria for looking up ephemeris
@@ -81,7 +91,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 		   //Rinex3ObsStream roffs(argv[1]);    // Open observations data file
 		Rinex3ObsStream roffs(obsData);    // Open observations data file
 
-										   // In order to throw exceptions, it is necessary to set the failbit
+		// In order to throw exceptions, it is necessary to set the failbit
 		roffs.exceptions(ios::failbit);
 
 		Rinex3ObsHeader roh;
@@ -105,10 +115,11 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 		}
 
 		// Let's process one line of observation data
+
 		while (roffs >> rod) // if you would you like to read all the line use this.
 		//roffs >> rod;
 		{
-			   // Apply editing criteria
+			// Apply editing criteria
 			if (rod.epochFlag == 0 || rod.epochFlag == 1)  // Begin usable data
 			{
 
@@ -175,7 +186,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 										rangeVec,
 										bcestore,
 										tropModelPtr2gpstk);
-
+				
 				// Note: Given that the default constructor sets public
 				// attribute "Algebraic" to FALSE, a linearized least squares
 				// algorithm will be used to get the solutions.
@@ -190,14 +201,14 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 					// Vector "Solution" holds the coordinates, expressed in
 					// meters in an Earth Centered, Earth Fixed (ECEF) reference
 					// frame. The order is x, y, z  (as all ECEF objects)
-					cout << setprecision(12) << raimSolver.Solution[0] << " ";
-					cout << raimSolver.Solution[1] << " ";
-					cout << raimSolver.Solution[2];
-					cout << endl;
+					cerr << setprecision(12) << raimSolver.Solution[0] << " ";
+					cerr << raimSolver.Solution[1] << " ";
+					cerr << raimSolver.Solution[2];
+					cerr << endl;
 
 				}  // End of 'if( raimSolver.isValid() )'
 				else {
-					std::cout << "Invalid result - by gpstk" << std::endl;
+					cerr << "Invalid result - by gpstk" << endl;
 				}
 
 				////////////////////////////////
@@ -208,16 +219,39 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 				if (egnosNavSolver.calculatePosition(rod.time, prnVec, rangeVec, tropModelPtr2EGNOS, ionoModel)) {
 					// Print result
 					egnosNavSolver.print_Result();
+					navData_RTKPOST.push_back(egnosNavSolver.getRTKPOST_data());
 				}
 				else {
-					std::cout << "Invalid result - by EGNOS NavEngine" << std::endl;
+					cerr << "Invalid result - by EGNOS NavEngine" << endl;
 				}
-
-				
 
 			} // End of 'if( rod.epochFlag == 0 || rod.epochFlag == 1 )'
 
 		}  // End of 'while( roffs >> rod )'
+		
+		RTKPOST_Parser::RTKPOST_Pos_Header  rtkPost_header;
+		rtkPost_header.datum = gpstk::ReferenceFrame::WGS84;
+		rtkPost_header.elevAngle = egnosNavSolver.elevetionMask;
+		rtkPost_header.ephemerisOpt = "broadcasted";
+		rtkPost_header.inpFiles.push_back(obsData);
+		rtkPost_header.inpFiles.push_back(ephData);
+		rtkPost_header.ionosOpt = "ems";
+		rtkPost_header.posMode = "single";
+		rtkPost_header.obsStart = navData_RTKPOST[0].dataTime;
+		rtkPost_header.obsEnd = navData_RTKPOST.back().dataTime;
+		rtkPost_header.programInfo = "GINA 1.0";
+		rtkPost_header.timeSys = gpstk::TimeSystem::GPS;
+		rtkPost_header.tropoOpt = tropModelPtr2EGNOS->name();
+	
+		RTKPOST_Parser::RTKPOST_Pos_Stream strm_out(rtkpost_out.c_str(), std::ios::out);
+		strm_out << rtkPost_header;
+
+		for (size_t i = 0; i < navData_RTKPOST.size(); i++)	{
+
+				strm_out << navData_RTKPOST[i];
+		}
+
+		strm_out.close();
 
 	}
 	catch (Exception& e)

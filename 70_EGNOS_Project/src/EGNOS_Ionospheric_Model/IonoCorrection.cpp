@@ -2375,8 +2375,13 @@ namespace EGNOS {
 
 	IonCorrandVar EGNOSIonoCorrectionModel::getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) {
 	
-
-		std::vector<gpstk::CommonTime> availableEpochs = this->ptrIonoMapStore->getEpochTimes();
+		std::vector<gpstk::CommonTime> availableEpochs;
+		if (this->ptrIonoMapStore != NULL) {
+			availableEpochs = this->ptrIonoMapStore->getEpochTimes();
+		}
+		else {
+			throw domain_error("Store does not exist");
+		}
 
 		if (availableEpochs.size() < 2) {
 			throw domain_error("Store has zero or just one element");
