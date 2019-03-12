@@ -10,7 +10,7 @@
 using namespace std;
 using namespace gpstk;
 
-int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData, std::string& rtkpost_out, std::string& errorFile)
+int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData, std::string& rtkpost_out_gpstk, std::string& rtkpost_out_navEngine, std::string& errorFile)
 {
 	if (errorFile.empty() != true) {
 		freopen(errorFile.c_str(), "w", stderr);
@@ -18,6 +18,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 	
 	
 	std::vector<RTKPOST_Parser::RTKPOST_Pos_Data> navData_RTKPOST;
+	std::vector<RTKPOST_Parser::RTKPOST_Pos_Data> navData_GPSTK;
 
 	
 	
@@ -48,11 +49,10 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 	EGNOS::EGNOS_UTILITY::SimpleNavSolver egnosNavSolver;
 	EGNOS::EGNOSIonoCorrectionModel egnosIonoModel;
 	EGNOS::IonoModel *ionoModel = NULL; //&egnosIonoModel;
-	egnosNavSolver.elevetionMask = -5;
-
-	egnosIonoModel.updateIntervalinSeconds = 60;
+	egnosNavSolver.elevetionMask = 0;
 
 	if (ionoModel != NULL) {
+		egnosIonoModel.updateIntervalinSeconds = 60;
 		egnosIonoModel.load(EMSData);
 	}
 	
@@ -122,7 +122,6 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 			// Apply editing criteria
 			if (rod.epochFlag == 0 || rod.epochFlag == 1)  // Begin usable data
 			{
-
 				vector<SatID> prnVec;
 				vector<double> rangeVec;
 
@@ -205,6 +204,16 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 					cerr << raimSolver.Solution[1] << " ";
 					cerr << raimSolver.Solution[2];
 					cerr << endl;
+					
+					RTKPOST_Parser::RTKPOST_Pos_Data data_from_gpstk;
+					gpstk::Position posSolutionGPSTK = egnosNavSolver.transform2CommonPositionFormat(raimSolver.Solution[0], raimSolver.Solution[1], raimSolver.Solution[3]);
+					Eigen::MatrixXd Cov_enu = egnosNavSolver.transformCovEcef2CovEnu(posSolutionGPSTK.geodeticLatitude(), posSolutionGPSTK.longitude(),raimSolver.Covariance);
+
+					data_from_gpstk = egnosNavSolver.createRTKPOST_data(raimSolver.Solution[0],	
+																		raimSolver.Solution[1], 
+																		raimSolver.Solution[2], 
+																		raimSolver.Nsvs, Cov_enu, rod.time);
+					navData_GPSTK.push_back(data_from_gpstk);
 
 				}  // End of 'if( raimSolver.isValid() )'
 				else {
@@ -229,29 +238,59 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 
 		}  // End of 'while( roffs >> rod )'
 		
-		RTKPOST_Parser::RTKPOST_Pos_Header  rtkPost_header;
-		rtkPost_header.datum = gpstk::ReferenceFrame::WGS84;
-		rtkPost_header.elevAngle = egnosNavSolver.elevetionMask;
-		rtkPost_header.ephemerisOpt = "broadcasted";
-		rtkPost_header.inpFiles.push_back(obsData);
-		rtkPost_header.inpFiles.push_back(ephData);
-		rtkPost_header.ionosOpt = "ems";
-		rtkPost_header.posMode = "single";
-		rtkPost_header.obsStart = navData_RTKPOST[0].dataTime;
-		rtkPost_header.obsEnd = navData_RTKPOST.back().dataTime;
-		rtkPost_header.programInfo = "GINA 1.0";
-		rtkPost_header.timeSys = gpstk::TimeSystem::GPS;
-		rtkPost_header.tropoOpt = tropModelPtr2EGNOS->name();
+
+		// Write NavEngine solution to file in rtkpost format
+		RTKPOST_Parser::RTKPOST_Pos_Header rtkPost_header_navEngine;
+		rtkPost_header_navEngine.datum = gpstk::ReferenceFrame::WGS84;
+		rtkPost_header_navEngine.elevAngle = egnosNavSolver.elevetionMask;
+		rtkPost_header_navEngine.ephemerisOpt = "broadcasted";
+		rtkPost_header_navEngine.inpFiles.push_back(obsData);
+		rtkPost_header_navEngine.inpFiles.push_back(ephData);
+		rtkPost_header_navEngine.ionosOpt = "ems";
+		rtkPost_header_navEngine.posMode = "single";
+		rtkPost_header_navEngine.obsStart = navData_RTKPOST[0].dataTime;
+		rtkPost_header_navEngine.obsEnd = navData_RTKPOST.back().dataTime;
+		rtkPost_header_navEngine.programInfo = "GINA 1.0";
+		rtkPost_header_navEngine.timeSys = gpstk::TimeSystem::GPS;
+		rtkPost_header_navEngine.tropoOpt = tropModelPtr2EGNOS->name();
 	
-		RTKPOST_Parser::RTKPOST_Pos_Stream strm_out(rtkpost_out.c_str(), std::ios::out);
-		strm_out << rtkPost_header;
+		RTKPOST_Parser::RTKPOST_Pos_Stream strm_out_navEngine(rtkpost_out_navEngine.c_str(), std::ios::out);
+		strm_out_navEngine << rtkPost_header_navEngine;
 
 		for (size_t i = 0; i < navData_RTKPOST.size(); i++)	{
 
-				strm_out << navData_RTKPOST[i];
+				strm_out_navEngine << navData_RTKPOST[i];
 		}
 
-		strm_out.close();
+		strm_out_navEngine.close();
+		////////////////////////////////////
+
+		// Write GPSTK solution to file in rtkpost format
+		RTKPOST_Parser::RTKPOST_Pos_Header rtkPost_header_gpstk;
+		rtkPost_header_gpstk.datum = gpstk::ReferenceFrame::WGS84;
+		rtkPost_header_gpstk.elevAngle = egnosNavSolver.elevetionMask;
+		rtkPost_header_gpstk.ephemerisOpt = "broadcasted";
+		rtkPost_header_gpstk.inpFiles.push_back(obsData);
+		rtkPost_header_gpstk.inpFiles.push_back(ephData);
+		rtkPost_header_gpstk.ionosOpt = "ems";
+		rtkPost_header_gpstk.posMode = "single";
+		rtkPost_header_gpstk.obsStart = navData_GPSTK[0].dataTime;
+		rtkPost_header_gpstk.obsEnd = navData_GPSTK.back().dataTime;
+		rtkPost_header_gpstk.programInfo = "GINA 1.0 gpstk's raw solution";
+		rtkPost_header_gpstk.timeSys = gpstk::TimeSystem::GPS;
+		rtkPost_header_gpstk.tropoOpt = tropModelPtr2gpstk->name();
+
+		RTKPOST_Parser::RTKPOST_Pos_Stream strm_out_gpstk(rtkpost_out_gpstk.c_str(), std::ios::out);
+		strm_out_gpstk << rtkPost_header_gpstk;
+
+		for (size_t i = 0; i < navData_GPSTK.size(); i++) {
+
+			strm_out_gpstk << navData_GPSTK[i];
+		}
+
+		strm_out_gpstk.close();
+
+		////////////////////////////////////
 
 	}
 	catch (Exception& e)

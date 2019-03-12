@@ -66,6 +66,9 @@ namespace EGNOS {
 			void resetStartPosition(void);
 
 			RTKPOST_Parser::RTKPOST_Pos_Data getRTKPOST_data(void);
+			RTKPOST_Parser::RTKPOST_Pos_Data createRTKPOST_data(double x_ecef, double y_ecef, double z_ecef, int numberOfUsedSv, Eigen::MatrixXd &Cov_enu, gpstk::CommonTime &time);
+			gpstk::Position transform2CommonPositionFormat(double x_ecef, double y_ecef, double z_ecef);
+			Eigen::MatrixXd transformCovEcef2CovEnu(double lat, double lon, gpstk::Matrix<double> &cov_ecef);
 
 			double elevetionMask = 10.0;
 			

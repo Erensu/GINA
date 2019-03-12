@@ -476,6 +476,65 @@ namespace EGNOS {
 			Cov_enu = ecef2enu*Cov_ecef*ecef2enu.transpose();
 		}
 
+
+		gpstk::Position SimpleNavSolver::transform2CommonPositionFormat(double x_ecef, double y_ecef, double z_ecef) {
+
+			gpstk::Position pos(x_ecef,
+				y_ecef,
+				z_ecef,
+				gpstk::Position::CoordinateSystem::Cartesian,
+				NULL, ReferenceFrame::WGS84);
+
+			return pos;
+
+		}
+
+		RTKPOST_Parser::RTKPOST_Pos_Data SimpleNavSolver::createRTKPOST_data(double x_ecef, double y_ecef, double z_ecef, int numberOfUsedSv, Eigen::MatrixXd &Cov_enu, gpstk::CommonTime &time) {
+
+			RTKPOST_Parser::RTKPOST_Pos_Data data;
+
+			gpstk::Position rovllh(x_ecef,
+				y_ecef,
+				z_ecef,
+				gpstk::Position::CoordinateSystem::Cartesian,
+				NULL, ReferenceFrame::WGS84);
+
+			data.age = 0;
+			data.dataTime = time;
+			data.numberOfSvId = numberOfUsedSv;
+			data.ratio = 0;
+			data.typeOfSolution = 5;		// 5 - single freq, basic solution
+			data.sde = sqrt(Cov_enu(0, 0));
+			data.sdeu = Cov_enu(0, 2);
+			data.sdn = sqrt(Cov_enu(1, 1));
+			data.sdne = Cov_enu(0, 1);
+			data.sdu = sqrt(Cov_enu(2, 2));
+			data.sdun = Cov_enu(1, 2);
+
+			data.pos = rovllh;
+
+			return data;
+		}
+
+		Eigen::MatrixXd SimpleNavSolver::transformCovEcef2CovEnu(double lat, double lon, gpstk::Matrix<double> &cov_ecef) {
+		
+			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(lat, lat);
+
+			Eigen::MatrixXd Cov_enu = Eigen::MatrixXd(3, 3);
+			Eigen::MatrixXd Cov_ecef = Eigen::MatrixXd(3, 3);
+
+			for (size_t i = 0; i < 3; i++) {
+				for (size_t j = 0; j < 3; j++) {
+					Cov_ecef(i, j) = cov_ecef(i, j);
+				}
+			}
+
+			Cov_enu = ecef2enu*Cov_ecef*ecef2enu.transpose();
+
+			return Cov_enu;
+		}
+
+
 #pragma endregion
 
 	};
