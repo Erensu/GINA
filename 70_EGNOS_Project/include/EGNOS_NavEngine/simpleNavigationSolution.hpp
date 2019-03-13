@@ -70,7 +70,7 @@ namespace EGNOS {
 			gpstk::Position transform2CommonPositionFormat(double x_ecef, double y_ecef, double z_ecef);
 			Eigen::MatrixXd transformCovEcef2CovEnu(double lat, double lon, gpstk::Matrix<double> &cov_ecef);
 
-			double elevetionMask = 10.0;
+			double elevationMask = 10.0;
 			
 		private:
 			IonoModel *pIonoModel = NULL;

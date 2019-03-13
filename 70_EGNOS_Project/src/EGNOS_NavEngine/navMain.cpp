@@ -10,7 +10,7 @@
 using namespace std;
 using namespace gpstk;
 
-int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData, std::string& rtkpost_out_gpstk, std::string& rtkpost_out_navEngine, std::string& errorFile)
+int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData, std::string& rtkpost_out_gpstk, std::string& rtkpost_out_navEngine, std::string& errorFile, double elevationMask)
 {
 	if (errorFile.empty() != true) {
 		freopen(errorFile.c_str(), "w", stderr);
@@ -49,7 +49,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 	EGNOS::EGNOS_UTILITY::SimpleNavSolver egnosNavSolver;
 	EGNOS::EGNOSIonoCorrectionModel egnosIonoModel;
 	EGNOS::IonoModel *ionoModel = NULL; //&egnosIonoModel;
-	egnosNavSolver.elevetionMask = 0;
+	egnosNavSolver.elevationMask = elevationMask;
 
 	if (ionoModel != NULL) {
 		egnosIonoModel.updateIntervalinSeconds = 60;
@@ -114,16 +114,21 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 			exit(1);
 		}
 
+		int loopNumber = 0;
 		// Let's process one line of observation data
-
 		while (roffs >> rod) // if you would you like to read all the line use this.
 		//roffs >> rod;
 		{
+			loopNumber++;
+
 			// Apply editing criteria
 			if (rod.epochFlag == 0 || rod.epochFlag == 1)  // Begin usable data
 			{
-				vector<SatID> prnVec;
-				vector<double> rangeVec;
+				vector<SatID> prnVec_navEngine;
+				vector<double> rangeVec_navEngine;
+
+				vector<SatID> prnVec_gpstk;
+				vector<double> rangeVec_gpstk;
 
 				// Define the "it" iterator to visit the observations PRN map. 
 				// Rinex3ObsData::DataMap is a map from RinexSatID to
@@ -155,11 +160,13 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 					// of "it" iterator into the vector holding the satellites.
 					// All satellites in view at this epoch that have P1 or P1+P2
 					// observations will be included.
-					prnVec.push_back((*it).first);
+					prnVec_navEngine.push_back((*it).first);
+					prnVec_gpstk.push_back((*it).first);
 
 					// The same is done for the vector of doubles holding the
 					// corrected ranges
-					rangeVec.push_back(P1);
+					rangeVec_navEngine.push_back(P1);
+					rangeVec_gpstk.push_back(P1);
 
 					// WARNING: Please note that so far no further correction
 					// is done on data: Relativistic effects, tropospheric
@@ -176,13 +183,23 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 				// Simple solution without RAIM
 				raimSolver.NSatsReject = 0;
 
+				// Apply elevation mask but not in the first loop
+				if (loopNumber > 1) {
+
+					applyElevationMask(	elevationMask,
+										raimSolver.Solution[0], 
+										raimSolver.Solution[1],
+										raimSolver.Solution[2],
+										rangeVec_gpstk, prnVec_gpstk, bcestore, rod.time);
+				}
+
 				// In order to compute positions we need the current time, the
 				// vector of visible satellites, the vector of corresponding
 				// ranges, the object containing satellite ephemerides, and a
 				// pointer to the tropospheric model to be applied
 				raimSolver.RAIMCompute(	rod.time,
-										prnVec,
-										rangeVec,
+										prnVec_gpstk,
+										rangeVec_gpstk,
 										bcestore,
 										tropModelPtr2gpstk);
 				
@@ -225,7 +242,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 				////////////////////////////////
 
 				// Calculate position
-				if (egnosNavSolver.calculatePosition(rod.time, prnVec, rangeVec, tropModelPtr2EGNOS, ionoModel)) {
+				if (egnosNavSolver.calculatePosition(rod.time, prnVec_navEngine, rangeVec_navEngine, tropModelPtr2EGNOS, ionoModel)) {
 					// Print result
 					egnosNavSolver.print_Result();
 					navData_RTKPOST.push_back(egnosNavSolver.getRTKPOST_data());
@@ -242,7 +259,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 		// Write NavEngine solution to file in rtkpost format
 		RTKPOST_Parser::RTKPOST_Pos_Header rtkPost_header_navEngine;
 		rtkPost_header_navEngine.datum = gpstk::ReferenceFrame::WGS84;
-		rtkPost_header_navEngine.elevAngle = egnosNavSolver.elevetionMask;
+		rtkPost_header_navEngine.elevAngle = egnosNavSolver.elevationMask;
 		rtkPost_header_navEngine.ephemerisOpt = "broadcasted";
 		rtkPost_header_navEngine.inpFiles.push_back(obsData);
 		rtkPost_header_navEngine.inpFiles.push_back(ephData);
@@ -268,7 +285,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 		// Write GPSTK solution to file in rtkpost format
 		RTKPOST_Parser::RTKPOST_Pos_Header rtkPost_header_gpstk;
 		rtkPost_header_gpstk.datum = gpstk::ReferenceFrame::WGS84;
-		rtkPost_header_gpstk.elevAngle = egnosNavSolver.elevetionMask;
+		rtkPost_header_gpstk.elevAngle = egnosNavSolver.elevationMask;
 		rtkPost_header_gpstk.ephemerisOpt = "broadcasted";
 		rtkPost_header_gpstk.inpFiles.push_back(obsData);
 		rtkPost_header_gpstk.inpFiles.push_back(ephData);
@@ -305,3 +322,49 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 	exit(0);
 
 }
+
+void applyElevationMask(double elevationMask, double x, double y, double z, vector<double> &rangeVec, vector<gpstk::SatID> &prnVec, GPSEphemerisStore &bcestore, gpstk::CommonTime &gpstime) {
+
+	vector<SatID> prnVec_old;
+	vector<double> rangeVec_old;
+
+	prnVec_old = prnVec;
+	rangeVec_old = rangeVec;
+
+	gpstk::Xvt satPos;
+	double elev = 0;
+	
+	for (size_t i = 0; i < prnVec_old.size(); i++)
+	{
+
+		if (prnVec_old[i].system != SatID::systemGPS){
+			continue;
+		}
+
+		Xvt satPos;
+
+		try {
+
+			satPos = bcestore.getXvt(prnVec_old[i], gpstime);
+			//return xvt;
+		}
+		catch (Exception& e) {
+			throw domain_error("Sat position cannot be calculated");
+		}
+
+		gpstk::Xvt RX;
+		RX.x[0] = x;
+		RX.x[1] = y;
+		RX.x[2] = z;
+
+		Position R(RX), S(satPos);
+		elev = R.elevation(S);
+
+		if (elev >= elevationMask) {
+			prnVec.push_back(prnVec_old[i]);
+			rangeVec.push_back(rangeVec_old[i]);
+		}
+	}
+
+}
+

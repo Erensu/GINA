@@ -127,8 +127,8 @@ namespace EGNOS {
 				Position R(RX), S(satPos);
 				elev = R.elevationGeodetic(S);
 
-				if (elev < elevetionMask) {
-					cout << "Elevation angle: "<< elev << " Elevation mask: " << elevetionMask << endl;
+				if (elev < elevationMask) {
+					cerr << "Elevation angle: "<< elev << " Elevation mask: " << elevationMask << endl;
 				}
 			}
 		}
@@ -150,16 +150,12 @@ namespace EGNOS {
 				RX.x[2] = roverPos[2];
 
 				Position R(RX), S(satPos);
-				elev = R.elevationGeodetic(S);
+				elev = R.elevation(S);
 
-				if (elev >= elevetionMask) {
+				if (elev >= elevationMask) {
 					gpsSatIds.push_back(gpsSatIds_original[i]);
 					gpsPrs.push_back(gpsPrs_original[i]);
 				}
-				else {
-					//cout << elev << endl;
-				}
-				
 			}
 
 		}
@@ -406,7 +402,7 @@ namespace EGNOS {
 			RTKPOST_Parser::RTKPOST_Pos_Data data;
 			data.age = 0;
 			data.dataTime = gpsTime;
-			data.numberOfSvId = gpsPrs.size();
+			data.numberOfSvId = gpsSatIds.size();
 			data.ratio = 0;
 			data.typeOfSolution = 5;		// 5 - single freq, basic solution
 			data.sde = sqrt(Cov_enu(0,0));
