@@ -47,29 +47,13 @@ namespace EGNOS {
 		SlantIonoDelay_SatVisibility SatVisibility;
 	}SlantIonoDelay_Input;
 
-	class IonoModel {
-	public:
-
-		virtual ~IonoModel() {};
-		virtual IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) = 0;
-		virtual std::string name(void) = 0;
-	};
-
-	class ZeroIonoModel: public IonoModel {
-	public:
-
-		virtual ~ZeroIonoModel() {};
-		virtual IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) { IonCorrandVar corr = {0,0};  return corr; };
-		virtual std::string name(void) { return "Zero"; };
-	};
-
 	class SlantIonoDelay
 	{
 	public:
 
 		static const double Re;
 		static const double hI;
-		
+
 		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon);
 
 	private:
@@ -87,6 +71,41 @@ namespace EGNOS {
 		double azimuthOfSatId;
 		double elevationOfSatId;
 		double ppLat, ppLon;
+	};
+
+	class IonoModel {
+	public:
+
+		virtual ~IonoModel() {};
+		virtual IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) = 0;
+		virtual std::string name(void) = 0;
+	};
+
+	class ZeroIonoModel: public IonoModel {
+	public:
+
+		~ZeroIonoModel() {};
+		IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) { IonCorrandVar corr = {0,0};  return corr; };
+		std::string name(void) { return "Zero"; };
+	};
+
+	class IonexModel: public IonoModel {
+		public:
+
+			IonexModel(void) {};
+			IonexModel(gpstk::IonexStore &ionoStore);
+			IonexModel(gpstk::IonexStore &ionoStore, double heightOfIonoLayerinMeter);
+			~IonexModel() {};
+			IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth);
+			std::string name(void) { return "Ionex model"; };
+			
+			void addIonexStore(gpstk::IonexStore ionoStore) { this->ionoStore = ionoStore; };
+
+		private:
+
+			gpstk::IonexStore ionoStore;
+			SlantIonoDelay slantCalculator;
+			double heightOfIonoLayerinMeter;
 	};
 
 	class VerticalIonoDelayInterpolator: public IonexCompatibleInterPolator

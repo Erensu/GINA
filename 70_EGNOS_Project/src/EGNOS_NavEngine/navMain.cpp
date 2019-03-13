@@ -10,7 +10,7 @@
 using namespace std;
 using namespace gpstk;
 
-int mainNavigationSolution(std::string& obsData, std::string &ephData, std::string& EMSData, std::string& rtkpost_out_gpstk, std::string& rtkpost_out_navEngine, std::string& errorFile, double elevationMask)
+int mainNavigationSolution(std::string& obsData, std::string &ephData, string& ionexFile, std::string& EMSData, std::string& rtkpost_out_gpstk, std::string& rtkpost_out_navEngine, std::string& errorFile, double elevationMask, IonoType ionoType)
 {
 	if (errorFile.empty() != true) {
 		freopen(errorFile.c_str(), "w", stderr);
@@ -20,8 +20,6 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 	std::vector<RTKPOST_Parser::RTKPOST_Pos_Data> navData_navEngine;
 	std::vector<RTKPOST_Parser::RTKPOST_Pos_Data> navData_GPSTK;
 
-	
-	
 	// Declaration of objects for storing ephemerides and handling RAIM
 	GPSEphemerisStore bcestore; // This is now static
 	PRSolution2 raimSolver;
@@ -43,23 +41,51 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 
 	// Pointer to one of the two available tropospheric models. It points
 	// to the void model by default
-	TropModel *tropModelPtr2gpstk = &noTropModel;
-	TropModel *tropModelPtr2EGNOS = &noTropModel;
-	
+	TropModel *tropModelPtr2gpstk = &saasTropModel;
+	TropModel *tropModelPtr2EGNOS = &saasTropModel;
 
 	EGNOS::EGNOS_UTILITY::SimpleNavSolver egnosNavSolver;
-	EGNOS::EGNOSIonoCorrectionModel egnosIonoModel;
-	EGNOS::ZeroIonoModel noIonoModel;
-	EGNOS::IonoModel *ionoModel_gpstk = &noIonoModel; //&egnosIonoModel;
-	EGNOS::IonoModel *ionoModel_navEngine = &noIonoModel; //&egnosIonoModel;
 	egnosNavSolver.elevationMask = elevationMask;
 
-	if (ionoModel_gpstk->name() != noIonoModel.name() || ionoModel_navEngine->name() != noIonoModel.name() ){
-		egnosIonoModel.updateIntervalinSeconds = 60;
-		egnosIonoModel.load(EMSData);
+	EGNOS::ZeroIonoModel noIonoModel;
+	EGNOS::IonexModel ionexModel;
+	EGNOS::EGNOSIonoCorrectionModel egnosIonoModel;
+
+	EGNOS::IonoModel *ionoModel_gpstk = &noIonoModel;
+	EGNOS::IonoModel *ionoModel_navEngine = &noIonoModel;
+
+	gpstk::IonexStore ionoStore;
+
+	switch (ionoType){
+	case IonoType::egnos:
+			egnosIonoModel.updateIntervalinSeconds = 30;
+			egnosIonoModel.load(EMSData);
+
+			ionoModel_gpstk = &egnosIonoModel; 
+			ionoModel_navEngine = &egnosIonoModel; 
+		break;
+
+	case IonoType::ionex: 
+		ionoStore.loadFile(ionexFile);
+		ionexModel.addIonexStore(ionoStore);
+
+		ionoModel_gpstk = &ionexModel; 
+		ionoModel_navEngine = &ionexModel;
+		break;
+		
+	case IonoType::zero: 
+		ionoModel_gpstk = &noIonoModel; 
+		ionoModel_navEngine = &noIonoModel;
+		break;
+
+	default:
+		ionoModel_gpstk = &noIonoModel; 
+		ionoModel_navEngine = &noIonoModel; 
+		break;
 	}
 	
-	std::cout << "IonoModel is loaded "<< std::endl;
+
+	std::cout << "IonoModel is set "<< std::endl;
 	gpstk::FFTextStream debugStrm;
 
 	//debugStrm.open()
@@ -83,6 +109,8 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 				cerr << e;
 			}
 		}
+
+		
 
 		// Setting the criteria for looking up ephemeris
 		bcestore.SearchNear();
@@ -202,6 +230,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 										bcestore, 
 										rod.time);
 
+
 					applyIonoCorrection(rod.time, bcestore, prnVec_gpstk, rangeVec_gpstk, *ionoModel_gpstk, Rx_gpstk);
 				}
 
@@ -275,7 +304,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 		rtkPost_header_navEngine.ephemerisOpt = "broadcasted";
 		rtkPost_header_navEngine.inpFiles.push_back(obsData);
 		rtkPost_header_navEngine.inpFiles.push_back(ephData);
-		rtkPost_header_navEngine.ionosOpt = "ems";
+		rtkPost_header_navEngine.ionosOpt = ionoModel_navEngine->name();
 		rtkPost_header_navEngine.posMode = "single";
 		rtkPost_header_navEngine.obsStart = navData_navEngine[0].dataTime;
 		rtkPost_header_navEngine.obsEnd = navData_navEngine.back().dataTime;
@@ -301,7 +330,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 		rtkPost_header_gpstk.ephemerisOpt = "broadcasted";
 		rtkPost_header_gpstk.inpFiles.push_back(obsData);
 		rtkPost_header_gpstk.inpFiles.push_back(ephData);
-		rtkPost_header_gpstk.ionosOpt = ionoModel_navEngine->name();
+		rtkPost_header_gpstk.ionosOpt = ionoModel_gpstk->name();
 		rtkPost_header_gpstk.posMode = "single";
 		rtkPost_header_gpstk.obsStart = navData_GPSTK[0].dataTime;
 		rtkPost_header_gpstk.obsEnd = navData_GPSTK.back().dataTime;

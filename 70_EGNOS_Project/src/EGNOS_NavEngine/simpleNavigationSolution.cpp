@@ -94,12 +94,12 @@ namespace EGNOS {
 			// do at least twice so that
 			// trop and iono model gets evaluated
 			do {
-				norm = updatePosition(iterNumber, false, false);
+				norm = updatePosition(iterNumber, tropoModelActive, ionoModelActive);
 				applyElevationMask();
 				if (norm < NAVENGINE_CONVERGENCE_LIMIT && iterNumber > 0) {
 					break;
 				}
-				if (iterNumber > 25) {
+				if (iterNumber > 50) {
 					validResult = false;
 					break;
 				}
@@ -327,6 +327,9 @@ namespace EGNOS {
 			gpsSatIds_original.clear();
 			gpsPrs_original.clear();
 			pTropModel = NULL;
+			pIonoModel = NULL;
+			tropoModelActive = false;
+			ionoModelActive = false;
 		}
 
 		void SimpleNavSolver::correctwSagnacEffect(double deltat, gpstk::Xvt &old_pos, gpstk::Xvt &new_pos) {
@@ -378,8 +381,16 @@ namespace EGNOS {
 
 			this->reset();
 
-			this->pTropModel = tropModel;
-			this->pIonoModel = ionoModel;
+			if (tropModel != NULL) {
+				this->pTropModel = tropModel;
+				tropoModelActive = true;
+			}
+
+			if (ionoModel) {
+				this->pIonoModel = ionoModel;
+				ionoModelActive = true;
+			}
+
 			this->gpsTime = time;
 
 			for (int i = 0; i < vid.size(); i++) { // TODO checker. size of vid and prv shall be the same

@@ -2506,4 +2506,61 @@ namespace EGNOS {
 
 #pragma endregion
 
+#pragma region IonexModel
+
+	IonexModel::IonexModel(gpstk::IonexStore &ionoStore, double heightOfIonoLayerinMeter) {
+	
+		this->ionoStore = ionoStore;
+		this->heightOfIonoLayerinMeter = heightOfIonoLayerinMeter;
+	};
+
+	IonexModel::IonexModel(gpstk::IonexStore &ionoStore) {
+
+		this->ionoStore = ionoStore;
+		this->heightOfIonoLayerinMeter = 350000;
+	};
+
+	IonCorrandVar IonexModel::getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) {
+	
+
+		SlantIonoDelay_Input inputData;
+		IonosphericGridPoint igpPP;
+
+		inputData.RoverPos.rlat = RX.geodeticLatitude();
+		inputData.RoverPos.rlon = RX.longitude();
+		inputData.RoverPos.rheight = RX.height();
+		inputData.SatVisibility.elevationOfSatId = elevation;
+		inputData.SatVisibility.azimuthOfSatId = azimuth;
+
+		double F = 1;
+		try
+		{
+			F = this->slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
+		}
+		catch (const std::exception& e)
+		{
+			std::string errMessage = e.what();
+			errMessage = errMessage + "\n" + "Iono pierce point is uncalculable";
+			throw domain_error(errMessage);
+		}
+
+		gpstk::Position PP(	igpPP.lat,
+							igpPP.lon,
+							heightOfIonoLayerinMeter,
+							gpstk::Position::CoordinateSystem::Geodetic,
+							NULL, gpstk::ReferenceFrame::WGS84);
+
+		gpstk::Triple tecval = this->ionoStore.getIonexValue(epoch, PP, 3);
+
+		IonCorrandVar corr;
+
+		corr.CorrinMeter = tecval[0];
+		corr.Variance = tecval[1] * tecval[1];
+
+		return corr;
+
+	}
+
+
+#pragma endregion
 };

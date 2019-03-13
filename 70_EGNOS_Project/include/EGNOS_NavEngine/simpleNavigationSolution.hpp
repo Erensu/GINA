@@ -75,6 +75,9 @@ namespace EGNOS {
 		private:
 			IonoModel *pIonoModel = NULL;
 			gpstk::TropModel *pTropModel = NULL;
+			bool tropoModelActive = false;
+			bool ionoModelActive = false;
+
 			GPSEphemerisStore bcestore;
 			gpstk::CommonTime gpsTime;
 

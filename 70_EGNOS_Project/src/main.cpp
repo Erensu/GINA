@@ -61,18 +61,20 @@ int main(int argc, char **argv) {
 
 	string obsFile					= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
 	string ephFile					= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
+	string ionexFile				= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
 	string EDAS_FileNamewPath		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
-	string RTKPOST_out_gpstk		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GPSTK_NoIono_NoTropo_elev10_out.pos";
-	string RTKPOST_out_navEngine	= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GINA_NoIono_NoTropo_elev10_out.pos";
+	string RTKPOST_out_gpstk		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GPSTK_EGNOSIono_NoTropo_elev10_out.pos";
+	string RTKPOST_out_navEngine	= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GINA_EGNOSIono_NoTropo_elev10_out.pos";
 	string error_log				= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\ErrorLog.txt";
 	double elevationMask			= 10;
+	IonoType ionoType				= IonoType::ionex;
 
-	mainNavigationSolution(obsFile, ephFile, EDAS_FileNamewPath, RTKPOST_out_gpstk, RTKPOST_out_navEngine, error_log, elevationMask);
+	mainNavigationSolution(obsFile, ephFile, ionexFile, EDAS_FileNamewPath, RTKPOST_out_gpstk, RTKPOST_out_navEngine, error_log, elevationMask, ionoType);
 	//////////////////////////////////////////
 
 	// This part is under construction
 	//////////////////////////////////////////
-	//td::string ionexFile1 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
+	//std::string ionexFile1 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
 	//std::string ionexFile1 = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_2.5x2.5_IGPMap.18i";
 	//std::string ionexFile1 = ROOT "\\70_EGNOS_Project\\files\\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap.19i";
 	//std::string ionexFile2 = ROOT "\\70_EGNOS_Project\\files\\\EMS_136_2019_02_11_15\\Ionex_from_h15_Europe\\Grid5x5\\ionex_Europe00217.19i";
