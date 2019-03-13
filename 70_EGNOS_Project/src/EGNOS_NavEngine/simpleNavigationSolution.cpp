@@ -36,7 +36,7 @@ namespace EGNOS {
 			}
 
 			Position R(RX), S(SV);
-			double tc = R.getHeight(), elev = R.elevationGeodetic(SV);
+			double tc = R.getHeight(), elev = R.elevation(SV);
 
 			if (elev < 0.0 || tc > 10000.0 || tc < -1000) {
 
@@ -59,7 +59,7 @@ namespace EGNOS {
 			gpstk::Position R(RX);
 			gpstk::Position S(SV);
 
-			double el = R.elevationGeodetic(S);
+			double el = R.elevation(S);
 			double az = R.azimuthGeodetic(S);
 
 			if (el < 0.0) {
@@ -96,7 +96,7 @@ namespace EGNOS {
 			do {
 				norm = updatePosition(iterNumber, false, false);
 				applyElevationMask();
-				if (norm < EGNOS_UTILITY_CONVERGENCE_LIMIT && iterNumber > 0) {
+				if (norm < NAVENGINE_CONVERGENCE_LIMIT && iterNumber > 0) {
 					break;
 				}
 				if (iterNumber > 25) {
@@ -125,7 +125,7 @@ namespace EGNOS {
 				RX.x[2] = roverPos[2];
 
 				Position R(RX), S(satPos);
-				elev = R.elevationGeodetic(S);
+				elev = R.elevation(S);
 
 				if (elev < elevationMask) {
 					cerr << "Elevation angle: "<< elev << " Elevation mask: " << elevationMask << endl;
@@ -179,10 +179,6 @@ namespace EGNOS {
 
 			for (int i = 0; i < gpsSatIds.size(); i++) {
 
-				if (gpsSatIds[i] < 0) {
-					continue;
-				}
-
 				try
 				{
 					satPos = getSatXvt(this->gpsTime, gpsSatIds[i]);
@@ -230,7 +226,7 @@ namespace EGNOS {
 				RX.x[2] = roverPos[2];
 
 				Position R(RX), S(satPos);
-				double elev = R.elevationGeodetic(S);
+				double elev = R.elevation(S);
 
 				double tc = 0;
 				try

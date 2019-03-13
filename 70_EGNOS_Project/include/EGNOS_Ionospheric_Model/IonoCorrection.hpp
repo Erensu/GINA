@@ -52,7 +52,15 @@ namespace EGNOS {
 
 		virtual ~IonoModel() {};
 		virtual IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) = 0;
+		virtual std::string name(void) = 0;
+	};
 
+	class ZeroIonoModel: public IonoModel {
+	public:
+
+		virtual ~ZeroIonoModel() {};
+		virtual IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) { IonCorrandVar corr = {0,0};  return corr; };
+		virtual std::string name(void) { return "Zero"; };
 	};
 
 	class SlantIonoDelay
@@ -262,7 +270,7 @@ namespace EGNOS {
 		gpstk::CommonTime getLastEpoch(void);
 
 		IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth);
-
+		std::string name(void) { return std::string("EGNOS brdc iono modell"); };
 
 		int updateIntervalinSeconds = 0;	// If this is zero, means we add new IGPMap to Store whenever we got an update.
 		bool debugInfo = false;

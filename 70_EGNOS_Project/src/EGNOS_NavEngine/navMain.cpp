@@ -17,7 +17,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 	}
 	
 	
-	std::vector<RTKPOST_Parser::RTKPOST_Pos_Data> navData_RTKPOST;
+	std::vector<RTKPOST_Parser::RTKPOST_Pos_Data> navData_navEngine;
 	std::vector<RTKPOST_Parser::RTKPOST_Pos_Data> navData_GPSTK;
 
 	
@@ -45,13 +45,16 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 	// to the void model by default
 	TropModel *tropModelPtr2gpstk = &noTropModel;
 	TropModel *tropModelPtr2EGNOS = &noTropModel;
+	
 
 	EGNOS::EGNOS_UTILITY::SimpleNavSolver egnosNavSolver;
 	EGNOS::EGNOSIonoCorrectionModel egnosIonoModel;
-	EGNOS::IonoModel *ionoModel = NULL; //&egnosIonoModel;
+	EGNOS::ZeroIonoModel noIonoModel;
+	EGNOS::IonoModel *ionoModel_gpstk = &noIonoModel; //&egnosIonoModel;
+	EGNOS::IonoModel *ionoModel_navEngine = &noIonoModel; //&egnosIonoModel;
 	egnosNavSolver.elevationMask = elevationMask;
 
-	if (ionoModel != NULL) {
+	if (ionoModel_gpstk->name() != noIonoModel.name() || ionoModel_navEngine->name() != noIonoModel.name() ){
 		egnosIonoModel.updateIntervalinSeconds = 60;
 		egnosIonoModel.load(EMSData);
 	}
@@ -186,11 +189,20 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 				// Apply elevation mask but not in the first loop
 				if (loopNumber > 1) {
 
+					gpstk::Position Rx_gpstk(	raimSolver.Solution[0],
+												raimSolver.Solution[1],
+												raimSolver.Solution[2],
+												gpstk::Position::CoordinateSystem::Cartesian,
+												NULL, ReferenceFrame::WGS84);
+
 					applyElevationMask(	elevationMask,
-										raimSolver.Solution[0], 
-										raimSolver.Solution[1],
-										raimSolver.Solution[2],
-										rangeVec_gpstk, prnVec_gpstk, bcestore, rod.time);
+										Rx_gpstk,
+										rangeVec_gpstk, 
+										prnVec_gpstk, 
+										bcestore, 
+										rod.time);
+
+					applyIonoCorrection(rod.time, bcestore, prnVec_gpstk, rangeVec_gpstk, *ionoModel_gpstk, Rx_gpstk);
 				}
 
 				// In order to compute positions we need the current time, the
@@ -242,10 +254,10 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 				////////////////////////////////
 
 				// Calculate position
-				if (egnosNavSolver.calculatePosition(rod.time, prnVec_navEngine, rangeVec_navEngine, tropModelPtr2EGNOS, ionoModel)) {
+				if (egnosNavSolver.calculatePosition(rod.time, prnVec_navEngine, rangeVec_navEngine, tropModelPtr2EGNOS, ionoModel_navEngine)) {
 					// Print result
 					egnosNavSolver.print_Result();
-					navData_RTKPOST.push_back(egnosNavSolver.getRTKPOST_data());
+					navData_navEngine.push_back(egnosNavSolver.getRTKPOST_data());
 				}
 				else {
 					cerr << "Invalid result - by EGNOS NavEngine" << endl;
@@ -265,8 +277,8 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 		rtkPost_header_navEngine.inpFiles.push_back(ephData);
 		rtkPost_header_navEngine.ionosOpt = "ems";
 		rtkPost_header_navEngine.posMode = "single";
-		rtkPost_header_navEngine.obsStart = navData_RTKPOST[0].dataTime;
-		rtkPost_header_navEngine.obsEnd = navData_RTKPOST.back().dataTime;
+		rtkPost_header_navEngine.obsStart = navData_navEngine[0].dataTime;
+		rtkPost_header_navEngine.obsEnd = navData_navEngine.back().dataTime;
 		rtkPost_header_navEngine.programInfo = "GINA 1.0";
 		rtkPost_header_navEngine.timeSys = gpstk::TimeSystem::GPS;
 		rtkPost_header_navEngine.tropoOpt = tropModelPtr2EGNOS->name();
@@ -274,9 +286,9 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 		RTKPOST_Parser::RTKPOST_Pos_Stream strm_out_navEngine(rtkpost_out_navEngine.c_str(), std::ios::out);
 		strm_out_navEngine << rtkPost_header_navEngine;
 
-		for (size_t i = 0; i < navData_RTKPOST.size(); i++)	{
+		for (size_t i = 0; i < navData_navEngine.size(); i++)	{
 
-				strm_out_navEngine << navData_RTKPOST[i];
+				strm_out_navEngine << navData_navEngine[i];
 		}
 
 		strm_out_navEngine.close();
@@ -289,7 +301,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 		rtkPost_header_gpstk.ephemerisOpt = "broadcasted";
 		rtkPost_header_gpstk.inpFiles.push_back(obsData);
 		rtkPost_header_gpstk.inpFiles.push_back(ephData);
-		rtkPost_header_gpstk.ionosOpt = "ems";
+		rtkPost_header_gpstk.ionosOpt = ionoModel_navEngine->name();
 		rtkPost_header_gpstk.posMode = "single";
 		rtkPost_header_gpstk.obsStart = navData_GPSTK[0].dataTime;
 		rtkPost_header_gpstk.obsEnd = navData_GPSTK.back().dataTime;
@@ -323,7 +335,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, std::stri
 
 }
 
-void applyElevationMask(double elevationMask, double x, double y, double z, vector<double> &rangeVec, vector<gpstk::SatID> &prnVec, GPSEphemerisStore &bcestore, gpstk::CommonTime &gpstime) {
+static void applyElevationMask(double elevationMask, gpstk::Position &R, vector<double> &rangeVec, vector<gpstk::SatID> &prnVec, gpstk::GPSEphemerisStore &bcestore, gpstk::CommonTime &gpstime) {
 
 	vector<SatID> prnVec_old;
 	vector<double> rangeVec_old;
@@ -331,13 +343,16 @@ void applyElevationMask(double elevationMask, double x, double y, double z, vect
 	prnVec_old = prnVec;
 	rangeVec_old = rangeVec;
 
+	prnVec.clear();
+	rangeVec.clear();
+
 	gpstk::Xvt satPos;
 	double elev = 0;
 	
 	for (size_t i = 0; i < prnVec_old.size(); i++)
 	{
 
-		if (prnVec_old[i].system != SatID::systemGPS){
+		if (prnVec_old[i].system != SatID::systemGPS || rangeVec_old[i] < 1000){
 			continue;
 		}
 
@@ -352,12 +367,7 @@ void applyElevationMask(double elevationMask, double x, double y, double z, vect
 			throw domain_error("Sat position cannot be calculated");
 		}
 
-		gpstk::Xvt RX;
-		RX.x[0] = x;
-		RX.x[1] = y;
-		RX.x[2] = z;
-
-		Position R(RX), S(satPos);
+		Position S(satPos);
 		elev = R.elevation(S);
 
 		if (elev >= elevationMask) {
@@ -368,3 +378,44 @@ void applyElevationMask(double elevationMask, double x, double y, double z, vect
 
 }
 
+
+static void applyIonoCorrection(gpstk::CommonTime &time, gpstk::GPSEphemerisStore &bcestore, vector<gpstk::SatID> &id, vector<double> &rangeVec, EGNOS::IonoModel &pIonoModel, gpstk::Position Rx) {
+	
+	for (size_t i = 0; i < id.size(); i++){
+
+		Xvt SVxvt;
+
+		try {
+
+			SVxvt = bcestore.getXvt(id[i], time);
+		}
+		catch (Exception& e) {
+			throw domain_error("Sat position cannot be calculated");
+		}
+
+		gpstk::Position S(SVxvt);
+
+		double el = Rx.elevationGeodetic(S);
+		double az = Rx.azimuthGeodetic(S);
+
+		if (el < 0.0) {
+			throw domain_error("Elevation is negative");
+		}
+
+
+		EGNOS::IonCorrandVar iCorrVar = { 0 };
+		double ic = 0;
+		try
+		{
+			iCorrVar = pIonoModel.getCorrection(time, Rx, el, az);
+			ic = iCorrVar.CorrinMeter;
+			rangeVec[i] -= ic;
+		}
+		catch (const std::exception&)
+		{
+
+		}
+	}
+	
+
+}
