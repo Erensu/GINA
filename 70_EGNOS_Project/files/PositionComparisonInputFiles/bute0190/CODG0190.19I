@@ -36,10 +36,10 @@ GNSS code bias parameters.                                  DESCRIPTION
 Contact address: code(at)aiub.unibe.ch                      DESCRIPTION         
 Data archive:    ftp.aiub.unibe.ch/CODE/                    DESCRIPTION         
                  www.aiub.unibe.ch/download/CODE/           DESCRIPTION         
-  2019     1    20     0     0     0                        EPOCH OF FIRST MAP  
+  2019     1    19     0     0     0                        EPOCH OF FIRST MAP  
   2019     1    20     0     0     0                        EPOCH OF LAST MAP   
-     0                                                      INTERVAL            
-     1                                                      # OF MAPS IN FILE   
+  3600                                                      INTERVAL            
+    25                                                      # OF MAPS IN FILE   
   NONE                                                      MAPPING FUNCTION    
     10.0                                                    ELEVATION CUTOFF    
 One-way carrier phase leveled to code                       OBSERVABLES USED    
