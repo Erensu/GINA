@@ -448,6 +448,7 @@ namespace gpstk
                      BestUse = UseSat;
                      BestSL = MaxSlope;
                      BestConv = Convergence;
+					 BestCovariance = Covariance; // This line was missing from the original gpstk file. It was a bug. Now fixed.
                      BestNIter = NIterations;
                   }
                      // quit immediately?
@@ -903,8 +904,6 @@ namespace gpstk
          //if(!applied_trop && pDebugStream)
             //*pDebugStream << "Warning - trop correction not applied at time "
                //<< T.printf("%4F %10.3g\n");
-
-         
 
             // compute slopes
          Slope = 0.0;
