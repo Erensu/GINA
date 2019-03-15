@@ -286,12 +286,10 @@ namespace EGNOS {
 			
 			// Create covariance matrix
 			covMatrix = designMatrix.transpose() * designMatrix;
+			covMatrix = covMatrix.inverse();
 
 			// Save covariance matrix
 			DOP_ecef = covMatrix;
-
-			// Get inverse of it
-			covMatrix = covMatrix.inverse();
 
 			// Set up observetion vector 
 			// Multiply Covariance matrix with A.' and PR residual matrix
@@ -468,7 +466,6 @@ namespace EGNOS {
 
 			Cov_ecef = DOP_ecef.block(0, 0, 3, 3);
 
-			cout << "GINA Cov_ecef: " << endl << Cov_ecef << endl;
 			Cov_enu = ecef2enu*Cov_ecef*ecef2enu.transpose();
 		}
 
@@ -524,7 +521,6 @@ namespace EGNOS {
 				}
 			}
 
-			cout << "GPSTK Cov_ecef: " << endl << Cov_ecef << endl;
 			Cov_enu = ecef2enu*Cov_ecef*ecef2enu.transpose();
 
 			return Cov_enu;
