@@ -2394,7 +2394,7 @@ namespace EGNOS {
 		SlantIonoDelay_Input inputData;
 		IonosphericGridPoint igpPP;
 
-		inputData.RoverPos.rlat = RX.geodeticLatitude();
+		inputData.RoverPos.rlat = RX.geocentricLatitude();
 		inputData.RoverPos.rlon = RX.longitude();
 		inputData.RoverPos.rheight = RX.height();
 		inputData.SatVisibility.elevationOfSatId = elevation;
@@ -2526,7 +2526,7 @@ namespace EGNOS {
 		SlantIonoDelay_Input inputData;
 		IonosphericGridPoint igpPP;
 
-		inputData.RoverPos.rlat = RX.geodeticLatitude();
+		inputData.RoverPos.rlat = RX.geocentricLatitude();
 		inputData.RoverPos.rlon = RX.longitude();
 		inputData.RoverPos.rheight = RX.height();
 		inputData.SatVisibility.elevationOfSatId = elevation;
@@ -2550,6 +2550,7 @@ namespace EGNOS {
 							gpstk::Position::CoordinateSystem::Geodetic,
 							NULL, gpstk::ReferenceFrame::WGS84);
 
+		PP.transformTo(gpstk::Position::CoordinateSystem::Geocentric);
 		gpstk::Triple tecval = this->ionoStore.getIonexValue(epoch, PP, 3);
 
 		IonCorrandVar corr;

@@ -56,32 +56,77 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, string& i
 
 	gpstk::IonexStore ionoStore;
 
-	switch (ionoType){
+	switch (ionoType) {
 	case IonoType::egnos:
+		{
 			egnosIonoModel.updateIntervalinSeconds = 30;
 			egnosIonoModel.load(EMSData);
 
-			ionoModel_gpstk = &egnosIonoModel; 
-			ionoModel_navEngine = &egnosIonoModel; 
-		break;
+			ionoModel_gpstk = &egnosIonoModel;
+			ionoModel_navEngine = &egnosIonoModel;
+			break;
+		}
+	case IonoType::ionex:
+		{
+			//ionoStore.loadFile(ionexFile);
 
-	case IonoType::ionex: 
-		ionoStore.loadFile(ionexFile);
-		ionexModel.addIonexStore(ionoStore);
+			// Stream creation
+			IonexStream strm(ionexFile.c_str(), std::ios::in);
 
-		ionoModel_gpstk = &ionexModel; 
-		ionoModel_navEngine = &ionexModel;
-		break;
-		
-	case IonoType::zero: 
-		ionoModel_gpstk = &noIonoModel; 
-		ionoModel_navEngine = &noIonoModel;
-		break;
+			if (!strm) {
 
+				FileMissingException e("File " + ionexFile +
+					" could not be opened.");
+				GPSTK_THROW(e);
+			}
+
+			// create the header object
+			IonexHeader header;
+			strm >> header;
+
+			if (!header.valid) {
+
+				FileMissingException e("File " + ionexFile +
+					" could not be opened. Check again " +
+					"the path or the name provided!");
+				GPSTK_THROW(e);
+			}
+
+			header.firstEpoch.setTimeSystem(gpstk::TimeSystem::GPS);
+			header.lastEpoch.setTimeSystem(gpstk::TimeSystem::GPS);
+
+			// keep an inventory of the loaded files 
+			ionoStore.addFile(ionexFile, header);
+
+			// this map is useful in finding DCB value
+			ionoStore.inxDCBMap[header.firstEpoch] = header.svsmap;
+
+			// object data. If valid, add to the map
+			IonexData iod;
+			while (strm >> iod && iod.isValid()) {
+
+				iod.time.setTimeSystem(gpstk::TimeSystem::GPS);
+				ionoStore.addMap(iod);
+			}
+
+			ionexModel.addIonexStore(ionoStore);
+
+			ionoModel_gpstk = &ionexModel;
+			ionoModel_navEngine = &ionexModel;
+			break;
+		}
+	case IonoType::zero:
+		{
+			ionoModel_gpstk = &noIonoModel;
+			ionoModel_navEngine = &noIonoModel;
+			break;
+		}
 	default:
-		ionoModel_gpstk = &noIonoModel; 
-		ionoModel_navEngine = &noIonoModel; 
-		break;
+		{
+			ionoModel_gpstk = &noIonoModel;
+			ionoModel_navEngine = &noIonoModel;
+			break;
+		}
 	}
 	
 
@@ -264,9 +309,9 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, string& i
 					cerr << endl;
 					
 					RTKPOST_Parser::RTKPOST_Pos_Data data_from_gpstk;
-					gpstk::Position posSolutionGPSTK = egnosNavSolver.transform2CommonPositionFormat(raimSolver.Solution[0], raimSolver.Solution[1], raimSolver.Solution[3]);
-					Eigen::MatrixXd Cov_enu = egnosNavSolver.transformCovEcef2CovEnu(posSolutionGPSTK.geodeticLatitude(), posSolutionGPSTK.longitude(),raimSolver.Covariance);
-
+					gpstk::Position posSolutionGPSTK = egnosNavSolver.transform2CommonPositionFormat(raimSolver.Solution[0], raimSolver.Solution[1], raimSolver.Solution[2]);
+					Eigen::MatrixXd Cov_enu = egnosNavSolver.transformCovEcef2CovEnu(posSolutionGPSTK.geocentricLatitude(), posSolutionGPSTK.longitude(),raimSolver.Covariance);
+					
 					data_from_gpstk = egnosNavSolver.createRTKPOST_data(raimSolver.Solution[0],	
 																		raimSolver.Solution[1], 
 																		raimSolver.Solution[2], 
@@ -287,6 +332,7 @@ int mainNavigationSolution(std::string& obsData, std::string &ephData, string& i
 					// Print result
 					egnosNavSolver.print_Result();
 					navData_navEngine.push_back(egnosNavSolver.getRTKPOST_data());
+					cout << rod.time.getSecondOfDay() << endl;
 				}
 				else {
 					cerr << "Invalid result - by EGNOS NavEngine" << endl;
@@ -424,8 +470,8 @@ static void applyIonoCorrection(gpstk::CommonTime &time, gpstk::GPSEphemerisStor
 
 		gpstk::Position S(SVxvt);
 
-		double el = Rx.elevationGeodetic(S);
-		double az = Rx.azimuthGeodetic(S);
+		double el = Rx.elevation(S);
+		double az = Rx.azimuth(S);
 
 		if (el < 0.0) {
 			throw domain_error("Elevation is negative");

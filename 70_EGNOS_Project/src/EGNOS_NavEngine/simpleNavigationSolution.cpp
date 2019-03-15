@@ -60,7 +60,7 @@ namespace EGNOS {
 			gpstk::Position S(SV);
 
 			double el = R.elevation(S);
-			double az = R.azimuthGeodetic(S);
+			double az = R.azimuth(S);
 
 			if (el < 0.0) {
 				throw domain_error("Elevation is negative");
@@ -107,7 +107,8 @@ namespace EGNOS {
 				iterNumber++;
 			} while (1);
 
-			checkElevation();
+			updateDOP();
+			
 			return validResult;
 		}
 
@@ -170,7 +171,7 @@ namespace EGNOS {
 			double travelTime = 0.0, travelTime_old = 0.0;
 			double temp_dist;
 
-			Eigen::MatrixXd covMatrix = Eigen::MatrixXd::Zero(4, 4);
+			Eigen::MatrixXd covMatrix(4, 4);
 			Eigen::MatrixXd designMatrix(gpsSatIds.size(), 4);
 			Eigen::VectorXd geometryDistance = Eigen::VectorXd::Zero(gpsSatIds.size());
 			Eigen::VectorXd PRObservations = Eigen::VectorXd::Zero(gpsSatIds.size());
@@ -282,19 +283,15 @@ namespace EGNOS {
 				designMatrix(i, 3) = 1.0;
 			}
 
+			
 			// Create covariance matrix
 			covMatrix = designMatrix.transpose() * designMatrix;
-			covMatrix = covMatrix.inverse();
 
-			try
-			{
-				updateDOP(covMatrix);
-			}
-			catch (...)
-			{
-				updateDOP();
-			}
-			
+			// Save covariance matrix
+			DOP_ecef = covMatrix;
+
+			// Get inverse of it
+			covMatrix = covMatrix.inverse();
 
 			// Set up observetion vector 
 			// Multiply Covariance matrix with A.' and PR residual matrix
@@ -460,22 +457,18 @@ namespace EGNOS {
 
 			return ecef2enu;
 		}
-		void SimpleNavSolver::updateDOP(void){	
-			DOP_ecef = Eigen::MatrixXd::Identity(4, 4);
-			Cov_ecef = Eigen::MatrixXd::Identity(3, 3);	
-			Cov_enu = Eigen::MatrixXd::Identity(3, 3);	
-		};
 
-		void SimpleNavSolver::updateDOP(Eigen::MatrixXd& dop4x4) {
+		void SimpleNavSolver::updateDOP(void) {
 
 			gpstk::Position rovllh(roverPos[0], roverPos[1], roverPos[2],
 				gpstk::Position::CoordinateSystem::Cartesian,  
 				NULL, ReferenceFrame::WGS84);
 
-			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(rovllh.geodeticLatitude(), rovllh.longitude());
-			
-			DOP_ecef = dop4x4;
-			Cov_ecef = dop4x4.block(0, 0, 3, 3);
+			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(rovllh.geocentricLatitude() * 180 / M_PI, rovllh.longitude() * 180 / M_PI);
+
+			Cov_ecef = DOP_ecef.block(0, 0, 3, 3);
+
+			cout << "GINA Cov_ecef: " << endl << Cov_ecef << endl;
 			Cov_enu = ecef2enu*Cov_ecef*ecef2enu.transpose();
 		}
 
@@ -521,8 +514,7 @@ namespace EGNOS {
 
 		Eigen::MatrixXd SimpleNavSolver::transformCovEcef2CovEnu(double lat, double lon, gpstk::Matrix<double> &cov_ecef) {
 		
-			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(lat, lat);
-
+			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(lat * 180 / M_PI, lon * 180 / M_PI);
 			Eigen::MatrixXd Cov_enu = Eigen::MatrixXd(3, 3);
 			Eigen::MatrixXd Cov_ecef = Eigen::MatrixXd(3, 3);
 
@@ -532,6 +524,7 @@ namespace EGNOS {
 				}
 			}
 
+			cout << "GPSTK Cov_ecef: " << endl << Cov_ecef << endl;
 			Cov_enu = ecef2enu*Cov_ecef*ecef2enu.transpose();
 
 			return Cov_enu;

@@ -92,7 +92,7 @@ namespace EGNOS {
 	class IonexModel: public IonoModel {
 		public:
 
-			IonexModel(void) {};
+			IonexModel(void) { this->heightOfIonoLayerinMeter = 350000; };
 			IonexModel(gpstk::IonexStore &ionoStore);
 			IonexModel(gpstk::IonexStore &ionoStore, double heightOfIonoLayerinMeter);
 			~IonexModel() {};
@@ -105,7 +105,7 @@ namespace EGNOS {
 
 			gpstk::IonexStore ionoStore;
 			SlantIonoDelay slantCalculator;
-			double heightOfIonoLayerinMeter;
+			double heightOfIonoLayerinMeter = 350000;
 	};
 
 	class VerticalIonoDelayInterpolator: public IonexCompatibleInterPolator

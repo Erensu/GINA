@@ -71,7 +71,7 @@ namespace EGNOS {
 			Eigen::MatrixXd transformCovEcef2CovEnu(double lat, double lon, gpstk::Matrix<double> &cov_ecef);
 
 			double elevationMask = 10.0;
-			
+
 		private:
 			IonoModel *pIonoModel = NULL;
 			gpstk::TropModel *pTropModel = NULL;
@@ -108,7 +108,6 @@ namespace EGNOS {
 			double Norm(Eigen::VectorXd x);
 
 			void updateDOP(void);
-			void updateDOP(Eigen::MatrixXd& dop);
 			
 			Eigen::MatrixXd getECEF2ENUMatrix(double lat, double lon);
 

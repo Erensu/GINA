@@ -17,7 +17,7 @@ namespace EGNOS
 			gpstk::CommonTime lastEpoch = egnosIono.getLastEpoch();
 			double timeIntervall = lastEpoch - firstEpoch;
 
-			gpstk::Position RX(45.0,0.0,0.0, gpstk::Position::CoordinateSystem::Geodetic);
+			gpstk::Position RX(45.0,0.0,0.0, gpstk::Position::CoordinateSystem::Geocentric);
 
 			gpstk::CommonTime epoch = firstEpoch + 6 * timeIntervall/10;
 			double elevation = 0;
