@@ -15,12 +15,12 @@ int main(int argc, char **argv) {
 
 	// Run RTKPOST parser
 	//////////////////////////////////////////
-	std::string EDAS_FileNamewPath_in = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE.pos";
+	/*std::string EDAS_FileNamewPath_in = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE.pos";
 	std::string EDAS_FileNamewPath_out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE_out.pos";
 	std::string EDAS_FileNamewPath_out_out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE_out_out.pos";
 	
 	EGNOS::EGNOS_RUNNABLE::runRTKPOSTParser(EDAS_FileNamewPath_in, EDAS_FileNamewPath_out, EDAS_FileNamewPath_out_out);
-	
+	*/
 	//////////////////////////////////////////
 
 	// Run EGNOSIonoCorrectionModel class and its features
