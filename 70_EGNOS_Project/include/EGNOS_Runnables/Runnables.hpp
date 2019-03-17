@@ -32,6 +32,7 @@ namespace EGNOS
 {
 	namespace EGNOS_RUNNABLE
 	{
+		void runRTKPOSTParser(std::string &EDAS_FileNamewPath_in, std::string &EDAS_FileNamewPath_out, std::string &EDAS_FileNamewPath_out_out);
 
 		void runEGNOSIonoCorrectionModel(std::string EDAS_FileNamewPath);
 

@@ -15,38 +15,12 @@ int main(int argc, char **argv) {
 
 	// Run RTKPOST parser
 	//////////////////////////////////////////
-	/*std::string EDAS_FileNamewPath_in = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE.pos";
+	std::string EDAS_FileNamewPath_in = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE.pos";
 	std::string EDAS_FileNamewPath_out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE_out.pos";
 	std::string EDAS_FileNamewPath_out_out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_w_CODE_out_out.pos";
-	RTKPOST_Parser::RTKPOST_Pos_Stream strm_in;
-	RTKPOST_Parser::RTKPOST_Pos_Stream strm_out;
-
-	strm_in.open(EDAS_FileNamewPath_in.c_str(), std::ios::in);
-	strm_out.open(EDAS_FileNamewPath_out.c_str(), std::ios::out);
-
-	RTKPOST_Parser::RTKPOST_Pos_Header header;
-	RTKPOST_Parser::RTKPOST_Pos_Data data;
-
-	strm_in >> header;
-	strm_out << header;
-
-	while (strm_in >> data) {
-		strm_out << data;
-	}
 	
+	EGNOS::EGNOS_RUNNABLE::runRTKPOSTParser(EDAS_FileNamewPath_in, EDAS_FileNamewPath_out, EDAS_FileNamewPath_out_out);
 	
-	strm_in.close();
-	strm_out.close();
-
-	strm_in.open(EDAS_FileNamewPath_out.c_str(), std::ios::in);
-	strm_out.open(EDAS_FileNamewPath_out_out.c_str(), std::ios::out);
-
-	strm_in >> header;
-	strm_out << header;
-
-	strm_in.close();
-	strm_out.close();
-	*/
 	//////////////////////////////////////////
 
 	// Run EGNOSIonoCorrectionModel class and its features
@@ -59,15 +33,15 @@ int main(int argc, char **argv) {
 	// Run mainNavigationSolution
 	//////////////////////////////////////////
 
-	string obsFile					= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
+	/*string obsFile					= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190.19o";
 	string ephFile					= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
 	string ionexFile				= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
 	string EDAS_FileNamewPath		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
-	string RTKPOST_out_gpstk		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GPSTK_NoIono_NoTropo_elev10_out.pos";
-	string RTKPOST_out_navEngine	= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GINA_NoIono_NoTropo_elev10_out.pos";
+	string RTKPOST_out_gpstk		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GPSTK_EGNOSIono_NoTropo_elev10_out.pos";
+	string RTKPOST_out_navEngine	= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GINA_EGNOSIono_NoTropo_elev10_out.pos";
 	string error_log				= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\ErrorLog.txt";
 	double elevationMask			= 10;
-	IonoType ionoType				= IonoType::zero;
+	IonoType ionoType				= IonoType::egnos;
 
 	mainNavigationSolution(	obsFile, 
 							ephFile, 
@@ -77,68 +51,9 @@ int main(int argc, char **argv) {
 							RTKPOST_out_navEngine, 
 							error_log, 
 							elevationMask, 
-							ionoType);
+							ionoType);*/
 
 	//////////////////////////////////////////
-
-	// This part is under construction
-	//////////////////////////////////////////
-	//std::string ionexFile1 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
-	//std::string ionexFile1 = ROOT "\\70_EGNOS_Project\\files\\EMS_124_2009_01_06_17\\h17ems_ionex_Europe_2.5x2.5_IGPMap.18i";
-	//std::string ionexFile1 = ROOT "\\70_EGNOS_Project\\files\\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap.19i";
-	//std::string ionexFile2 = ROOT "\\70_EGNOS_Project\\files\\\EMS_136_2019_02_11_15\\Ionex_from_h15_Europe\\Grid5x5\\ionex_Europe00217.19i";
-	
-	/*std::string ionexFile1 = ROOT "\\70_EGNOS_Project\\files\\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_InterPol_All.19i";
-
-	gpstk::IonexStore ionoStore1;
-	gpstk::IonexStore ionoStore2;
-	gpstk::IonexHeader ionoHeader1;
-
-	ionoStore1.loadFile(ionexFile1);
-	
-	ionoHeader1 = ionoStore1.getHeader(ionexFile1);
-	
-
-	cout << gpstk::CivilTime(ionoHeader1.firstEpoch).year << " " << gpstk::CivilTime(ionoHeader1.firstEpoch).month << " " << gpstk::CivilTime(ionoHeader1.firstEpoch).day << " " << gpstk::CivilTime(ionoHeader1.firstEpoch).hour << " " << gpstk::CivilTime(ionoHeader1.firstEpoch).minute << " " << gpstk::CivilTime(ionoHeader1.firstEpoch).second << endl;
-	
-	gpstk::CommonTime initTime = ionoStore1.getInitialTime();
-	gpstk::CommonTime finalTime = ionoStore1.getFinalTime();
-	
-	ionoHeader1.dump(cout);
-	cout << endl;
-	cout << gpstk::CivilTime(initTime).year << " " << gpstk::CivilTime(initTime).month << " " << gpstk::CivilTime(initTime).day << " " << gpstk::CivilTime(initTime).hour << " " << gpstk::CivilTime(initTime).minute << " " << gpstk::CivilTime(initTime).second << endl;
-	cout << gpstk::CivilTime(finalTime).year << " " << gpstk::CivilTime(finalTime).month << " " << gpstk::CivilTime(finalTime).day << " " << gpstk::CivilTime(finalTime).hour << " " << gpstk::CivilTime(finalTime).minute << " " << gpstk::CivilTime(finalTime).second << endl;
-
-	gpstk::Position RX;
-	RX.setGeocentric(32.3, 25.4, 0);
-	
-	try
-	{
-
-		gpstk::Triple rtv = ionoStore1.getIonexValue(initTime, RX, 1);
-		cout << rtv << endl;
-
-	}
-	catch (...)
-	{
-		std::cout << "ad" << std::endl;
-	}*/
-	
-
-	//gpstk::IonexStream ionoStream;
-	//gpstk::IonexHeader ionoHeader;
-	//gpstk::IonexData ionoData;
-
-	//ionoStream.open(ionexFile1.c_str(), std::ios::in);
-	////ionoStream >> ionoHeader;
-
-	//ionoStream >> ionoData;
-	//ionoStream >> ionoData;
-
-	//cout << "done" << endl;
-	//////////////////////////////////////////
-
-
 
 	// Compare Ionex Files
 	//////////////////////////////////////////
@@ -148,15 +63,13 @@ int main(int argc, char **argv) {
 
 	//std::string IonexFileNamewPath_1 = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
 	//std::string IonexFileNamewPath_2 = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
-										  //"\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\Ionex_from_h15_Europe\\Grid5x5\\ionex_files"
-	//std::string IonexFileNamewPath_1 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
-	//std::string IonexFileNamewPath_2 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
-	//std::string IonexFileNamewPath_Out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\TestIonexStoreOut.19i";
+										
+	std::string IonexFileNamewPath_1 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
+	std::string IonexFileNamewPath_2 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
+	std::string IonexFileNamewPath_Out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\TestIonexStoreOut.19i";
 	
-	/*
 	EGNOS::EGNOS_RUNNABLE::compareIonexFiles(IonexFileNamewPath_1, IonexFileNamewPath_2, IonexFileNamewPath_Out);
-	*/
-
+	
 	//////////////////////////////////////////
 
 	// Process EMS file

@@ -8,6 +8,38 @@ namespace EGNOS
 	{
 	#define TEC_IN_METER 0.162372
 		
+		void runRTKPOSTParser(std::string &EDAS_FileNamewPath_in, std::string &EDAS_FileNamewPath_out, std::string &EDAS_FileNamewPath_out_out) {
+		
+			RTKPOST_Parser::RTKPOST_Pos_Stream strm_in;
+			RTKPOST_Parser::RTKPOST_Pos_Stream strm_out;
+
+			strm_in.open(EDAS_FileNamewPath_in.c_str(), std::ios::in);
+			strm_out.open(EDAS_FileNamewPath_out.c_str(), std::ios::out);
+
+			RTKPOST_Parser::RTKPOST_Pos_Header header;
+			RTKPOST_Parser::RTKPOST_Pos_Data data;
+
+			strm_in >> header;
+			strm_out << header;
+
+			while (strm_in >> data) {
+				strm_out << data;
+			}
+
+
+			strm_in.close();
+			strm_out.close();
+
+			strm_in.open(EDAS_FileNamewPath_out.c_str(), std::ios::in);
+			strm_out.open(EDAS_FileNamewPath_out_out.c_str(), std::ios::out);
+
+			strm_in >> header;
+			strm_out << header;
+
+			strm_in.close();
+			strm_out.close();
+		}
+
 		void runEGNOSIonoCorrectionModel(std::string EDAS_FileNamewPath) {
 		
 			EGNOSIonoCorrectionModel egnosIono;
