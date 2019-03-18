@@ -316,6 +316,7 @@ namespace EGNOS
 						timOffset += updateIntervalinSeconds;
 						LastUpdateTime = CurrentDataTime;
 
+						IonoMap.referenceTime = CurrentDataTime;
 						igpMapStore.addMap(CurrentDataTime, IonoMap);
 
 						gpstk::CivilTime clock(CurrentDataTime);
