@@ -519,8 +519,8 @@ namespace EGNOS
 
 				try
 				{
-					TECRMS1 = refreceStore.getIonexValue(epoch, RX, 4);
-					TECRMS2 = targetStore.getIonexValue(epoch, RX, 4);
+					TECRMS1 = refreceStore.getIonexValue(epoch, RX, 1);
+					TECRMS2 = targetStore.getIonexValue(epoch, RX, 1);
 
 					diffTEC = TECRMS1[0] - TECRMS2[0];
 					diffRMS = TECRMS1[1] - TECRMS2[1];
@@ -533,9 +533,6 @@ namespace EGNOS
 					valuesTEC(counter) = 999.9;
 					valuesRMS(counter) = 999.9;
 				}
-				
-
-				
 
 				if (abs(currLon - lon2) < dlon) {
 					currLon = lon1 - dlon;

@@ -84,9 +84,9 @@ namespace EGNOS {
 
 			friend std::ostream &operator<<(std::ostream &os, IGPMap const &imap);
 			 
+			gpstk::CommonTime referenceTime;
 		private:
 
-			gpstk::CommonTime referenceTime;
 			std::map<IGPCoordinate, IonosphericGridPoint>  Map;
 	};
 
