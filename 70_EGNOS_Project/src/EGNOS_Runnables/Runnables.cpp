@@ -112,19 +112,25 @@ namespace EGNOS
 
 			gpstk::IonexHeader refHeader = ionoStoreRef.getHeader(names[0]);
 
-			
+			// Narrow difference ionex's region to Europe
+			refHeader.lat[0] = 90;
+			refHeader.lat[1] = 10;
+			refHeader.lat[2] = -abs(5);
+
+			refHeader.lon[0] = -60;
+			refHeader.lon[1] = 60;
+			refHeader.lon[2] = abs(5);
+
 			int mapID = 0;
 
 			std::vector<gpstk::IonexData> ionexDataVector;
 
 			for (it_ref = ionoStoreRef.inxMaps.begin(); it_ref != ionoStoreRef.inxMaps.end(); it_ref++)	{
 
-				epoch_ref = it_ref->first;		// key
+				epoch_ref = it_ref->first;
 
 				it_target = ionoStoreTarget.inxMaps.find(epoch_ref);
 				if (it_target == ionoStoreTarget.inxMaps.end()) {
-
-					//cout << "The map not found. We use the neares map. Difference limit is 100 sec." << endl;
 					
 					double timeDifference = matchingIntervall + 1;
 					double temp_timeDifference = 0;
@@ -369,6 +375,7 @@ namespace EGNOS
 		
 	namespace EGNOS_RUNNABLE_UTILITY
 	{
+
 		bool checkArgs(std::string EDAS_FileNamewPath,
 			std::string Output_IonexFileNamewPath,
 			std::string Output_IonexFileNamewPathLast,

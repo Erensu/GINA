@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
 												IonexFileNamewPath_2, 
 												IonexFileNamewPath_Out,
 												EGNOS::europe5x5_tec,
-												600);
+												60);
 	
 	//////////////////////////////////////////
 
