@@ -110,9 +110,10 @@ namespace EGNOS {
 			IGPMap getIGPMap(gpstk::CommonTime &epoch);
 
 		private:
-			int numberOfMap = 0;
 
 			void updateTime(gpstk::CommonTime &t);
+
+			int numberOfMap = 0;
 			gpstk::CommonTime initialTime, finalTime;
 
 			/// The key to this map is the time

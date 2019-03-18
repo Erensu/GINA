@@ -38,6 +38,7 @@ namespace EGNOS {
 	IGPMap::IGPMap(IGPMap* original) {
 
 		this->Map = original->Map;
+		this->referenceTime = original->referenceTime;
 	}
 
 	IGPMap::~IGPMap(void) {
