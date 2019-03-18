@@ -39,7 +39,6 @@ namespace EGNOS
 		void compareIonexFiles(	std::string& ReferenceIonexFileNamewPath,
 								std::string& TargetIonexFileNamewPath,
 								std::string& IonexFileNamewPath_Out,
-								EGNOSMapType mapType,
 								double matchingIntervall = 100);
 
 		void processEMS(std::string EDAS_FileNamewPath = "",

@@ -87,7 +87,6 @@ namespace EGNOS
 		void compareIonexFiles(	std::string& ReferenceIonexFileNamewPath,
 								std::string& TargetIonexFileNamewPath,
 								std::string& IonexFileNamewPath_Out,
-								EGNOSMapType mapType, 
 								double matchingIntervall) {
 
 			gpstk::IonexStore ionoStoreRef, ionoStoreTarget;

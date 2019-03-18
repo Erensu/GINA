@@ -58,20 +58,19 @@ int main(int argc, char **argv) {
 	// Compare Ionex Files
 	//////////////////////////////////////////
 
-	//std::string IonexFileNamewPath_1 = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\ionex_Europe00100.19i";
-	//std::string IonexFileNamewPath_2 = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\ionex_Europe00200.19i";
+	//std::string IonexFileNamewPath_1		= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\ionex_Europe00100.19i";
+	//std::string IonexFileNamewPath_2		= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\ionex_Europe00200.19i";
 
-	//std::string IonexFileNamewPath_1 = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
-	//std::string IonexFileNamewPath_2 = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
+	//std::string IonexFileNamewPath_1		= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
+	//std::string IonexFileNamewPath_2		= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
 		
-	std::string IonexFileNamewPath_1 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
-	std::string IonexFileNamewPath_2 = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
-	std::string IonexFileNamewPath_Out = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\Difference_IONEX_CODG0190-y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
+	std::string IonexFileNamewPath_1		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
+	std::string IonexFileNamewPath_2		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
+	std::string IonexFileNamewPath_Out		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\Difference_IONEX_CODG0190-y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
 	
 	EGNOS::EGNOS_RUNNABLE::compareIonexFiles(	IonexFileNamewPath_1, 
 												IonexFileNamewPath_2, 
 												IonexFileNamewPath_Out,
-												EGNOS::europe5x5_tec,
 												60);
 	
 	//////////////////////////////////////////
@@ -79,31 +78,31 @@ int main(int argc, char **argv) {
 	// Process EMS file
 	//////////////////////////////////////////
 
-	//std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15.ems";
-	//std::string Output_IonexFileNamewPath = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_2.5x2.5_IGPMap.19i";
-	//std::string Output_IonexFileNamewPath_Detailed = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\Ionex_from_h15_Europe\\Grid2.5x2.5\\ionex_Europe.19i";
+	//std::string EDAS_FileNamewPath					= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15.ems";
+	//std::string Output_IonexFileNamewPath				= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_2.5x2.5_IGPMap.19i";
+	//std::string Output_IonexFileNamewPath_Detailed	= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\Ionex_from_h15_Europe\\Grid2.5x2.5\\ionex_Europe.19i";
 	
-	//std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15.ems";
-	//std::string Output_IonexFileNamewPath = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_1x1_IGPMap.19i";
-	//std::string Output_IonexFileNamewPath_Detailed = "";//ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\Ionex_from_h15_Europe\\Grid1x1\\ionex_Europe.19i";
+	//std::string EDAS_FileNamewPath					= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15.ems";
+	//std::string Output_IonexFileNamewPath				= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_1x1_IGPMap.19i";
+	//std::string Output_IonexFileNamewPath_Detailed	= "";//ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\Ionex_from_h15_Europe\\Grid1x1\\ionex_Europe.19i";
 
-	//std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15.ems";
-	//std::string Output_IonexFileNamewPath = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_World_5x5_IGPMap_All.19i";
-	//std::string Output_IonexFileNamewPathLast = ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_World_5x5_IGPMap_Last.19i";
-	//std::string Output_IonexFileNamewPath_Detailed = "";//ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\Ionex_from_h17_Europe\\ionex_files\\ionex_Europe.19i";
+	//std::string EDAS_FileNamewPath					= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15.ems";
+	//std::string Output_IonexFileNamewPath				= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_World_5x5_IGPMap_All.19i";
+	//std::string Output_IonexFileNamewPathLast			= ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_World_5x5_IGPMap_Last.19i";
+	//std::string Output_IonexFileNamewPath_Detailed	= "";//ROOT "\\70_EGNOS_Project\\files\\EMS_136_2019_02_11_15\\Ionex_from_h17_Europe\\ionex_files\\ionex_Europe.19i";
 
 
-	//std::string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
-    //std::string Output_IonexFileNamewPath = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
-	//std::string Output_IonexFileNamewPathLast = ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_Last.19i";
-	//std::string Output_IonexFileNamewPath_Detailed = "";
+	std::string EDAS_FileNamewPath					= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
+    std::string Output_IonexFileNamewPath			= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
+	std::string Output_IonexFileNamewPathLast		= ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_Last.19i";
+	std::string Output_IonexFileNamewPath_Detailed	= "";
 
-	//EGNOS::EGNOSMapType mapType = EGNOS::europe5x5_tec; // world5x5_tec | europe5x5_tec | EGNOS::europe2_5x2_5_tec | EGNOS::europe1x1_tec
+	EGNOS::EGNOSMapType mapType = EGNOS::europe5x5_tec; // world5x5_tec | europe5x5_tec | EGNOS::europe2_5x2_5_tec | EGNOS::europe1x1_tec
 
-	//gpstk::CivilTime firstUpdate;
-	//gpstk::CivilTime lastUpdate;
+	gpstk::CivilTime firstUpdate;
+	gpstk::CivilTime lastUpdate;
 
-	/*EGNOS::EGNOS_RUNNABLE::processEMS(	EDAS_FileNamewPath,
+	EGNOS::EGNOS_RUNNABLE::processEMS(	EDAS_FileNamewPath,
 										Output_IonexFileNamewPath,
 										Output_IonexFileNamewPathLast,										
 										Output_IonexFileNamewPath_Detailed,
@@ -111,7 +110,7 @@ int main(int argc, char **argv) {
 										false,
 										firstUpdate,
 										lastUpdate,
-										3600);*/
+										360);
 
 	//////////////////////////////////////////
 
