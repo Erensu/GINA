@@ -84,9 +84,11 @@ namespace EGNOS
 			
 		}
 
-		void compareIonexFiles(	std::string ReferenceIonexFileNamewPath,
-								std::string TargetIonexFileNamewPath,
-								std::string IonexFileNamewPath_Out) {
+		void compareIonexFiles(	std::string& ReferenceIonexFileNamewPath,
+								std::string& TargetIonexFileNamewPath,
+								std::string& IonexFileNamewPath_Out,
+								EGNOSMapType mapType, 
+								double matchingIntervall) {
 
 			gpstk::IonexStore ionoStoreRef, ionoStoreTarget;
 			gpstk::IonexHeader ionoHeader1, ionoHeader2;
@@ -103,23 +105,72 @@ namespace EGNOS
 			std::vector<std::string> names = ionoStoreRef.getFileNames();
 			outIonexStoreStream << ionoStoreRef.getHeader(names[0]);
 
-			gpstk::IonexStore::IonexMap::iterator it;
-			gpstk::CommonTime epoch;
+			gpstk::IonexStore::IonexMap::iterator it_ref;
+			gpstk::IonexStore::IonexMap::iterator it_target;
+			gpstk::IonexStore::IonexMap::iterator it_target_iterator;
+			gpstk::CommonTime epoch_ref, epoch_target;
 
 			gpstk::IonexHeader refHeader = ionoStoreRef.getHeader(names[0]);
 
+			
 			int mapID = 0;
 
 			std::vector<gpstk::IonexData> ionexDataVector;
 
-			for (it = ionoStoreRef.inxMaps.begin(); it != ionoStoreRef.inxMaps.end(); it++)	{
+			for (it_ref = ionoStoreRef.inxMaps.begin(); it_ref != ionoStoreRef.inxMaps.end(); it_ref++)	{
 
-				epoch = it->first;		// key
+				epoch_ref = it_ref->first;		// key
+
+				it_target = ionoStoreTarget.inxMaps.find(epoch_ref);
+				if (it_target == ionoStoreTarget.inxMaps.end()) {
+
+					//cout << "The map not found. We use the neares map. Difference limit is 100 sec." << endl;
+					
+					double timeDifference = matchingIntervall + 1;
+					double temp_timeDifference = 0;
+
+					bool atLeastOneMatchingEpochFound = false;
+
+					for (it_target_iterator = ionoStoreTarget.inxMaps.begin(); it_target_iterator != ionoStoreTarget.inxMaps.end(); it_target_iterator++) {
+
+						temp_timeDifference = abs(it_target_iterator->first - it_ref->first);
+						if (temp_timeDifference <= matchingIntervall) {
+
+							if (temp_timeDifference < timeDifference) {
+								atLeastOneMatchingEpochFound = true;
+								timeDifference = temp_timeDifference;
+								it_target = it_target_iterator;
+							}
+							else {
+								break;
+							}
+						}
+						else {
+							if (atLeastOneMatchingEpochFound == true)
+								break;
+						}
+					}
+				}
+				
+				if (it_target == ionoStoreTarget.inxMaps.end()) {
+
+					cout << "Times of map not matched" << endl;
+					continue;
+				}
+				else {
+
+					epoch_target = it_target->first;
+				}
+
+				if (abs(epoch_ref - epoch_target) > matchingIntervall) {
+					cout << "Times of map not matched" << endl;
+					continue;
+				}
 
 				ionexDataVector = EGNOS_RUNNABLE_UTILITY::createDifferenceDataBlock(refHeader,
 																					ionoStoreRef,
 																					ionoStoreTarget,
-																					epoch,
+																					epoch_ref,
 																					mapID);
 
 				for (size_t index = 0; index < ionexDataVector.size(); index++){
@@ -139,6 +190,8 @@ namespace EGNOS
 						std::string Output_IonexFileNamewPath_Detailed,
 						EGNOSMapType mapType,
 						bool interPolationOn,
+						gpstk::CommonTime firstUpdate,
+						gpstk::CommonTime lastUpdate,
 						double updateIntervalinSeconds) {
 
 
@@ -153,18 +206,19 @@ namespace EGNOS
 				return;
 			}
 
-			EGNOS_EMS_Parser::EGNOS_EMS_Stream EMSStream(EDAS_FileNamewPath.c_str());
+			// Make sur that the firstUpdate and time's time systems are the same and compatible to EMS data timesystem
+			firstUpdate.setTimeSystem(gpstk::TimeSystem::GPS);
+			lastUpdate.setTimeSystem(gpstk::TimeSystem::GPS);
 
+			EGNOS_EMS_Parser::EGNOS_EMS_Stream EMSStream(EDAS_FileNamewPath.c_str());
 			EGNOS_EMS_Parser::EGNOS_EMS_Data EData;
 
 			EGNOS::IonosphericDelayCorrectionsMessageParser IonoGridPointParser;
 			EGNOS::IonosphericGridPointMasksMessageParser IonoMaskParser;
-
 			EGNOS::IGPMapStore igpMapStore;
 
 			gpstk::CommonTime CurrentDataTime;
 			gpstk::CommonTime LastUpdateTime;
-
 
 			EGNOS::IGPMap IonoMap;
 			EGNOS::VerticalIonoDelayInterpolator egnosInterPol;
@@ -175,8 +229,11 @@ namespace EGNOS
 			if (interPolationOn == true)
 				ionexWriter.setInterpolator(egnosInterPol);
 
+			double timOffset = 0;
 			bool weHad18 = false;
 			bool weHad26 = false;
+			bool newData = false;
+			bool hadFirstTimeData = false;
 
 			int updateIndex = 0;
 			while (EMSStream >> EData) {
@@ -190,6 +247,37 @@ namespace EGNOS
 					continue;
 				}
 				
+				if (hadFirstTimeData == false) {
+
+					LastUpdateTime = CurrentDataTime;
+					gpstk::CivilTime firstCivilTime(CurrentDataTime);
+					gpstk::CivilTime firstUpdateinCivilTime(firstUpdate);
+					gpstk::CivilTime lastUpdateinCivilTime(lastUpdate);
+
+					if (firstCivilTime > firstUpdate) {
+
+						firstUpdateinCivilTime.year = firstCivilTime.year;
+						firstUpdateinCivilTime.month = firstCivilTime.month;
+						firstUpdateinCivilTime.day = firstCivilTime.day;
+						firstUpdateinCivilTime.hour = firstCivilTime.hour;
+						firstUpdateinCivilTime.minute = firstCivilTime.minute;
+						firstUpdateinCivilTime.second = firstCivilTime.second;
+						firstUpdate = firstUpdateinCivilTime;
+					}
+					
+					if (lastUpdate == gpstk::CommonTime() || lastUpdate < firstUpdate) {
+
+						lastUpdateinCivilTime.year = firstCivilTime.year;
+						lastUpdateinCivilTime.month = firstCivilTime.month;
+						lastUpdateinCivilTime.day = firstCivilTime.day + 1;
+						lastUpdateinCivilTime.hour = firstCivilTime.hour;
+						lastUpdateinCivilTime.minute = firstCivilTime.minute;
+						lastUpdateinCivilTime.second = firstCivilTime.second;
+						lastUpdate = lastUpdateinCivilTime;
+					}
+
+					hadFirstTimeData = true;
+				}
 
 				if (EData.messageId == 18) {
 
@@ -207,7 +295,7 @@ namespace EGNOS
 
 				if (weHad18 || weHad26) {
 
-					bool newData = false;
+					newData = false;
 
 					IgpMediator.updateTime(CurrentDataTime);
 					IgpMediator.setIGPCandidates(IonoGridPointParser.getIonosphericGridPoint());
@@ -215,46 +303,49 @@ namespace EGNOS
 
 					newData = IonoMap.updateMap(IgpMediator);
 
-					
-					if (newData == true) {
-						
-						if (updateIntervalinSeconds > 0) {
-						
-							if (CurrentDataTime > (LastUpdateTime + updateIntervalinSeconds)) {
-
-								LastUpdateTime = CurrentDataTime;
-
-								igpMapStore.addMap(CurrentDataTime, IonoMap);
-
-								gpstk::CivilTime clock(CurrentDataTime);
-								cout << "Time: " << clock.asString() << ": IGP Map was updated and added to IGPMapStore" << endl;
-							}
-							
-						}
-						else {
-							igpMapStore.addMap(CurrentDataTime, IonoMap);
-							gpstk::CivilTime clock(CurrentDataTime);
-							cout << "Time: " << clock << ": IGP Map was updated and added to IGPMapStore" << endl;
-						}
-
-						if (Output_IonexFileNamewPath_Detailed != "") {
-							updateIndex++;
-							string ems_out_file_index = EGNOS_RUNNABLE_UTILITY::createStrFileIndex(updateIndex);
-							std::string ionexFile_Out_Detailed = Output_IonexFileNamewPath_Detailed;
-							ionexFile_Out_Detailed = ionexFile_Out_Detailed.insert(Output_IonexFileNamewPath_Detailed.size() - 4, ems_out_file_index.c_str());
-
-							ionexWriter.setIonexCompatibleMap(IonoMap);
-							ionexWriter.writeIGPMap2file(ionexFile_Out_Detailed);
-							cout << "IGP Map was written to a standalone ionex file" << endl;
-						}
-						
-					}
-
 					//cout << IonoMap;
 
 					weHad26 = false;
 					weHad18 = false;
 				}
+					
+				if (updateIntervalinSeconds > 0) {
+
+					if (CurrentDataTime >= (firstUpdate + timOffset) && CurrentDataTime >= firstUpdate && CurrentDataTime <= lastUpdate) {
+
+						timOffset += updateIntervalinSeconds;
+						LastUpdateTime = CurrentDataTime;
+
+						igpMapStore.addMap(CurrentDataTime, IonoMap);
+
+						gpstk::CivilTime clock(CurrentDataTime);
+						cout << "Time: " << clock.asString() << ": IGP Map was added to IGPMapStore" << endl;
+					}
+							
+				}
+				else {
+					if (newData == true) {
+						igpMapStore.addMap(CurrentDataTime, IonoMap);
+						gpstk::CivilTime clock(CurrentDataTime);
+						cout << "Time: " << clock << ": IGP Map was updated and added to IGPMapStore" << endl;
+					}
+						
+				}
+
+				if (newData == true) {
+
+					if (Output_IonexFileNamewPath_Detailed != "") {
+						updateIndex++;
+						string ems_out_file_index = EGNOS_RUNNABLE_UTILITY::createStrFileIndex(updateIndex);
+						std::string ionexFile_Out_Detailed = Output_IonexFileNamewPath_Detailed;
+						ionexFile_Out_Detailed = ionexFile_Out_Detailed.insert(Output_IonexFileNamewPath_Detailed.size() - 4, ems_out_file_index.c_str());
+
+						ionexWriter.setIonexCompatibleMap(IonoMap);
+						ionexWriter.writeIGPMap2file(ionexFile_Out_Detailed);
+						cout << "IGP Map was written to a standalone ionex file" << endl;
+					}	
+				}	
+
 			}
 
 			EMSStream.close();
@@ -270,32 +361,6 @@ namespace EGNOS
 				ionexWriter.setIonexCompatibleMap(igpMapStore);
 				ionexWriter.writeIGPMap2file(Output_IonexFileNamewPath);
 			}
-
-			IGPMap2IonexData ionexConverter;
-
-			gpstk::IonexStore ionexStore = ionexConverter.convert(igpMapStore);
-
-			cout << "Init Time: " << ionexStore.getInitialTime() << endl;
-			cout << "Final Time: " << ionexStore.getFinalTime() << endl;
-
-			gpstk::Position RX;
-			RX.setGeocentric(32.3, 15.4, 0);
-
-			try
-			{
-				cout << endl << endl;
-				gpstk::Triple rtv = ionexStore.getIonexValue(ionexStore.getInitialTime() + 1000, RX, 1);
-				cout << rtv << endl;
-
-			}
-			catch (...)
-			{
-				std::cout << "We could not get TEC and RMS information from the IonexStore" << std::endl;
-			}
-
-			cout << endl << endl;
-
-			//ionexStore.dump();
 
 			return;
 		}
@@ -394,9 +459,9 @@ namespace EGNOS
 			}
 		}
 
-		std::vector<gpstk::IonexData> createDifferenceDataBlock(	gpstk::IonexHeader header,
-																	gpstk::IonexStore refreceStore,
-																	gpstk::IonexStore targetStore,
+		std::vector<gpstk::IonexData> createDifferenceDataBlock(	gpstk::IonexHeader &header,
+																	gpstk::IonexStore &refreceStore,
+																	gpstk::IonexStore &targetStore,
 																	gpstk::CommonTime &epoch,
 																	int mapID) {
 			
@@ -453,24 +518,12 @@ namespace EGNOS
 
 				try
 				{
-					TECRMS1 = refreceStore.getIonexValue(epoch, RX, 1);
-					TECRMS2 = targetStore.getIonexValue(epoch, RX, 1);
+					TECRMS1 = refreceStore.getIonexValue(epoch, RX, 4);
+					TECRMS2 = targetStore.getIonexValue(epoch, RX, 4);
 
 					diffTEC = TECRMS1[0] - TECRMS2[0];
 					diffRMS = TECRMS1[1] - TECRMS2[1];
 
-					//if (diffTEC < 0){
-					//	cout << endl;//diffTEC = 999.9 - diffTEC;
-					//}
-
-					//if (diffRMS < 0) {
-					//	cout << endl;
-					//	//diffRMS = 999.9 - diffRMS;
-					//}
-
-					diffTEC = diffTEC / TEC_IN_METER;
-					diffRMS = diffRMS / TEC_IN_METER;
-					
 					valuesTEC(counter) = diffTEC;
 					valuesRMS(counter) = diffRMS;
 				}

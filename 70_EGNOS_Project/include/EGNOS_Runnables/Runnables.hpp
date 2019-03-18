@@ -36,9 +36,11 @@ namespace EGNOS
 
 		void runEGNOSIonoCorrectionModel(std::string EDAS_FileNamewPath);
 
-		void compareIonexFiles(	std::string ReferenceIonexFileNamewPath,
-								std::string TargetIonexFileNamewPath,
-								std::string IonexFileNamewPath_Out);
+		void compareIonexFiles(	std::string& ReferenceIonexFileNamewPath,
+								std::string& TargetIonexFileNamewPath,
+								std::string& IonexFileNamewPath_Out,
+								EGNOSMapType mapType,
+								double matchingIntervall = 100);
 
 		void processEMS(std::string EDAS_FileNamewPath = "",
 			std::string Output_IonexFileNamewPath = "",
@@ -46,15 +48,17 @@ namespace EGNOS
 			std::string Output_IonexFileNamewPath_Detailed = "",
 			EGNOSMapType mapType = EGNOS::europe5x5_tec,
 			bool interPolationOn = true,
+			gpstk::CommonTime firstUpdate = gpstk::CommonTime(),
+			gpstk::CommonTime lastUpdate = gpstk::CommonTime(),
 			double updateIntervalinSeconds = 0);
 	};
 		
 	namespace EGNOS_RUNNABLE_UTILITY
 	{
 
-		std::vector<gpstk::IonexData> createDifferenceDataBlock(gpstk::IonexHeader header,
-																gpstk::IonexStore refreceStore,
-																gpstk::IonexStore targetStore,
+		std::vector<gpstk::IonexData> createDifferenceDataBlock(gpstk::IonexHeader &header,
+																gpstk::IonexStore &refreceStore,
+																gpstk::IonexStore &targetStore,
 																gpstk::CommonTime &epoch,
 																int mapID);
 
