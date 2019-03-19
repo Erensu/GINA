@@ -43,14 +43,6 @@ include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/99_Cmake")
 #################################################################
 add_subdirectory (10_MathPckgs)
 
-	##########
-	# ALGLIB #
-	##########
-	#################################################################
-	get_property(ALGLIB_CORE_INC_DIRS DIRECTORY "${PROJECT_SOURCE_DIR}/10_MathPckgs/ALGLIB" PROPERTY ALGLIB_CORE_INC_DIRS)
-	set (EXTRA_LIBS ${EXTRA_LIBS} ALGLIB)
-	#message("Property for root directory root read from ALGLIB_CORE_INC_DIRS: " ${ALGLIB_CORE_INC_DIRS})
-
 	############
 	#Eigen Lib #
 	############

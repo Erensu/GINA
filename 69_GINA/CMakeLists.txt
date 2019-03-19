@@ -10,9 +10,9 @@ target_include_directories(GINA PUBLIC "${PROJECT_SOURCE_DIR}/60_IMUSimulator/in
 set( GINA_CORE_INC_DIRS "" )
 list( APPEND GINA_CORE_INC_DIRS ${IMU_CORE_INC_DIRS} )
 
-target_include_directories(GINA PUBLIC ${GINA_CORE_INC_DIRS} ${ALGLIB_CORE_INC_DIRS} ${GPSTK_CORE_INC_DIRS})
+target_include_directories(GINA PUBLIC ${GINA_CORE_INC_DIRS} ${GPSTK_CORE_INC_DIRS})
 
-target_link_libraries (GINA gpstk IMUSimulator ALGLIB)
+target_link_libraries (GINA gpstk IMUSimulator)
 
 # add the install targets
 install (TARGETS GINA DESTINATION bin)
