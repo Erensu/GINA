@@ -126,6 +126,7 @@ add_subdirectory (40_GNSS_Competence_Team)
 
 add_subdirectory (69_GINA)
 
+option( EGNOS_RUNNABLES "HELP: BUILD_EGNOS_RUNNABLES: SWITCH, Default = OFF, Build the EGNOS extra runnables" OFF )
 add_subdirectory (70_EGNOS_Project)
 
 
