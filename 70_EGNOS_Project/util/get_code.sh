@@ -1,20 +1,25 @@
 #!/bin/bash
 #shell script to download CODE ionosphere file
 
-#the first argument is the number of the days before the current day
-#the default values is 5
-if [ "$1" != "" ]; then
-	n=$1
-else
-	n=5
+#the first argument is the year
+#the second one is the day of year
+#typical call_ ./get_code.sh 2019 46
+
+#check number of arguments
+if [ "$#" != 2 ]
+then
+	echo "typical call ./get_code.sh 2019 46"
+	exit
 fi
 
-#get day of year and year from the PC date
-doy=$(date -d "-$n day" +"%j")
-year=$(date -d "-$n day" +"%Y")
-year2=$(date -d "-$n day" +"%y")
+year=$1
+printf -v doy "%03d" $2
+year2=`echo $year | cut -c 3-4`
 
 #get files from AIUB ftp server
-wget -N "ftp://ftp.aiub.unibe.ch/CODE/$year/CODG"$doy"0."$year2"I.Z"
-
-
+if [ ! -f $year"/code/CODG"$doy"0."$year2"I" ]
+then
+	wget -N "ftp://ftp.aiub.unibe.ch/CODE/$year/CODG"$doy"0."$year2"I.Z"
+	uncompress "CODG"$doy"0."$year2"I.Z"
+	mv "CODG"$doy"0."$year2"I" $year"/code/."
+fi
