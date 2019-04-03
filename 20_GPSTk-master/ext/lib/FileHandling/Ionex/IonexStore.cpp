@@ -335,7 +335,15 @@ namespace gpstk
             itm = inxMaps.lower_bound(t);
                // store current and next epoch
             T[0] = itm->first;
-            T[1] = (++itm)->first;
+			++itm;
+			if (itm != inxMaps.end()) {
+				T[1] = (itm)->first;
+			}
+			else {
+				InvalidRequest e("IonexStore::getIonexValue() ... Invalid time!");
+				GPSTK_THROW(e);
+			}
+           
 
          }
          else                                   // t is between two maps
@@ -345,7 +353,15 @@ namespace gpstk
             itm = inxMaps.lower_bound(t);
                // store the next and previous epoch
             T[1] = itm->first;
-            T[0] = (--itm)->first;
+
+			--itm;
+			if (itm != inxMaps.end()) {
+				T[0] = (itm)->first;
+			}
+			else {
+				InvalidRequest e("IonexStore::getIonexValue() ... Invalid time!");
+				GPSTK_THROW(e);
+			}
 
          }  // end of 'if( itm != inxMaps.end() ) ... else ... '' 
 

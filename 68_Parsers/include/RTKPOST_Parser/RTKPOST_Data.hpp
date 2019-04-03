@@ -40,7 +40,7 @@ namespace RTKPOST_Parser
 		virtual bool isData() const { return true; }
 
 		/// Outputs the record to the FFStream \a s.
-		virtual void reallyPutRecord(gpstk::FFStream& s) const
+		virtual void reallyGetRecord(gpstk::FFStream& ffs)
 			throw(std::exception, gpstk::FFStreamError,
 				gpstk::StringUtils::StringException);
 
@@ -53,31 +53,22 @@ namespace RTKPOST_Parser
 		*  a read or formatting error occurs.  This also resets the
 		*  stream to its pre-read position.
 		*/
-		virtual void reallyGetRecord(gpstk::FFStream& s)
+		/// Outputs the record to the FFStream \a s.
+		virtual void reallyPutRecord(gpstk::FFStream& ffs) const
 			throw(std::exception, gpstk::FFStreamError,
 				gpstk::StringUtils::StringException);
 
-		
-		gpstk::CommonTime messageTime;
+		gpstk::CommonTime dataTime;
+		gpstk::Position pos;
 
-		std::bitset<256> message;
-		unsigned int messageId;
-		unsigned int svId;
+		int numberOfSvId = 0;
+		int typeOfSolution = 0;
+		double sdn = 0,   sde = 0,   sdu = 0,  sdne = 0,  sdeu = 0,  sdun = 0;
+		double age = 0;
+		double ratio = 0;
 
-		double getGPSWeek(void);
-		double getGPSToW(void);
-
-		void reset(void);
-		
 	private:
 		RTKPOST_Pos_Stream* strm;
-
-		std::string HexCharToBin(char c);
-		std::string HexStrToBin(const std::string & hs);
-		std::string reverseStr(std::string& str) const;
-		std::string int2string(unsigned int number) const;
-		char getHexCharacter(std::string str) const;
-		std::string bitset2hexstring(void) const;
 
 		void parseLine(std::string& currentLine)
 			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);
