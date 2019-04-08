@@ -1,8 +1,8 @@
 
 
-add_executable(EGNOS_Runnable_1 main.cpp)
+add_executable(EMS2IONEX EMS2IONEX.cpp)
 
-target_link_libraries (EGNOS_Runnable_1 	PUBLIC EGNOS
+target_link_libraries (EMS2IONEX 			PUBLIC EGNOS
 											PUBLIC gpstk 
 											PUBLIC GINAParser)
 

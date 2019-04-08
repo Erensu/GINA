@@ -118,7 +118,7 @@ add_subdirectory (40_GNSS_Competence_Team)
 
 add_subdirectory (69_GINA)
 
-option( EGNOS_RUNNABLES "HELP: BUILD_EGNOS_RUNNABLES: SWITCH, Default = OFF, Build the EGNOS extra runnables" OFF )
+option( EGNOS_RUNNABLES_EMS2IONEX "HELP: BUILD_EGNOS_RUNNABLES EMS2IONEX converter: SWITCH, Default = ON, Build the EMS 2 IONEX converter" ON )
 add_subdirectory (70_EGNOS_Project)
 
 
