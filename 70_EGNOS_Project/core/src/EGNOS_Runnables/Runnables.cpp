@@ -529,7 +529,7 @@ namespace EGNOS
 					TECRMS2 = targetStore.getIonexValue(epoch, RX, 1);
 
 					diffTEC = TECRMS1[0] - TECRMS2[0];
-					diffRMS = TECRMS1[1] + TECRMS2[1];
+					diffRMS = std::sqrt(TECRMS1[1] * TECRMS1[1] + TECRMS2[1] * TECRMS2[1]);
 
 					valuesTEC(counter) = diffTEC;
 					valuesRMS(counter) = diffRMS;

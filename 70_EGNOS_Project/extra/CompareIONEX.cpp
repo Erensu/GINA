@@ -8,7 +8,8 @@ int main(int argc, char **argv) {
 		std::cout << " #3 Differentiated IONEX filename with absolute path - output " << std::endl;
 		std::cout << " #4 Matching intervall - optional - default value is 60 - input" << std::endl;
 		std::cout << "\t Matching intervall means that the runnable differentiate the available ionex maps from the first file to the closeset ionex map of the second file in the given matching interval." << std::endl;
-		
+		std::cout << "TEC values are calculated as: TEC1 - TEC2" << std::endl;
+		std::cout << "RMS values calculated as:		sqrt(RMS1^2 + RMS2^2)" << std::endl;
 		exit(1);
 	}
 
