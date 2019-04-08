@@ -3,13 +3,6 @@
 
 using namespace std;
 
-#include "IonexStream.hpp"
-#include "IonexHeader.hpp"
-#include "IonexData.hpp"
-#include "IonexStore.hpp"
-
-#include "RTKPOST_Data.hpp"
-#include "RTKPOST_Stream.hpp"
 
 int main(int argc, char **argv) {
 

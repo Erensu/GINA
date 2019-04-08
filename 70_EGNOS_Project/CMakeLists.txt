@@ -1,8 +1,4 @@
 
-
 add_subdirectory (core) 
+add_subdirectory (extra) 
 
-
-if( EGNOS_RUNNABLES_EMS2IONEX )
-	add_subdirectory (extra) 
-endif()
