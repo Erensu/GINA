@@ -40,8 +40,8 @@ plot(x,PMean2)
 title('Normal pdfs')
 legend('Normal Distribution 1','Normal Distribution 2', 'jointProbability', 'Pmean2')
 
-cdfFigure = figure();
-figure(cdfFigure);
+%cdfFigure = figure();
+%figure(cdfFigure);
 
 
 mu = meanP;
@@ -51,10 +51,10 @@ y2 = cdf('Normal',x,mu,sigma);
 
 hold on
 
-plot(x,y2)
-plot(x,PMean2)
-title('Normal cdf')
-legend('CDF of Normal Distribution')
+%plot(x,y2)
+%plot(x,PMean2)
+%title('Normal cdf')
+%legend('CDF of Normal Distribution')
 
 cdf('Normal',mean2,mu,sigma)
 
@@ -63,9 +63,21 @@ mu;
 sigma;
 
 
-p1 = cdf('Normal',mean2-std1,mu,sigma)
-p2 = cdf('Normal',mean2+std1,mu,sigma)
-p2-p1
+p1 = cdf('Normal',mean2,mu,sigma)
+p2 = cdf('Normal',mean2,mu,sigma)
+
+mean1
+mean2
+meanP
+stdP
+
+normpdf(mean2,mean1,stdP)
+
+p2-p1;
+
+y1 = normpdf(x,1,1);
+y2 = normpdf(x,1,0.5);
+norm(y1.*y2)
 
 end
 
