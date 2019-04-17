@@ -1816,7 +1816,15 @@ namespace EGNOS {
 
 		openFile();
 
-		createHeader();
+		try
+		{
+			createHeader();
+		}
+		catch (const std::exception& e)
+		{
+			throw e;
+		}
+		
 		writeHeader(header);
 
 		gpstk::IonexData tecData;
@@ -1942,6 +1950,9 @@ namespace EGNOS {
 	void IonexCreator::createHeaderBase(void) {
 
 		header.clear();
+		if (epochs.size() == 0) {
+			throw domain_error("There are no epoch stored in the igpMap");
+		}
 		gpstk::CommonTime firstEpoch = epochs[0];
 		gpstk::CommonTime lastEpoch = epochs[epochs.size() - 1];
 
@@ -2033,7 +2044,15 @@ namespace EGNOS {
 		minLon = -60;
 		lonDistance = abs(gridSize);
 
-		createHeaderBase();
+		try
+		{
+			createHeaderBase();
+		}
+		catch (const std::exception& e)
+		{
+			throw e;
+		}
+		
 		
 	}
 
@@ -2209,7 +2228,7 @@ namespace EGNOS {
 				return rtv;
 				break;
 		}
-
+	
 		if (unit == unitType::tec) {
 			rtv = rtv / TEC_IN_METER;
 		}

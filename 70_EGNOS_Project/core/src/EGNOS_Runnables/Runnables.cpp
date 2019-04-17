@@ -324,8 +324,15 @@ namespace EGNOS
 						IonoMap.referenceTime = CurrentDataTime;
 						igpMapStore.addMap(CurrentDataTime, IonoMap);
 
-						gpstk::CivilTime clock(CurrentDataTime);
-						cout << "Time: " << clock.asString() << ": IGP Map was added to IGPMapStore" << endl;
+						if (newData == true) {
+							gpstk::CivilTime clock(CurrentDataTime);
+							cout << "Time: " << clock.asString() << ": IGP Map was added to IGPMapStore" << endl;
+						}
+						else {
+							gpstk::CivilTime clock(CurrentDataTime);
+							cout << "Time: " << clock.asString() << ": IGP Map was updated and added to IGPMapStore" << endl;
+						}
+						newData = false;
 					}
 							
 				}
@@ -333,7 +340,8 @@ namespace EGNOS
 					if (newData == true) {
 						igpMapStore.addMap(CurrentDataTime, IonoMap);
 						gpstk::CivilTime clock(CurrentDataTime);
-						cout << "Time: " << clock << ": IGP Map was updated and added to IGPMapStore" << endl;
+						cout << "Time: " << clock.asString() << ": IGP Map was updated and added to IGPMapStore" << endl;
+						newData = false;
 					}
 						
 				}
@@ -349,6 +357,7 @@ namespace EGNOS
 						ionexWriter.setIonexCompatibleMap(IonoMap);
 						ionexWriter.writeIGPMap2file(ionexFile_Out_Detailed);
 						cout << "IGP Map was written to a standalone ionex file" << endl;
+						newData = false;
 					}	
 				}	
 
@@ -365,7 +374,16 @@ namespace EGNOS
 
 			if (Output_IonexFileNamewPath != "") {
 				ionexWriter.setIonexCompatibleMap(igpMapStore);
-				ionexWriter.writeIGPMap2file(Output_IonexFileNamewPath);
+				try
+				{
+					ionexWriter.writeIGPMap2file(Output_IonexFileNamewPath);
+				}
+				catch (const std::exception& e)
+				{
+					std::cout << std::endl << "Ionex file creation has failed" << std::endl;
+					std::cout << "ErrorType: " << e.what() << std::endl << std::endl;
+				}
+				
 			}
 
 			return;

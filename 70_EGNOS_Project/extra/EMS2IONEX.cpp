@@ -10,9 +10,10 @@ int main(int argc, char **argv) {
 		std::cout << " Invalid argument. \n Expected arguments: \n #1 EMS filename with absolute path -input \n #2 Ionex filename with absolute path - output " << std::endl;
 		std::cout << " #2 Ionex filename with absolute path - output " << std::endl;
 		std::cout << " #3 MapType - optional - default value is 0 - input" << std::endl;
-		std::cout << "\t MapType value 0 - 5x5 Europe" << std::endl;
-		std::cout << "\t MapType value 1 - 2.5x2.5 Europe - values are interpolated" << std::endl;
-		std::cout << "\t MapType value 2 - 1x1 Europe - values are interpolated" << std::endl;
+		std::cout << "\t MapType value 0 - 5x5 Europe - values are NOT interpolated" << std::endl;
+		std::cout << "\t MapType value 1 - 5x5 Europe - values are interpolated" << std::endl;
+		std::cout << "\t MapType value 2 - 2.5x2.5 Europe - values are interpolated" << std::endl;
+		std::cout << "\t MapType value 3 - 1x1 Europe - values are interpolated" << std::endl;
 		std::cout << " #4 Update Interval in second - optional - default value is 3600 - input" << std::endl;
 		std::cout << "\t When 'Update Interval' value is 0, it means everytime the parser gets an iono update from the ems, creates a map" << std::endl;
 		exit(1);
@@ -48,10 +49,14 @@ int main(int argc, char **argv) {
 			doInterpolate = false;
 			break;
 		case 1:
-			mapType = EGNOS::europe2_5x2_5_tec;
+			mapType = EGNOS::europe5x5_tec;
 			doInterpolate = true;
 			break;
 		case 2:
+			mapType = EGNOS::europe2_5x2_5_tec;
+			doInterpolate = true;
+			break;
+		case 3:
 			mapType = EGNOS::europe1x1_tec;
 			doInterpolate = true;
 			break;
@@ -93,7 +98,7 @@ int main(int argc, char **argv) {
 		lastUpdate,
 		updateIntervalinSeconds);
 
-	std::cout << " EMS to Ionex converter succesfully finished the job" << std::endl;
+	std::cout << "EMS to Ionex converter finished the job" << std::endl;
 
 	return 0;
 }
