@@ -1,0 +1,1453 @@
+     1.0            IONOSPHERE MAPS     GNSS                IONEX VERSION / TYPE
+ADDNEQ2 V5.3        AIUB                15-APR-19 20:18     PGM / RUN BY / DATE 
+CODE'S GLOBAL IONOSPHERE MAPS FOR DAY 101, 2019             COMMENT             
+Global ionosphere maps (GIM) are generated on a daily basis DESCRIPTION         
+at CODE using data from about 300 GNSS sites of the IGS and DESCRIPTION         
+other institutions. The vertical total electron content     DESCRIPTION         
+(VTEC) is modeled in a solar-geomagnetic reference frame    DESCRIPTION         
+using a spherical harmonics expansion up to degree and      DESCRIPTION         
+order 15. Piece-wise linear functions are used for          DESCRIPTION         
+representation in the time domain. The time spacing of      DESCRIPTION         
+their vertices is 1 hour, conforming with the epochs of the DESCRIPTION         
+VTEC maps.                                                  DESCRIPTION         
+To convert line-of-sight TEC into vertical TEC, a modified  DESCRIPTION         
+single-layer model mapping function approximating the JPL   DESCRIPTION         
+extended slab model mapping function is adopted. The        DESCRIPTION         
+mapping function is evaluated at geodetic satellite         DESCRIPTION         
+elevation angles. For the computation of the ionospheric    DESCRIPTION         
+pierce points, a spherical layer with a radius of 6821 km   DESCRIPTION         
+is assumed, implying geocentric, not geodetic IONEX         DESCRIPTION         
+latitudes.                                                  DESCRIPTION         
+Instrumental biases with respect to each involved GNSS code DESCRIPTION         
+observable are estimated as constant values for each        DESCRIPTION         
+day. They are modeled with one set of bias parameters for   DESCRIPTION         
+each satellite and each station in case of GPS and for each DESCRIPTION         
+satellite-station link in case of GLONASS. The code bias    DESCRIPTION         
+datum is defined by zero-mean conditions imposed on the     DESCRIPTION         
+satellite bias estimates. In this file, just GPS C1W-C2W    DESCRIPTION         
+satellite and station bias values are included. The         DESCRIPTION         
+complete set of GNSS code bias results is provided in an    DESCRIPTION         
+additional Bias-SINEX file as pseudo-absolute values        DESCRIPTION         
+specific to each observable.                                DESCRIPTION         
+Note: These GIM results correspond to the results for the   DESCRIPTION         
+middle day of a 3-day combination analysis solving for 73   DESCRIPTION         
+times 256, or 18688 VTEC parameters and 3 daily sets of     DESCRIPTION         
+GNSS code bias parameters.                                  DESCRIPTION         
+Contact address: code(at)aiub.unibe.ch                      DESCRIPTION         
+Data archive:    ftp.aiub.unibe.ch/CODE/                    DESCRIPTION         
+                 www.aiub.unibe.ch/download/CODE/           DESCRIPTION         
+  2019     4    11     0     0     0                        EPOCH OF FIRST MAP  
+  2019     4    12     0     0     0                        EPOCH OF LAST MAP   
+  3600                                                      INTERVAL            
+    25                                                      # OF MAPS IN FILE   
+  NONE                                                      MAPPING FUNCTION    
+    10.0                                                    ELEVATION CUTOFF    
+One-way carrier phase leveled to code                       OBSERVABLES USED    
+   255                                                      # OF STATIONS       
+    55                                                      # OF SATELLITES     
+  6371.0                                                    BASE RADIUS         
+     2                                                      MAP DIMENSION       
+   450.0 450.0   0.0                                        HGT1 / HGT2 / DHGT  
+    87.5 -87.5  -2.5                                        LAT1 / LAT2 / DLAT  
+  -180.0 180.0   5.0                                        LON1 / LON2 / DLON  
+    -1                                                      EXPONENT            
+TEC/RMS values in 0.1 TECU; 9999, if no value available     COMMENT             
+Peak TEC values for the included maps:                      COMMENT             
+ 413  414  414  420  407  398  421  446  461  442  409  386 COMMENT             
+ 383  393  399  409  393  411  450  460  461  461  456  461 COMMENT             
+ 493                                                        COMMENT             
+List of stations:                                           COMMENT             
+abpo adis albh algo alic amu2 ankr areg areq artu ascg aspa COMMENT             
+auck azgb badg bake barh bisk bjfs bndy boav bogo bogt bor1 COMMENT             
+braz brst brux bshm cas1 ccj2 cedu cefe chpg chti chur ckis COMMENT             
+coco cord cpvg cpxf cro1 daej darw dav1 dgar dhlg drao dubo COMMENT             
+ebre faa1 fair flin flrs frdn ftna func ganp glps glsv gmsd COMMENT             
+gode godz gol2 gope gras graz guat harb hers hert hlfx hnpt COMMENT             
+hob2 hofn holb hrao hyde iddr iisc impz ineg iqal irkj isba COMMENT             
+jog2 joz2 joze kerg khar kir0 kiru kit3 kokv kouc koug kour COMMENT             
+krgg lama laut lhaz lmmf lpal lpgs m0se mac1 madr mag0 maju COMMENT             
+mal2 mana mas1 mat1 mate maui maw1 mcil mcm4 mdo1 mdvj medi COMMENT             
+mets mgue mizu mnls mobj mobk mobs monp morp mqzg mro1 mtka COMMENT             
+nano naur nico nist nium nklg nnor not1 nrc1 nril nrmd ntus COMMENT             
+nya1 nyal ohi2 ohi3 onsa opmt ous2 pado park pbri pdel penc COMMENT             
+pert pfa2 pie1 pimo pohn pol2 polv pots pove prds ptag ptbb COMMENT             
+ptvl quin ramo reun reyk rgdg rio2 riop roth salu samo sant COMMENT             
+savo sch2 scor scrz sctb seyg sfer sofi spt0 stjo stk2 str2 COMMENT             
+suth sutm suwn sydn syog tabl tabv tash thtg thti tid1 tidb COMMENT             
+tixg tixi tlse tn22 tong tow2 tro1 tsea tskb twtf txes uclu COMMENT             
+ufpr ulab unb3 unbj unbn unsa urum usn7 usud vaco vald vill COMMENT             
+voim vtsp wab2 wark wes2 wgtn whit will wind wsrt wtza wtzl COMMENT             
+wtzr wtzs xmis yar2 yar3 yarr ycba yell yssk zamb zeck zim2 COMMENT             
+zim3 zimj zimm                                              COMMENT             
+Reference observables for GPS    : C1W-C2W                  COMMENT             
+Reference observables for ABPO 33302M001 (G): C1W-C2W       COMMENT             
+Reference observables for ADIS 31502M001 (G): C1W-C2W       COMMENT             
+Reference observables for ALBH 40129M003 (G): C1W-C2W       COMMENT             
+Reference observables for ALGO 40104M002 (G): C1W-C2W       COMMENT             
+Reference observables for ALIC 50137M001 (G): C1C-C2W       COMMENT             
+Reference observables for AMU2 66040M002 (G): C1C-C2W       COMMENT             
+Reference observables for ANKR 20805M002 (G): C1C-C2W       COMMENT             
+Reference observables for AREG 42202M008 (G): C1W-C2W       COMMENT             
+Reference observables for AREQ 42202M005 (G): C1W-C2W       COMMENT             
+Reference observables for ARTU 12362M001 (G): C1W-C2W       COMMENT             
+Reference observables for ASCG 30602M004 (G): C1C-C2W       COMMENT             
+Reference observables for ASPA 50503S006 (G): C1C-C2W       COMMENT             
+Reference observables for AUCK 50209M001 (G): C1C-C2W       COMMENT             
+Reference observables for AZGB 49541S001 (G): C1C-C2W       COMMENT             
+Reference observables for BADG 12338M002 (G): C1W-C2W       COMMENT             
+Reference observables for BAKE 40152M001 (G): C1W-C2W       COMMENT             
+Reference observables for BARH 49927S001 (G): C1C-C2W       COMMENT             
+Reference observables for BISK 11520M001 (G): C1W-C2W       COMMENT             
+Reference observables for BJFS 21601M001 (G): C1C-C2W       COMMENT             
+Reference observables for BNDY 50185M001 (G): C1C-C2W       COMMENT             
+Reference observables for BOAV 41636M001 (G): C1C-C2W       COMMENT             
+Reference observables for BOGO 12207M002 (G): C1W-C2W       COMMENT             
+Reference observables for BOGT 41901M001 (G): C1W-C2W       COMMENT             
+Reference observables for BOR1 12205M002 (G): C1C-C2W       COMMENT             
+Reference observables for BRAZ 41606M001 (G): C1C-C2W       COMMENT             
+Reference observables for BRST 10004M004 (G): C1C-C2W       COMMENT             
+Reference observables for BRUX 13101M010 (G): C1W-C2W       COMMENT             
+Reference observables for BSHM 20705M001 (G): C1W-C2W       COMMENT             
+Reference observables for CAS1 66011M001 (G): C1C-C2W       COMMENT             
+Reference observables for CCJ2 21732M002 (G): C1C-C2W       COMMENT             
+Reference observables for CEDU 50138M001 (G): C1W-C2W       COMMENT             
+Reference observables for CEFE 41637M001 (G): C1C-C2W       COMMENT             
+Reference observables for CHPG 41609M004 (G): C1C-C2W       COMMENT             
+Reference observables for CHTI 50242M001 (G): C1C-C2W       COMMENT             
+Reference observables for CHUR 40128M002 (G): C1W-C2W       COMMENT             
+Reference observables for CKIS 50213M003 (G): C1C-C2W       COMMENT             
+Reference observables for COCO 50127M001 (G): C1W-C2W       COMMENT             
+Reference observables for CORD 41511M001 (G): C1W-C2W       COMMENT             
+Reference observables for CPVG 39601M001 (G): C1C-C2W       COMMENT             
+Reference observables for CPXF 49642S001 (G): C1C-C2W       COMMENT             
+Reference observables for CRO1 43201M001 (G): C1W-C2W       COMMENT             
+Reference observables for DAEJ 23902M002 (G): C1C-C2W       COMMENT             
+Reference observables for DARW 50134M001 (G): C1W-C2W       COMMENT             
+Reference observables for DAV1 66010M001 (G): C1W-C2W       COMMENT             
+Reference observables for DGAR 30802M001 (G): C1W-C2W       COMMENT             
+Reference observables for DHLG 49904M001 (G): C1C-C2W       COMMENT             
+Reference observables for DRAO 40105M002 (G): C1W-C2W       COMMENT             
+Reference observables for DUBO 40137M001 (G): C1W-C2W       COMMENT             
+Reference observables for EBRE 13410M001 (G): C1C-C2W       COMMENT             
+Reference observables for FAA1 92201M012 (G): C1W-C2W       COMMENT             
+Reference observables for FAIR 40408M001 (G): C1W-C2W       COMMENT             
+Reference observables for FLIN 40135M001 (G): C1W-C2W       COMMENT             
+Reference observables for FLRS 31907M001 (G): C1C-C2W       COMMENT             
+Reference observables for FRDN 40146M001 (G): C1W-C2W       COMMENT             
+Reference observables for FTNA 92902S002 (G): C1C-C2W       COMMENT             
+Reference observables for FUNC 13911S001 (G): C1C-C2W       COMMENT             
+Reference observables for GANP 11515M001 (G): C1C-C2W       COMMENT             
+Reference observables for GLPS 42005M002 (G): C1W-C2W       COMMENT             
+Reference observables for GLSV 12356M001 (G): C1C-C2W       COMMENT             
+Reference observables for GMSD 21749S002 (G): C1C-C2W       COMMENT             
+Reference observables for GODE 40451M123 (G): C1W-C2W       COMMENT             
+Reference observables for GODZ 40451M123 (G): C1W-C2W       COMMENT             
+Reference observables for GOL2 40405S031 (G): C1W-C2W       COMMENT             
+Reference observables for GOPE 11502M002 (G): C1C-C2W       COMMENT             
+Reference observables for GRAS 10002M006 (G): C1C-C2W       COMMENT             
+Reference observables for GRAZ 11001M002 (G): C1W-C2W       COMMENT             
+Reference observables for GUAT 40901S001 (G): C1C-C2W       COMMENT             
+Reference observables for HARB 30302M009 (G): C1W-C2W       COMMENT             
+Reference observables for HERS 13212M007 (G): C1W-C2W       COMMENT             
+Reference observables for HERT 13212M010 (G): C1C-C2W       COMMENT             
+Reference observables for HLFX 40120M001 (G): C1W-C2W       COMMENT             
+Reference observables for HNPT 49913S001 (G): C1C-C2W       COMMENT             
+Reference observables for HOB2 50116M004 (G): C1W-C2W       COMMENT             
+Reference observables for HOFN 10204M002 (G): C1C-C2W       COMMENT             
+Reference observables for HOLB 40130M001 (G): C1W-C2W       COMMENT             
+Reference observables for HRAO 30302M004 (G): C1W-C2W       COMMENT             
+Reference observables for HYDE 22307M001 (G): C1C-C2W       COMMENT             
+Reference observables for IDDR 49451M001 (G): C1C-C2W       COMMENT             
+Reference observables for IISC 22306M002 (G): C1W-C2W       COMMENT             
+Reference observables for IMPZ 41615M001 (G): C1C-C2W       COMMENT             
+Reference observables for INEG 40507M001 (G): C1C-C2W       COMMENT             
+Reference observables for IQAL 40194M001 (G): C1W-C2W       COMMENT             
+Reference observables for IRKJ 12313M002 (G): C1W-C2W       COMMENT             
+Reference observables for ISBA 20308M001 (G): C1C-C2W       COMMENT             
+Reference observables for JOG2 23109M002 (G): C1C-C2W       COMMENT             
+Reference observables for JOZ2 12204M002 (G): C1C-C2W       COMMENT             
+Reference observables for JOZE 12204M001 (G): C1W-C2W       COMMENT             
+Reference observables for KERG 91201M002 (G): C1C-C2W       COMMENT             
+Reference observables for KHAR 12314M001 (G): C1C-C2W       COMMENT             
+Reference observables for KIR0 10422M001 (G): C1W-C2W       COMMENT             
+Reference observables for KIRU 10403M002 (G): C1W-C2W       COMMENT             
+Reference observables for KIT3 12334M001 (G): C1C-C2W       COMMENT             
+Reference observables for KOKV 40424M004 (G): C1W-C2W       COMMENT             
+Reference observables for KOUC 92727S001 (G): C1C-C2W       COMMENT             
+Reference observables for KOUG 97301M402 (G): C1W-C2W       COMMENT             
+Reference observables for KOUR 97301M210 (G): C1W-C2W       COMMENT             
+Reference observables for KRGG 91201M007 (G): C1C-C2W       COMMENT             
+Reference observables for LAMA 12209M001 (G): C1C-C2W       COMMENT             
+Reference observables for LAUT 50804M002 (G): C1W-C2W       COMMENT             
+Reference observables for LHAZ 21613M002 (G): C1C-C2W       COMMENT             
+Reference observables for LMMF 97205M001 (G): C1C-C2W       COMMENT             
+Reference observables for LPAL 81701M001 (G): C1C-C2W       COMMENT             
+Reference observables for LPGS 41510M001 (G): C1C-C2W       COMMENT             
+Reference observables for M0SE 12772M001 (G): C1C-C2W       COMMENT             
+Reference observables for MAC1 50135M001 (G): C1W-C2W       COMMENT             
+Reference observables for MADR 13407S012 (G): C1W-C2W       COMMENT             
+Reference observables for MAG0 12354M001 (G): C1W-C2W       COMMENT             
+Reference observables for MAJU 51501M001 (G): C1W-C2W       COMMENT             
+Reference observables for MAL2 33201M003 (G): C1W-C2W       COMMENT             
+Reference observables for MANA 41201S001 (G): C1C-C2W       COMMENT             
+Reference observables for MAS1 31303M002 (G): C1W-C2W       COMMENT             
+Reference observables for MAT1 12734M009 (G): C1C-C2W       COMMENT             
+Reference observables for MATE 12734M008 (G): C1C-C2W       COMMENT             
+Reference observables for MAUI 40445S008 (G): C1C-C2W       COMMENT             
+Reference observables for MAW1 66004M001 (G): C1W-C2W       COMMENT             
+Reference observables for MCIL 21789S001 (G): C1C-C2W       COMMENT             
+Reference observables for MCM4 66001M003 (G): C1W-C2W       COMMENT             
+Reference observables for MDO1 40442M012 (G): C1W-C2W       COMMENT             
+Reference observables for MDVJ 12309M005 (G): C1W-C2W       COMMENT             
+Reference observables for MEDI 12711M003 (G): C1C-C2W       COMMENT             
+Reference observables for METS 10503S011 (G): C1W-C2W       COMMENT             
+Reference observables for MGUE 41558M001 (G): C1W-C2W       COMMENT             
+Reference observables for MIZU 21702M002 (G): C1C-C2W       COMMENT             
+Reference observables for MNLS           (G): C1C-C2W       COMMENT             
+Reference observables for MOBJ 12365M002 (G): C1W-C2W       COMMENT             
+Reference observables for MOBK 12365M002 (G): C1W-C2W       COMMENT             
+Reference observables for MOBS 50182M001 (G): C1W-C2W       COMMENT             
+Reference observables for MONP 40497M004 (G): C1C-C2W       COMMENT             
+Reference observables for MORP 13299S001 (G): C1C-C2W       COMMENT             
+Reference observables for MQZG 50214M001 (G): C1C-C2W       COMMENT             
+Reference observables for MRO1 59913M001 (G): C1C-C2W       COMMENT             
+Reference observables for MTKA 21741S002 (G): C1C-C2W       COMMENT             
+Reference observables for NANO 40138M001 (G): C1W-C2W       COMMENT             
+Reference observables for NAUR 50701M001 (G): C1W-C2W       COMMENT             
+Reference observables for NICO 14302M001 (G): C1C-C2W       COMMENT             
+Reference observables for NIST 49507M002 (G): C1C-C2W       COMMENT             
+Reference observables for NIUM 50210M001 (G): C1C-C2W       COMMENT             
+Reference observables for NKLG 32809M002 (G): C1C-C2W       COMMENT             
+Reference observables for NNOR 50181M001 (G): C1W-C2W       COMMENT             
+Reference observables for NOT1 12717M004 (G): C1C-C2W       COMMENT             
+Reference observables for NRC1 40114M001 (G): C1W-C2W       COMMENT             
+Reference observables for NRIL 12364M001 (G): C1W-C2W       COMMENT             
+Reference observables for NRMD 92701M005 (G): C1C-C2W       COMMENT             
+Reference observables for NTUS 22601M001 (G): C1C-C2W       COMMENT             
+Reference observables for NYA1 10317M003 (G): C1W-C2W       COMMENT             
+Reference observables for NYAL 10317M001 (G): C1W-C2W       COMMENT             
+Reference observables for OHI2 66008M005 (G): C1W-C2W       COMMENT             
+Reference observables for OHI3 66008M006 (G): C1C-C2W       COMMENT             
+Reference observables for ONSA 10402M004 (G): C1W-C2W       COMMENT             
+Reference observables for OPMT 10001S006 (G): C1W-C2W       COMMENT             
+Reference observables for OUS2 50212M002 (G): C1C-C2W       COMMENT             
+Reference observables for PADO 12750S001 (G): C1W-C2W       COMMENT             
+Reference observables for PARK 50108M001 (G): C1C-C2W       COMMENT             
+Reference observables for PBRI 22308M001 (G): C1C-C2W       COMMENT             
+Reference observables for PDEL 31906M004 (G): C1C-C2W       COMMENT             
+Reference observables for PENC 11206M006 (G): C1C-C2W       COMMENT             
+Reference observables for PERT 50133M001 (G): C1C-C2W       COMMENT             
+Reference observables for PFA2 11005M003 (G): C1C-C2W       COMMENT             
+Reference observables for PIE1 40456M001 (G): C1W-C2W       COMMENT             
+Reference observables for PIMO 22003M001 (G): C1W-C2W       COMMENT             
+Reference observables for POHN 51601M001 (G): C1W-C2W       COMMENT             
+Reference observables for POL2 12348M001 (G): C1W-C2W       COMMENT             
+Reference observables for POLV 12336M001 (G): C1C-C2W       COMMENT             
+Reference observables for POTS 14106M003 (G): C1C-C2W       COMMENT             
+Reference observables for POVE 41628M001 (G): C1C-C2W       COMMENT             
+Reference observables for PRDS 40124M001 (G): C1W-C2W       COMMENT             
+Reference observables for PTAG 22006M005 (G): C1C-C2W       COMMENT             
+Reference observables for PTBB 14234M001 (G): C1W-C2W       COMMENT             
+Reference observables for PTVL 51402M002 (G): C1C-C2W       COMMENT             
+Reference observables for QUIN 40433M004 (G): C1W-C2W       COMMENT             
+Reference observables for RAMO 20703S001 (G): C1W-C2W       COMMENT             
+Reference observables for REUN 97401M003 (G): C1C-C2W       COMMENT             
+Reference observables for REYK 10202M001 (G): C1C-C2W       COMMENT             
+Reference observables for RGDG 41507M007 (G): C1C-C2W       COMMENT             
+Reference observables for RIO2 41507M006 (G): C1C-C2W       COMMENT             
+Reference observables for RIOP 42006M001 (G): C1C-C2W       COMMENT             
+Reference observables for ROTH 66007M003 (G): C1C-C2W       COMMENT             
+Reference observables for SALU 41640M001 (G): C1C-C2W       COMMENT             
+Reference observables for SAMO 50603M001 (G): C1C-C2W       COMMENT             
+Reference observables for SANT 41705M003 (G): C1W-C2W       COMMENT             
+Reference observables for SAVO 41643M001 (G): C1C-C2W       COMMENT             
+Reference observables for SCH2 40133M002 (G): C1W-C2W       COMMENT             
+Reference observables for SCOR 43006M002 (G): C1W-C2W       COMMENT             
+Reference observables for SCRZ 41801M001 (G): C1C-C2W       COMMENT             
+Reference observables for SCTB 66071M001 (G): C1C-C2W       COMMENT             
+Reference observables for SEYG 39801M004 (G): C1C-C2W       COMMENT             
+Reference observables for SFER 13402M004 (G): C1C-C2W       COMMENT             
+Reference observables for SOFI 11101M002 (G): C1C-C2W       COMMENT             
+Reference observables for SPT0 10425M001 (G): C1W-C2W       COMMENT             
+Reference observables for STJO 40101M001 (G): C1W-C2W       COMMENT             
+Reference observables for STK2 21731S004 (G): C1C-C2W       COMMENT             
+Reference observables for STR2 50119M001 (G): C1C-C2W       COMMENT             
+Reference observables for SUTH 30314M002 (G): C1W-C2W       COMMENT             
+Reference observables for SUTM 30314M004 (G): C1C-C2W       COMMENT             
+Reference observables for SUWN 23903M001 (G): C1C-C2W       COMMENT             
+Reference observables for SYDN 50124M003 (G): C1W-C2W       COMMENT             
+Reference observables for SYOG 66006S002 (G): C1C-C2W       COMMENT             
+Reference observables for TABL 49901M001 (G): C1C-C2W       COMMENT             
+Reference observables for TABV 49901M001 (G): C1W-C2W       COMMENT             
+Reference observables for TASH 12327M001 (G): C1C-C2W       COMMENT             
+Reference observables for THTG 92201M016 (G): C1W-C2W       COMMENT             
+Reference observables for THTI 92201M009 (G): C1C-C2W       COMMENT             
+Reference observables for TID1 50103M108 (G): C1W-C2W       COMMENT             
+Reference observables for TIDB 50103M108 (G): C1W-C2W       COMMENT             
+Reference observables for TIXG 12360M001 (G): C1W-C2W       COMMENT             
+Reference observables for TIXI 12360M001 (G): C1W-C2W       COMMENT             
+Reference observables for TLSE 10003M009 (G): C1C-C2W       COMMENT             
+Reference observables for TN22 49450M001 (G): C1W-C2W       COMMENT             
+Reference observables for TONG 50902M001 (G): C1W-C2W       COMMENT             
+Reference observables for TOW2 50140M001 (G): C1W-C2W       COMMENT             
+Reference observables for TRO1 10302M006 (G): C1W-C2W       COMMENT             
+Reference observables for TSEA 49448S001 (G): C1C-C2W       COMMENT             
+Reference observables for TSKB 21730S005 (G): C1C-C2W       COMMENT             
+Reference observables for TWTF 23603S002 (G): C1W-C2W       COMMENT             
+Reference observables for TXES 49512M001 (G): C1C-C2W       COMMENT             
+Reference observables for UCLU 40140M001 (G): C1W-C2W       COMMENT             
+Reference observables for UFPR 41610M002 (G): C1C-C2W       COMMENT             
+Reference observables for ULAB 24201M001 (G): C1C-C2W       COMMENT             
+Reference observables for UNB3 40146M002 (G): C1C-C2W       COMMENT             
+Reference observables for UNBJ 40146M002 (G): C1W-C2W       COMMENT             
+Reference observables for UNBN 40146M002 (G): C1C-C2W       COMMENT             
+Reference observables for UNSA 41514M001 (G): C1C-C2W       COMMENT             
+Reference observables for URUM 21612M001 (G): C1C-C2W       COMMENT             
+Reference observables for USN7 40451S009 (G): C1W-C2W       COMMENT             
+Reference observables for USUD 21729S007 (G): C1W-C2W       COMMENT             
+Reference observables for VACO 11516M001 (G): C1W-C2W       COMMENT             
+Reference observables for VALD 40156M001 (G): C1W-C2W       COMMENT             
+Reference observables for VILL 13406M001 (G): C1W-C2W       COMMENT             
+Reference observables for VOIM 33303M001 (G): C1C-C2W       COMMENT             
+Reference observables for VTSP 49449M001 (G): C1C-C2W       COMMENT             
+Reference observables for WAB2 14014M002 (G): C1W-C2W       COMMENT             
+Reference observables for WARK 50243M001 (G): C1C-C2W       COMMENT             
+Reference observables for WES2 40440S020 (G): C1W-C2W       COMMENT             
+Reference observables for WGTN 50208M003 (G): C1C-C2W       COMMENT             
+Reference observables for WHIT 40136M001 (G): C1W-C2W       COMMENT             
+Reference observables for WILL 40134M001 (G): C1C-C2W       COMMENT             
+Reference observables for WIND 31101M001 (G): C1C-C2W       COMMENT             
+Reference observables for WSRT 13506M005 (G): C1W-C2W       COMMENT             
+Reference observables for WTZA 14201M013 (G): C1W-C2W       COMMENT             
+Reference observables for WTZL 14201M022 (G): C1C-C2W       COMMENT             
+Reference observables for WTZR 14201M010 (G): C1C-C2W       COMMENT             
+Reference observables for WTZS 14201M015 (G): C1W-C2W       COMMENT             
+Reference observables for XMIS 50183M001 (G): C1C-C2W       COMMENT             
+Reference observables for YAR2 50107M004 (G): C1W-C2W       COMMENT             
+Reference observables for YAR3 50107M008 (G): C1W-C2W       COMMENT             
+Reference observables for YARR 50107M006 (G): C1W-C2W       COMMENT             
+Reference observables for YCBA 41803M001 (G): C1C-C2W       COMMENT             
+Reference observables for YELL 40127M003 (G): C1W-C2W       COMMENT             
+Reference observables for YSSK 12329M003 (G): C1W-C2W       COMMENT             
+Reference observables for ZAMB 34601M001 (G): C1W-C2W       COMMENT             
+Reference observables for ZECK 12351M001 (G): C1W-C2W       COMMENT             
+Reference observables for ZIM2 14001M008 (G): C1C-C2W       COMMENT             
+Reference observables for ZIM3 14001M008 (G): C1C-C2W       COMMENT             
+Reference observables for ZIMJ 14001M006 (G): C1C-C2W       COMMENT             
+Reference observables for ZIMM 14001M004 (G): C1C-C2W       COMMENT             
+DCB values in ns; zero-mean condition wrt satellite values  COMMENT             
+DIFFERENTIAL CODE BIASES                                    START OF AUX DATA   
+   G01    -7.664     0.012                                  PRN / BIAS / RMS    
+   G02     9.330     0.012                                  PRN / BIAS / RMS    
+   G03    -5.330     0.012                                  PRN / BIAS / RMS    
+   G04    -1.158     0.014                                  PRN / BIAS / RMS    
+   G05     3.274     0.012                                  PRN / BIAS / RMS    
+   G06    -6.871     0.012                                  PRN / BIAS / RMS    
+   G07     3.341     0.012                                  PRN / BIAS / RMS    
+   G08    -7.262     0.012                                  PRN / BIAS / RMS    
+   G09    -4.902     0.012                                  PRN / BIAS / RMS    
+   G10    -5.262     0.012                                  PRN / BIAS / RMS    
+   G11     4.066     0.012                                  PRN / BIAS / RMS    
+   G12     3.909     0.012                                  PRN / BIAS / RMS    
+   G13     3.317     0.012                                  PRN / BIAS / RMS    
+   G14     2.259     0.012                                  PRN / BIAS / RMS    
+   G15     3.178     0.012                                  PRN / BIAS / RMS    
+   G16     3.110     0.012                                  PRN / BIAS / RMS    
+   G17     3.226     0.012                                  PRN / BIAS / RMS    
+   G18    -0.318     0.012                                  PRN / BIAS / RMS    
+   G19     6.091     0.012                                  PRN / BIAS / RMS    
+   G20     1.681     0.012                                  PRN / BIAS / RMS    
+   G21     2.671     0.012                                  PRN / BIAS / RMS    
+   G22     7.788     0.012                                  PRN / BIAS / RMS    
+   G23     9.187     0.012                                  PRN / BIAS / RMS    
+   G24    -5.826     0.012                                  PRN / BIAS / RMS    
+   G25    -7.845     0.012                                  PRN / BIAS / RMS    
+   G26    -8.762     0.012                                  PRN / BIAS / RMS    
+   G27    -4.937     0.012                                  PRN / BIAS / RMS    
+   G28     3.150     0.012                                  PRN / BIAS / RMS    
+   G29     2.573     0.012                                  PRN / BIAS / RMS    
+   G30    -6.388     0.012                                  PRN / BIAS / RMS    
+   G31     4.725     0.012                                  PRN / BIAS / RMS    
+   G32    -4.355     0.012                                  PRN / BIAS / RMS    
+DIFFERENTIAL CODE BIASES                                    END OF AUX DATA     
+                                                            END OF HEADER       
+     0                                                      START OF TEC MAP    
+  2019     4    11     0     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     0                                                      END OF TEC MAP      
+     0                                                      START OF RMS MAP    
+  2019     4    11     0     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     0                                                      END OF RMS MAP      
+     1                                                      START OF TEC MAP    
+  2019     4    11     1     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999  -33  -28  -22  -26  -14  -16  -18  -18  -18  -16
+  -14  -11   -9   -7   -6 9999 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  -41  -36  -15  -10  -12  -12  -12   -9   -6
+   -2    2    5    7 9999 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999  -34 9999 9999 9999  -66  -44  -13   -4   -3    6    1    3    6
+    9   13   22   31 9999 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999    5   -4    4    7    3    7   10   11   11   20
+   21   22   31   38   37 9999 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999    2   -2    4   14   10   14   18   11   10   17   15
+   23   24   26   27   35 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   -4  -15    0   10   12   14    7    6    4    3    2
+   12   14    9    4   13 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999    1    3    6    7    6   12    1    1   -5   -2
+    1   11    5   28 9999 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   10    7    8   13 9999 9999 9999 9999   17
+   12   11   14 9999 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999    9   10   10 9999 9999 9999 9999 9999
+ 9999    1   31 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     1                                                      END OF TEC MAP      
+     1                                                      START OF RMS MAP    
+  2019     4    11     1     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999  113   68   68   52   52   52   51   51   45   45
+   45   45   46   56   67 9999 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  113   85   68   46   46   45   45   45   45
+   45   45   51   56 9999 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999  842 9999 9999 9999  842   85   85   57   51   51   45   45   45
+   45   45   45   51 9999 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999  113   85   57   68   52   45   45   45   39   39
+   39   45   45   46  112 9999 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   85  113   52   46   46   52   45   45   39   39   39
+   39   39   46   51   67 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  113   57   46   40   40   40   40   40   46   46   46
+   46   46   46   46   67 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999  281   46   40   40   40   41   47   53   53   52
+   47   46   46   52 9999 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   47   41   40   41 9999 9999 9999 9999  842
+  282   53   53 9999 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999   47   41   47 9999 9999 9999 9999 9999
+ 9999  114   86 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     1                                                      END OF RMS MAP      
+     2                                                      START OF TEC MAP    
+  2019     4    11     2     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999  -25  -17  -11  -27  -29  -16  -11  -14  -17  -19  -20  -20  -18
+  -15  -11   -7   -3    2 9999 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999  -54 9999 9999 9999  -10   -4   -7  -10  -12  -13  -13  -11   -7
+   -2   -5   -1   -4   -1 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999    4   -4 9999 9999 9999   -5   -5   -5   -4    3    4    5    8   12
+   17   13   23    8   -8 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999    0 9999 9999  -21    1    2   13    9   12   15   16   17   18   19
+   29   38   46   44   33 9999 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   -3    4    5    9   22   18   19   19   17   15   14
+   23   24   24   16   22 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  -13  -14   -5    5   15   16    7   13    2   -1    6
+    7   10    5    8    9 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999   -9    0    7    6   12    9    7   -3  -11    4
+   14    1    4    0    8 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   -2   -2    4    8   14   13   13   14   21
+   19   17   24   23 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999   -4    4   11 9999 9999 9999 9999 9999
+   27   18   18 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999    1 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     2                                                      END OF TEC MAP      
+     2                                                      START OF RMS MAP    
+  2019     4    11     2     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999  842  281   68   52   46   46   46   46   46   46   46   46   45
+   45   46   46   51   67 9999 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999  842 9999 9999 9999   53   47   46   46   46   45   45   45   45
+   45   45   45   56  281 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999 9999  281   52   46   46   45   45   45   45   45
+   45   45   45  112  281 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842 9999 9999  281  113   68   52   52   46   39   39   39   39   45
+   45   45   45   46   84 9999 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   68   68   40   40   46   46   39   39   39   39   39
+   39   45   46   46   57 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  113   52   40   46   46   46   46   40   40   40   40
+   40   46   46   46   68 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999  281   46   46   46   40   46   47   47   47   41
+   47   46   46   52  281 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   85   41   46   47   47   58   69   86   69
+   58   47   47   53 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999   52   41   47 9999 9999 9999 9999 9999
+  282   70   59 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999   53 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     2                                                      END OF RMS MAP      
+     3                                                      START OF TEC MAP    
+  2019     4    11     3     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999  -34  -36  -29  -45  -45  -30  -22  -17  -11  -13  -16  -18  -19  -18  -16
+  -12   -6   -7   -6   -7  -39 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -28  -27 9999 9999 9999   -4   -6   -9  -12  -15  -16  -15  -13   -9
+   -3    3   -4   -5  -22 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   -4   -9 9999 9999 9999  -23   -9   -3   -5   -5   -4   -1    2    6
+   11    9    5   -7    5 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   -2 9999 9999   17   -6   -6    2   11   12   14   15    9   12   14
+   16   17   18   19   30   50 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   13    4    5    7   18   20   21   21   13   13   14
+   22   21   28   22   11 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   -8   -2    7   10   13   23   21   10    9    1   10
+   18   10   12    8    1 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999   -3   -2    1   12   12   17    5   -5   -4    6
+   16    9    3    1   10 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   -4    5    7   15   12    8    7    8   16
+   23   21   13    9 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999   -2    7   13   18 9999 9999 9999   21
+   14   14   12 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999   -6    1 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     3                                                      END OF TEC MAP      
+     3                                                      START OF RMS MAP    
+  2019     4    11     3     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999  842  842  842  842  842  113   57   52   68   57   52   52   51   46   46
+   46   46   46   46   46   57 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999 9999  842   68   57   68   52   45   45   45   45
+   45   45   45   45   67 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999 9999  281   85   57   52   51   45   45   45   45
+   45   45   45   51   56 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842 9999 9999  842  113   85   57   52   46   45   45   45   45   45
+   45   45   45   46   56  281 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   85   68   57   46   46   46   46   45   39   39   45
+   39   40   40   46   67 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   68   41   40   40   46   46   46   40   40   40   40
+   40   40   40   46   57 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999  281   41   46   40   46   46   41   47   41   47
+   47   46   46   57   85 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   52   40   46   47   68  113  282  282  282
+  282   58   47   53 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999   47   41   47  842 9999 9999 9999  842
+  842  282   86 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999   85   69 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     3                                                      END OF RMS MAP      
+     4                                                      START OF TEC MAP    
+  2019     4    11     4     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999  -28  -29  -38  -39  -16  -18  -13  -15   -9  -11  -13  -13  -13  -10   -6
+    0   -1    6    6    4   -7 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -26  -25 9999 9999 9999   -7  -10  -12  -13  -14  -14  -13   -9   -4
+   -4   -2   -2   -2   -5   -9 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   -7  -11 9999 9999 9999    0   -1   -1    1    3   -3   -1    2    0
+   -2   -2   -2   12    7    9 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   -4  -19    6  -12  -14   16   10   13   10   14   16   10   10   12
+    7   13   19   24   36   40 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   10    9    9   11   15   19   22   23   22   21   12
+   23   20   26   24   24 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   -4    4    6    9   12   14    6    4    3    2    3
+    7   14   16   16    9 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999    7    1   -3    1   11   10    0  -10  -11   -4   15
+   14   16   19   28   28 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999    1    5   13   27   -1   -3    3    2   20
+   26   20   23   26 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999    8   10    2   14   18 9999 9999 9999   10
+   20   21   17   22 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999    5   18    6 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     4                                                      END OF TEC MAP      
+     4                                                      START OF RMS MAP    
+  2019     4    11     4     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999  842  842  842  842  281   85   68   57   57   46   46   46   46   46   46
+   45   46   40   40   52  281 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999 9999  281   68   68   52   46   45   45   45   45
+   45   45   45   51   67  842 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999 9999  842  842   68   52   45   45   45   45   45
+   45   45   51   51  281  842 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842  842  842   85   85  113   57   46   45   45   45   45   45
+   45   45   46   51   67  842 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  113   68   85   52   46   46   46   45   45   39   45
+   46   40   40   46   57 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   85   57   46   40   46   46   46   46   46   46   46
+   40   46   46   46   52 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  842   68   46   40   46   46   57   57  281   68   53
+   53   47   46   52   85 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   47   46   46   53  281  842  842  842  842
+  282   69   53   58 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  281   47   47   69  842 9999 9999 9999  842
+  842  282   87   70 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  842   68   58 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     4                                                      END OF RMS MAP      
+     5                                                      START OF TEC MAP    
+  2019     4    11     5     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999  -23  -25  -19  -60  -47  -34  -28  -21  -14   -5   -3   -1    2    6    2
+    7   -3    3    9    5    2 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -23  -32 9999 9999   -7   -9  -18  -17   -8   -6   -4   -1   -4   -5
+    2    1    8   14   19   22 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   -9  -16 9999 9999   -4   -4  -17  -15   -5    6    9    5    3    9
+   17   16   23   20   32   18 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   -7    7   -2   11   11    4    0   -4    8   18   20   16   12   18
+   18   25   23   27   31   28 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -10    2    7    4   -5    4   15   11   13   21   14   15   12   12
+   13   20   18   23   28 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   -6   -7    9   11   13   13    3    2   -3    4    8
+   10   11   17   22   22 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999    7   -1    0    1    2    8   -3  -12   -7    5   12
+   16   17   15   13  -17 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   -7    2   18   15    4  -12   -6    7   15
+   19   20   26   18 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   -2   -3   11   16  -11 9999 9999 9999   15
+   20   29   30   27 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999    6    3  -16 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     5                                                      END OF TEC MAP      
+     5                                                      START OF RMS MAP    
+  2019     4    11     5     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999  842  842  842  842  113   85   57   52   46   46   46   46   40   40   40
+   40   40   40   46   52   68 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999  842  113   68   68   57   51   45   45   39   39
+   39   39   39   46   51  842 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999  842  281   68   68   57   51   45   45   45   45
+   45   45   45   56  842  842 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842  842  842  281   68   68   52   51   51   45   45   39   45
+   45   45   46   46  112  842 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842  281  281   85   52   46   46   46   46   45   45   39   40
+   46   46   46   46   68 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   68   68   46   46   40   46   46   46   46   40   40
+   46   46   46   46   68 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  842  281   46   46   46   46   47   57  113   53   47
+   47   47   52   52   85 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   85   46   46   47  113  842  842  282  113
+  113   69   47   69 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  281   47   47   69  842 9999 9999 9999  842
+  842  114  282  282 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  842   85   59 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     5                                                      END OF RMS MAP      
+     6                                                      START OF TEC MAP    
+  2019     4    11     6     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999    3   -6  -15  -25  -27  -28  -20  -11    0    4    9   13    8    4    7
+    2   -2   -5   -6   -8  -11    1 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   -4   -4 9999 9999  -31  -16   -7   -4    1    5   10    6    3   -1
+   -4    2   -7  -16  -17  -51    6 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -12  -18 9999 9999  -27  -26  -16   -5    0   13   10    8    5    3
+    1    0    7   -2    3   16 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -11   12   -5    1   -6   -5   -2    2    7   19   17    7    6   12
+   12   10    8   14   13   18 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   23   -3   10   -1    6    6   15   19   15   20   10   10   18   18
+   17   15   13   19   17   17 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   -7   -9   -1    1   11   15   12   12    7    9   10
+    1    6    4   11   19   13 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  -11    4   -4   -3   -1    3   11   15   13    8   10
+   -1    5    5    6   17 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999    5  -11    6   14   11   13   12   28   25   25
+   24   31   25   16 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   10    9   15   12    7 9999 9999 9999   36
+   28   41   50   78 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   -6    0   -3 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     6                                                      END OF TEC MAP      
+     6                                                      START OF RMS MAP    
+  2019     4    11     6     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999  842  842  842  842  281   52   52   46   46   46   46   46   46   46   46
+   46   40   40   40   46   68  842 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999  281  281   68   46   52   46   46   45   45   45
+   45   45   45   51   67  842  842 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999  842  842   85   52   46   46   45   45   45   45
+   45   45   45  112  842  842 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842  842  842  281  113   52   46   46   46   45   45   45   39
+   45   45   51   67  842  281 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842  842  281   68   52   46   46   46   46   46   40   39   39
+   46   40   46   57   84  281 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   68   46   46   40   40   46   46   46   40   40   40
+   46   46   52   57   68  281 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  842  281   41   46   46   46   47   53   53   47   53
+   58   57   68   68   85 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999  842   52   46   46   47  113  842  842  282  842
+  842  282  281  113 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  281   52   58   69  282 9999 9999 9999  842
+  842  842  114  282 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  842   58  113 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     6                                                      END OF RMS MAP      
+     7                                                      START OF TEC MAP    
+  2019     4    11     7     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999    1   -7  -15  -23  -22  -21  -18  -14  -10   -6   -2    1   -5   -2    0
+    3    0   -2    4    2    6    2 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   -8   -7 9999 9999   -5   -1   -4   -6   -1   -4    0    4   -1    3
+    0   -1   -2    6  -11    2    4 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -14   -6 9999 9999  -35   -8   -9  -10   -3   11    0    5   10    8
+    6   13   12   19   10    7 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -12    9   -8  -18   -9   -5    1    9   16   23   14   12   11    9
+   15   20   25   16   22   65 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   21   -7    4    1    1    4   17   18   26   17    9    9   16   14
+   19   16   21   12   12   -5 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   -7   -7   -3    5    6    7    0    0    1    9    8
+    5   10   10   20   24  -11 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  -20   -3    3    5    1    5   -1   -8   -8   -6   -6
+    1   -6   -2    5   37    1 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999    4  -12   15   14   13    9   26   42   35   39
+   11   15   23   34   62 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   14   18   10   19   33 9999 9999 9999   69
+   70   87   19   -1 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999    7    8    6 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     7                                                      END OF TEC MAP      
+     7                                                      START OF RMS MAP    
+  2019     4    11     7     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999  842  842  842  842  281   57   57   52   52   52   46   46   46   46   46
+   46   46   46   46   52  281  281 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999  842   85   68   52   52   51   46   45   45   39
+   39   45   45   51  281  842  842 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999  842  842   68   52   46   46   45   45   45   45
+   39   45   45  281  842  842 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842  842  842  281   85  281   52   46   46   45   45   45   39
+   39   45   46   67   84  842 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842  842  281  113   85   52   46   46   46   40   40   40   40
+   40   40   40   46   52  842 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  281   85   52   46   40   40   46   46   46   46   46
+   46   40   40   46   52  842 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  842  113   41   40   40   46   53  281  842  281  281
+   53   53   47   52  113  842 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999  842   53   41   41   47  282  842  842  842  842
+  842   86   58   69  281 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   85   47   47  282  842 9999 9999 9999  842
+  842  842  282  842 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  281   69   69 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     7                                                      END OF RMS MAP      
+     8                                                      START OF TEC MAP    
+  2019     4    11     8     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999    6   -2  -32  -37  -34  -24  -20   -8   -5   -3   -2   -1    0    2    5
+    9    5    3    8    4    0   -5 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   -5   -4 9999 9999  -23  -17  -11   -6   -3    0    2    4    7    4
+    9    8    6    4    2   -2   -8 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -14   -4 9999 9999  -38  -30  -15   -1    4    0   -3    1    6   11
+   17   15    7   -3    2   14 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  -27  -12   -5  -27  -37  -21   -7    8   14   12   11   16   14   19
+   24   21   11    8   14   26 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999   21   10    8   -8  -12   -6    1    8   14   14   14   22   20   17
+   28   32   23    6   13    2 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   -6   -9   -2    5   12   12    5    8    9   16   13
+   12   11   14   11   23    1 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  -25  -24   -5   -4    4    5    0    3    6    6    7
+   -6   -6    5   26   53   46 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999   26    2   -2    1    4    7   27    7    9   -2
+   -1    5    7   26   35 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   11    9   14   25   45 9999 9999 9999  107
+    3   11  -11  -40 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999   14   12   17 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     8                                                      END OF TEC MAP      
+     8                                                      START OF RMS MAP    
+  2019     4    11     8     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999  842  842  842  842  113   57   52   46   52   46   46   46   46   46   46
+   46   46   46   46   46   84  281 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999  842   85   57   52   52   46   46   45   45   39
+   39   39   39   51   67  112  842 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842 9999 9999  842  281   68   52   52   46   45   45   39   39
+   45   56   84  842  842  842 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842  842  842   85   85   57   52   46   45   45   45   39   45
+   45   56   84  112  112  281 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999  842  842  281  281   68   57   52   46   46   46   45   39   45   45
+   51   51   56   57  112  112 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999   85   85   52   46   46   40   46   46   46   40   46
+   46   52   52   57   68  842 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999  842  281   57   52   40   46   47   58   85   47   41
+   47   52   57   57  112  842 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999  842   85   46   41   47  281  842  842  842  842
+  113   86   58   68  281 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  842   68   68  282  842 9999 9999 9999  842
+  842  282  842  281 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999  842  281  282 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     8                                                      END OF RMS MAP      
+     9                                                      START OF TEC MAP    
+  2019     4    11     9     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     9                                                      END OF TEC MAP      
+     9                                                      START OF RMS MAP    
+  2019     4    11     9     0     0                        EPOCH OF CURRENT MAP
+    90.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    85.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    80.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    75.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    70.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    65.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    60.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    55.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    50.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    45.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    40.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    35.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    30.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    25.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    20.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    15.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+    10.0 -60.0  60.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999 9999
+ 9999 9999 9999 9999 9999 9999 9999 9999 9999                                   
+     9                                                      END OF RMS MAP      
