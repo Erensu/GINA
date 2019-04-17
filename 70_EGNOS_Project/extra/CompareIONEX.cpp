@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 													IonexFileNamewPath_Out,
 													matchingIntervall);
 
-	std::cout << " Create of the new differental ionex is finished" << std::endl;
+	std::cout << "Program finished" << std::endl;
 
 	return 0;
 }

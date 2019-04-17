@@ -92,10 +92,30 @@ namespace EGNOS
 			gpstk::IonexStore ionoStoreRef, ionoStoreTarget;
 			gpstk::IonexHeader ionoHeader1, ionoHeader2;
 
-			ionoStoreRef.loadFile(ReferenceIonexFileNamewPath);
+			try
+			{
+				ionoStoreRef.loadFile(ReferenceIonexFileNamewPath);
+				std::cout << "IONEX files is loaded: "<< ReferenceIonexFileNamewPath << std::endl;
+			}
+			catch (const gpstk::FileMissingException &e)
+			{
+				throw domain_error(e.getText());
+			}
+			
 			ionoHeader1 = ionoStoreRef.getHeader(ReferenceIonexFileNamewPath);
 
-			ionoStoreTarget.loadFile(TargetIonexFileNamewPath);
+			try
+			{
+				ionoStoreTarget.loadFile(TargetIonexFileNamewPath);
+				std::cout << "IONEX files is loaded: " << TargetIonexFileNamewPath << std::endl;
+			}
+			catch (const gpstk::FileMissingException &e)
+			{
+				std::cout << std::endl << "ERROR"<< endl;
+				std::cout<< e.getText() << std::endl;
+				return;
+			}
+
 			ionoHeader2 = ionoStoreTarget.getHeader(TargetIonexFileNamewPath);
 
 			gpstk::IonexStream outIonexStoreStream;
