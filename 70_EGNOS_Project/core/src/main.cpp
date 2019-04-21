@@ -11,7 +11,26 @@ using namespace std;
 #include "RTKPOST_Data.hpp"
 #include "RTKPOST_Stream.hpp"
 
+#include "ProtectionLevel_Main.hpp"
+
 int main(int argc, char **argv) {
+
+
+	//ProtectionLevel Calculation
+	//////////////////////////////////////////
+
+	string ephFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
+	string ionexFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
+	string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
+	string RTKPOST_out_gpstk = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GPSTK_EGNOSIono_NoTropo_elev10_out.pos";
+	string RTKPOST_out_navEngine = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GINA_EGNOSIono_NoTropo_elev10_out.pos";
+	string error_log = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\ErrorLog.txt";
+	double elevationMask = 10;
+	EGNOS::ProtectionLevel::IonoType ionoType = EGNOS::ProtectionLevel::IonoType::egnos;
+
+	EGNOS::ProtectionLevel::run_PL(ephFile, ionexFile, EDAS_FileNamewPath, elevationMask, ionoType);
+
+	//////////////////////////////////////////
 
 	// Run RTKPOST parser
 	//////////////////////////////////////////
@@ -92,7 +111,7 @@ int main(int argc, char **argv) {
 	//std::string Output_IonexFileNamewPath_Detailed	= "";//ROOT "\\70_EGNOS_Project\\core\\files\\EMS_136_2019_02_11_15\\Ionex_from_h17_Europe\\ionex_files\\ionex_Europe.19i";
 
 
-	std::string EDAS_FileNamewPath					= ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
+	/*std::string EDAS_FileNamewPath					= ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
     std::string Output_IonexFileNamewPath			= ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
 	std::string Output_IonexFileNamewPathLast		= ""; //ROOT "\\70_EGNOS_Project\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_Last.19i";
 	std::string Output_IonexFileNamewPath_Detailed	= "";
@@ -111,7 +130,7 @@ int main(int argc, char **argv) {
 										firstUpdate,
 										lastUpdate,
 										3600);
-
+	*/
 	//////////////////////////////////////////
 
 	return 0;

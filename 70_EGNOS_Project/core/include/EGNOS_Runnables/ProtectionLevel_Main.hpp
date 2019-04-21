@@ -1,0 +1,71 @@
+#ifndef PROTECTION_LEVEL_MAIN_HPP
+#define PROTECTION_LEVEL_MAIN_HPP
+
+// Primary Math Library
+#include <Eigen/Dense>
+
+// First, let's include Standard Template Library classes
+#include <string>
+#include <vector>
+#include <array>
+
+// Classes for handling observations RINEX files (data)
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
+#include "Rinex3ObsStream.hpp"
+
+// Classes for handling satellite navigation parameters RINEX
+// files (ephemerides)
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavStream.hpp"
+
+// Classes for handling RINEX files with meteorological parameters
+#include "RinexMetBase.hpp"
+#include "RinexMetData.hpp"
+#include "RinexMetHeader.hpp"
+#include "RinexMetStream.hpp"
+
+// Class for handling tropospheric model
+#include "GGTropModel.hpp"
+#include "SaasTropModel.hpp"
+#include "NeillTropModel.hpp"
+
+// Class for storing "broadcast-type" ephemerides
+#include "GPSEphemerisStore.hpp"
+#include "GloEphemerisStore.hpp"
+#include "GalEphemerisStore.hpp"
+
+// Class for handling RAIM
+#include "PRSolution2.hpp"
+
+// Class defining GPS system constants
+#include "GNSSconstants.hpp"
+
+// EGNOS Iono Model
+#include "IonoCorrection.hpp"
+
+// RTKPOS interface
+#include "RTKPOST_Data.hpp"
+
+// Protection Level Engine
+#include "ProtectionLevelEngine.hpp"
+
+// GPSTK Iono models
+#include <ComputeIonoModel.hpp>
+
+namespace EGNOS {
+	namespace ProtectionLevel {
+
+		typedef enum
+		{
+			egnos = 0,
+			ionex = 1,
+			zero
+		}IonoType;
+
+		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, double elevationMask, IonoType ionoType);
+	};
+};
+
+#endif

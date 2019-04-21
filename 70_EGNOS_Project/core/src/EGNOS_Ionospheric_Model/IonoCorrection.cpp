@@ -2511,6 +2511,15 @@ namespace EGNOS {
 		return corr;
 	}
 
+	std::vector<gpstk::CommonTime> EGNOSIonoCorrectionModel::getFirstandLastEpoch(void) {
+
+		std::vector<gpstk::CommonTime> e;
+		e.push_back(this->getFirstEpoch());
+		e.push_back(this->getLastEpoch());
+
+		return e;
+	}
+
 	gpstk::CommonTime EGNOSIonoCorrectionModel::getFirstEpoch(void) {
 		std::vector<gpstk::CommonTime> availableEpochs = this->ptrIonoMapStore->getEpochTimes();
 
@@ -2581,6 +2590,14 @@ namespace EGNOS {
 
 	}
 
+	std::vector<gpstk::CommonTime> IonexModel::getFirstandLastEpoch(void) {
+	
+		std::vector<gpstk::CommonTime> e;
+		e.push_back(this->ionoStore.getInitialTime());
+		e.push_back(this->ionoStore.getFinalTime());
+
+		return e;
+	}
 
 #pragma endregion
 };

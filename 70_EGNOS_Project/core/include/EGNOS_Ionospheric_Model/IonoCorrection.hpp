@@ -32,14 +32,14 @@ namespace EGNOS {
 	}EGNOSMapType;
 
 	typedef struct {
-		double rlat;
-		double rlon;
+		double rlat;				// in degree
+		double rlon;				// in degree
 		double rheight;
 	}SlantIonoDelay_RoverPos;
 
 	typedef struct {
-		double azimuthOfSatId;
-		double elevationOfSatId;
+		double azimuthOfSatId;		// in degree
+		double elevationOfSatId;	// in degree
 	}SlantIonoDelay_SatVisibility;
 
 	typedef struct {
@@ -77,8 +77,9 @@ namespace EGNOS {
 	public:
 
 		virtual ~IonoModel() {};
-		virtual IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) = 0;
+		virtual IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) = 0; // elevation and azimuth in degree
 		virtual std::string name(void) = 0;
+		virtual std::vector<gpstk::CommonTime> getFirstandLastEpoch(void) = 0;
 	};
 
 	class ZeroIonoModel: public IonoModel {
@@ -87,6 +88,7 @@ namespace EGNOS {
 		~ZeroIonoModel() {};
 		IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) { IonCorrandVar corr = {0,0};  return corr; };
 		std::string name(void) { return "Zero"; };
+		std::vector<gpstk::CommonTime> getFirstandLastEpoch(void) { std::vector<gpstk::CommonTime> e; return e;}
 	};
 
 	class IonexModel: public IonoModel {
@@ -96,9 +98,10 @@ namespace EGNOS {
 			IonexModel(gpstk::IonexStore &ionoStore);
 			IonexModel(gpstk::IonexStore &ionoStore, double heightOfIonoLayerinMeter);
 			~IonexModel() {};
-			IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth);
+			IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth);	// elevation and azimuth in degree
 			std::string name(void) { return "Ionex model"; };
-			
+			std::vector<gpstk::CommonTime> getFirstandLastEpoch(void);
+
 			void addIonexStore(gpstk::IonexStore ionoStore) { this->ionoStore = ionoStore; };
 
 		private:
@@ -288,8 +291,9 @@ namespace EGNOS {
 		gpstk::CommonTime getFirstEpoch(void);
 		gpstk::CommonTime getLastEpoch(void);
 
-		IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth);
+		IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth); // elevation and azimuth in degree
 		std::string name(void) { return std::string("EGNOS brdc iono modell"); };
+		std::vector<gpstk::CommonTime> getFirstandLastEpoch(void);
 
 		int updateIntervalinSeconds = 0;	// If this is zero, means we add new IGPMap to Store whenever we got an update.
 		bool debugInfo = false;

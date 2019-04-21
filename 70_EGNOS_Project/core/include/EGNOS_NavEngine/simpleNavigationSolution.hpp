@@ -46,7 +46,6 @@ namespace EGNOS {
 		using namespace std;
 		using namespace gpstk;
 
-
 #define NAVENGINE_CONVERGENCE_LIMIT 1E-7
 
 		class SimpleNavSolver

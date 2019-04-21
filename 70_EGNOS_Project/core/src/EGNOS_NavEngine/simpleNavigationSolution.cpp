@@ -449,10 +449,9 @@ namespace EGNOS {
 			double sLon = sin(lon);
 			double cLon = cos(lon);
 
-			ecef2enu <<		-sLat, -cLat*sLon,	cLat*cLon,
-							 cLat, -sLat*sLon,	sLat*cLon,
-							 0,		cLon,		sLon;
-
+			ecef2enu << -sLat, cLat, 0,
+						-cLat*sLon, -sLat*sLon, cLon,
+						cLat*cLon, sLat*cLon, sLon;
 			return ecef2enu;
 		}
 
@@ -462,7 +461,7 @@ namespace EGNOS {
 				gpstk::Position::CoordinateSystem::Cartesian,  
 				NULL, ReferenceFrame::WGS84);
 
-			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(rovllh.geocentricLatitude() * 180 / M_PI, rovllh.longitude() * 180 / M_PI);
+			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(rovllh.geocentricLatitude() * M_PI/ 180, rovllh.longitude() *  M_PI / 180);
 
 			Cov_ecef = DOP_ecef.block(0, 0, 3, 3);
 
