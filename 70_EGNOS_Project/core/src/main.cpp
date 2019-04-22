@@ -12,14 +12,28 @@ using namespace std;
 #include "RTKPOST_Stream.hpp"
 
 #include "ProtectionLevel_Main.hpp"
+#include "ProtectionLevel_Data.hpp"
+#include "ProtectionLevel_Stream.hpp"
 
 int main(int argc, char **argv) {
 
+	//ProtectionLevel Parser
+	//////////////////////////////////////////
+
+	string PL_FilewPath = ROOT "\\70_EGNOS_Project\\core\\files\\ProtectionLevelOutput.pl";
+	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm(PL_FilewPath.c_str());
+	ProtectionLevel_Parser::ProtectionLevel_Data pl_data;
+	ProtectionLevel_Parser::ProtectionLevel_Data pl_data2;
+	pl_strm >> pl_data;
+	pl_strm >> pl_data2;
+
+	std::cout << "Job is finished" << std::endl;
+	//////////////////////////////////////////
 
 	//ProtectionLevel Calculation
 	//////////////////////////////////////////
 
-	string ephFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
+	/*string ephFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
 	string ionexFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
 	string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
 	string RTKPOST_out_gpstk = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GPSTK_EGNOSIono_NoTropo_elev10_out.pos";
@@ -28,7 +42,7 @@ int main(int argc, char **argv) {
 	double elevationMask = 10;
 	EGNOS::ProtectionLevel::IonoType ionoType = EGNOS::ProtectionLevel::IonoType::egnos;
 
-	EGNOS::ProtectionLevel::run_PL(ephFile, ionexFile, EDAS_FileNamewPath, elevationMask, ionoType);
+	EGNOS::ProtectionLevel::run_PL(ephFile, ionexFile, EDAS_FileNamewPath, elevationMask, ionoType);*/
 
 	//////////////////////////////////////////
 

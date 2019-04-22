@@ -1,26 +1,26 @@
 ﻿
-#include "EGNOS_EMS_Stream.hpp"
+#include "ProtectionLevel_Stream.hpp"
 
-namespace EGNOS_EMS_Parser {
-	EGNOS_EMS_Stream::EGNOS_EMS_Stream(){
+namespace ProtectionLevel_Parser {
+	ProtectionLevel_Stream::ProtectionLevel_Stream(){
 		init();
 	}
 
-	EGNOS_EMS_Stream::EGNOS_EMS_Stream(const char* fn, std::ios::openmode mode)
+	ProtectionLevel_Stream::ProtectionLevel_Stream(const char* fn, std::ios::openmode mode)
 		: FFTextStream(fn, mode){
 		init();
 	}
 
-	EGNOS_EMS_Stream::~EGNOS_EMS_Stream(){
+	ProtectionLevel_Stream::~ProtectionLevel_Stream(){
 	}
 
-	void EGNOS_EMS_Stream ::
+	void ProtectionLevel_Stream ::
 		open(const char* fn, std::ios::openmode mode){
 		FFTextStream::open(fn, mode);
 		init();
 	}
 
-	void EGNOS_EMS_Stream ::
+	void ProtectionLevel_Stream ::
 		init(){
 	}
 

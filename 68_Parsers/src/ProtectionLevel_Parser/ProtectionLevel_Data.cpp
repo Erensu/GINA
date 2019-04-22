@@ -1,11 +1,81 @@
-﻿
-#include "ProtectionLevel_Data.hpp"
-
-#define EMS_YEAR_OFFSET 2000
+﻿#include "ProtectionLevel_Data.hpp"
 
 namespace ProtectionLevel_Parser
 {
 	using namespace std;
+
+	const std::string ProtectionLevel_Data::startofdataTag = "START OF DATA";
+	const std::string ProtectionLevel_Data::endOfdataTag = "END OF DATA";
+	const std::string ProtectionLevel_Data::timeofdataTag = "TIME OF DATA";
+	const std::string ProtectionLevel_Data::positionTag = "POSITION";
+	const std::string ProtectionLevel_Data::hplTag = "HPL";
+	const std::string ProtectionLevel_Data::vplTag = "VPL";
+	const std::string ProtectionLevel_Data::elevationTag = "ELEVATION MASK";
+	const std::string ProtectionLevel_Data::typeofcalculationTag = "TYPE OF PL CALCULATION";
+	const std::string ProtectionLevel_Data::probabilitofintegrityTag = "PROBABILITY OF INTEGRITY";
+	const std::string ProtectionLevel_Data::horizontalpositionerrorTag = "HP ERROR";
+	const std::string ProtectionLevel_Data::verticalpositionerrorTag = "VP ERROR";
+	const std::string ProtectionLevel_Data::positionerrorTag = "POSITION ERROR";
+	const std::string ProtectionLevel_Data::horizontalalarmTag = "HORIZONTAL ALARM LIMIT";
+	const std::string ProtectionLevel_Data::verticalalarmTag = "VERTICAL ALARM LIMIT";
+	const std::string ProtectionLevel_Data::alarmTag = "ALARM LIMIT 3D";
+	const std::string ProtectionLevel_Data::startofcovmatrixecefTag = "START OF COV MATRIX ECEF";
+	const std::string ProtectionLevel_Data::endofcovmatrixecefTag = "END OF COV MATRIX ECEF";
+	const std::string ProtectionLevel_Data::startofcovmatrixenuTag = "START OF COV MATRIX ENU";
+	const std::string ProtectionLevel_Data::endofcovmatrixenuTag = "END OF COV MATRIX ENU";
+	const std::string ProtectionLevel_Data::startofusedsatTag = "START OF USED SAT";
+	const std::string ProtectionLevel_Data::endofusedsatTag = "END OF USED SAT";
+	const std::string ProtectionLevel_Data::startofunusedsatTag = "START OF UNUSED SAT";
+	const std::string ProtectionLevel_Data::endofunusedsatTag = "END OF UNUSED SAT";
+
+	void ProtectionLevel_Data::reallyGetRecord(gpstk::FFStream& ffs)
+		throw(exception,
+			gpstk::FFStreamError,
+			gpstk::StringUtils::StringException) {
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		isDataStart = false;
+
+		while (isDataStart == false) {
+			string line;
+			strm.formattedGetLine(line);
+			gpstk::StringUtils::stripTrailing(line);
+			if (hasStartofDataFound(line, ffs) == true) {
+				isDataStart = true;
+				break;
+			}
+		}
+
+		while (isDataStart && !isDataEnd) {
+
+			string line;
+			strm.formattedGetLine(line);
+			gpstk::StringUtils::stripTrailing(line);
+
+			if (line.length() == 0) continue;
+
+			// Parse File
+			if (hasEndofDataFound(line, ffs)) continue;
+			else if (hasTimeofDataFound(line)) continue;
+			else if (hasPositionFound(line)) continue;
+			else if (hasVerticalProtectionLevelFound(line)) continue;
+			else if (hasHorizontalProtectionLevelFound(line)) continue;
+			else if (hasElevationMaskFound(line)) continue;
+			else if (hasTypeOfCalculationFound(line)) continue;
+			else if (hasProbabilityOfIntegrityFound(line)) continue;
+			else if (hasHorizontalErrorFound(line)) continue;
+			else if (hasVerticalErrorFound(line)) continue;
+			else if (hasPositionErrorFound(line)) continue;
+			else if (hasHorizontalAlarmLimitFound(line)) continue;
+			else if (hasVerticalAlarmLimitFound(line)) continue;
+			else if (hasAlarmLimitFound(line)) continue;
+			else if (hasCovEcefMatrixFound(line, ffs)) continue;
+			else if (hasCovEnuMatrixFound(line, ffs)) continue;
+			else if (hasUsedSatsFound(line, ffs)) continue;
+			else if (hasUnusedSatsFound(line, ffs)) continue;
+			else continue;
+		}
+	}
 
 	void ProtectionLevel_Data::reallyPutRecord(gpstk::FFStream& ffs) const
 		throw(std::exception, gpstk::FFStreamError,
@@ -13,94 +83,852 @@ namespace ProtectionLevel_Parser
 
 		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
 
-		strm << this->svId << " ";
-
-		gpstk::CivilTime civTime = this->messageTime;
-		strm << this->int2string(civTime.year - EMS_YEAR_OFFSET) << " ";
+		gpstk::CivilTime civTime = this->dataTime;
+		/*strm << this->int2string(civTime.year - EMS_YEAR_OFFSET) << " ";
 		strm << this->int2string(civTime.month) << " ";
 		strm << this->int2string(civTime.day) << " ";
 		strm << this->int2string(civTime.hour) << " ";
 		strm << this->int2string(civTime.minute) << " ";
 		strm << this->int2string(civTime.second) << " ";
 		strm << this->messageId << " ";
-		strm << this->bitset2hexstring();
+		strm << this->bitset2hexstring();*/
 
 		strm << endl;
 		strm.lineNumber++;
 	}
 
-	std::string ProtectionLevel_Data::bitset2hexstring(void) const {
-
-		string temp = this->message.to_string();
-		string bin = this->reverseStr(temp);
-		string hex;
-		for (size_t i = 0; i <= bin.length()-4; i+=4)
-		{
-			hex += this->getHexCharacter(bin.substr(i, 4));
-		}
-
-		return hex;
-	}
-
-	std::string ProtectionLevel_Data::int2string(unsigned int number) const {
-		std::string s = std::to_string(number);
-
-		if (number < 10) {
-			return "0" + s;
-		}
-		else if (number >= 10 && number < 100 ){
-			return s;
-		}
-		else{
-			throw gpstk::StringUtils::StringException(" The date number had 3 digits. Maximum allowable digit number is 2.");
-		}
-	}
-
-	void ProtectionLevel_Data::reallyGetRecord(gpstk::FFStream& ffs)
-		throw(std::exception, gpstk::FFStreamError,
-			gpstk::StringUtils::StringException) {
+	/*Read methods*/
+	bool ProtectionLevel_Data::hasStartofDataFound(std::string& line, gpstk::FFStream& ffs) {
 
 		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
-		this->strm = &strm;
+		bool rtnv = false;
 
-		this->reset();
+		if (line.find(startofdataTag) != string::npos){
 
-		std::string line;
-		strm.formattedGetLine(line, true);
-		gpstk::StringUtils::stripTrailing(line);
-		parseLine(line);
-		
-		return;
+			rtnv = true;
+		}
+
+		return rtnv;
 	}
 
-	double ProtectionLevel_Data::getGPSWeek(void) {
-		// Set common time
-		gpstk::CommonTime temp(messageTime);
-		gpstk::GPSWeekSecond GPSTime(temp);
-		return GPSTime.getWeek();
-	}
-
-	double ProtectionLevel_Data::getGPSToW(void) {
-		gpstk::CommonTime temp(messageTime);
-		gpstk::GPSWeekSecond GPSTime(temp);
-		return GPSTime.getSOW();
-	}
-
-	void ProtectionLevel_Data::reset(void) {
-
-		messageTime.reset();
-		message.reset();
-		messageId = 0;
-		svId = 0;
-	}
 	
+
+	bool ProtectionLevel_Data::hasPositionFound(std::string& line) {
+
+		if (line.find(positionTag) != string::npos) {
+
+			if (line.length() == positionTag.length()) {
+				return false;
+			}
+
+			std::string posString;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				posString = line.substr(positionTag.length() + 1, index - positionTag.length() - 1);
+			}
+			else {
+				posString = line.substr(positionTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(posString, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(posString, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(posString);
+			string lat, lon, height;
+
+			ss >> lat >> lon >> height;
+
+			if (lat.empty() || lon.empty() || height.empty()) {
+				return false;
+			}
+
+			posData.setGeodetic(stod(lat), stod(lon), stod(height));
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasVerticalProtectionLevelFound(std::string& line) {
+
+		if (line.find(vplTag) != string::npos) {
+
+			if (line.length() == vplTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(vplTag.length() + 1, index - vplTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(vplTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->VPL = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasHorizontalProtectionLevelFound(std::string& line) {
+
+		if (line.find(hplTag) != string::npos) {
+
+			if (line.length() == hplTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(hplTag.length() + 1, index - hplTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(hplTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->HPL = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasElevationMaskFound(std::string& line) {
+
+		if (line.find(elevationTag) != string::npos) {
+
+			if (line.length() == elevationTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(elevationTag.length() + 1, index - elevationTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(elevationTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->elevationMask = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasTypeOfCalculationFound(std::string& line) {
+
+		if (line.find(typeofcalculationTag) != string::npos) {
+
+			if (line.length() == typeofcalculationTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(typeofcalculationTag.length() + 1, index - typeofcalculationTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(typeofcalculationTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->typeOfCalcuation = dataStr;
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasProbabilityOfIntegrityFound(std::string& line) {
+
+		if (line.find(probabilitofintegrityTag) != string::npos) {
+
+			if (line.length() == probabilitofintegrityTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(probabilitofintegrityTag.length() + 1, index - probabilitofintegrityTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(probabilitofintegrityTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->probabilityOfIntegrity = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasHorizontalErrorFound(std::string& line) {
+
+		if (line.find(horizontalpositionerrorTag) != string::npos) {
+
+			if (line.length() == horizontalpositionerrorTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(horizontalpositionerrorTag.length() + 1, index - horizontalpositionerrorTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(horizontalpositionerrorTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->horizontalPosError = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasVerticalErrorFound(std::string& line) {
+
+		if (line.find(verticalpositionerrorTag) != string::npos) {
+
+			if (line.length() == verticalpositionerrorTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(verticalpositionerrorTag.length() + 1, index - verticalpositionerrorTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(verticalpositionerrorTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->verticalPosError = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasPositionErrorFound(std::string& line) {
+
+		if (line.find(positionerrorTag) != string::npos) {
+
+			if (line.length() == positionerrorTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(positionerrorTag.length() + 1, index - positionerrorTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(positionerrorTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->posError = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasHorizontalAlarmLimitFound(std::string& line) {
+
+		if (line.find(horizontalalarmTag) != string::npos) {
+
+			if (line.length() == horizontalalarmTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(horizontalalarmTag.length() + 1, index - horizontalalarmTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(horizontalalarmTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->HorizontalAlarmLimit = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasVerticalAlarmLimitFound(std::string& line) {
+
+		if (line.find(verticalalarmTag) != string::npos) {
+
+			if (line.length() == verticalalarmTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(verticalalarmTag.length() + 1, index - verticalalarmTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(verticalalarmTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->VerticalAlarmLimit = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasAlarmLimitFound(std::string& line) {
+
+		if (line.find(alarmTag) != string::npos) {
+
+			if (line.length() == alarmTag.length()) {
+				return false;
+			}
+
+			std::string infoStr;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				infoStr = line.substr(alarmTag.length() + 1, index - alarmTag.length() - 1);
+			}
+			else {
+				infoStr = line.substr(alarmTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
+
+
+			std::stringstream   ss(infoStr);
+			string dataStr;
+
+			ss >> dataStr;
+
+			if (dataStr.empty()) {
+				return false;
+			}
+
+			this->AlarmLimit = stod(dataStr);
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasCovEcefMatrixFound(std::string& line, gpstk::FFStream& ffs) {
+
+		if (line.find(startofcovmatrixecefTag) != string::npos) {
+
+			ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+			string line1;
+			strm.formattedGetLine(line1);
+			gpstk::StringUtils::stripTrailing(line1);
+
+			if (line1.find(endofcovmatrixecefTag) != string::npos) {
+				strm.lineNumber = strm.lineNumber - 1;
+				return false;
+			}
+			string line2;
+			strm.formattedGetLine(line2);
+			gpstk::StringUtils::stripTrailing(line2);
+
+			if (line2.find(endofcovmatrixecefTag) != string::npos) {
+				strm.lineNumber = strm.lineNumber - 2;
+				return false;
+			}
+
+			string line3;
+			strm.formattedGetLine(line3);
+			gpstk::StringUtils::stripTrailing(line3);
+
+			if (line3.find(endofcovmatrixecefTag) != string::npos) {
+				strm.lineNumber = strm.lineNumber - 3;
+				return false;
+			}
+
+			string line4;
+			strm.formattedGetLine(line4);
+			gpstk::StringUtils::stripTrailing(line4);
+
+			if (line4.find(endofcovmatrixecefTag) == string::npos) {
+				strm.lineNumber = strm.lineNumber - 4;
+				return false;
+			}
+
+			std::string infoStr = line1 + " " + line2 + " " + line3;
+			std::stringstream   ss(infoStr);
+
+			string dataStr1, dataStr2, dataStr3, dataStr4, dataStr5, dataStr6, dataStr7, dataStr8, dataStr9, dataStr_this_shall_be_empty;
+				
+
+			ss >> dataStr1 >> dataStr2 >> dataStr3 >> dataStr4 >> dataStr5 >> dataStr6 >> dataStr7 >> dataStr8 >> dataStr9 >> dataStr_this_shall_be_empty;
+
+			if (dataStr1.empty() || dataStr9.empty() || dataStr_this_shall_be_empty.empty() == false) {
+				strm.lineNumber = strm.lineNumber - 4;
+				return false;
+			}
+			Eigen::MatrixXd Covariance_ecef_local = Eigen::MatrixXd(3, 3);
+			Covariance_ecef_local <<	stod(dataStr1), stod(dataStr2), stod(dataStr3),
+										stod(dataStr4), stod(dataStr5), stod(dataStr6),
+										stod(dataStr7), stod(dataStr8), stod(dataStr9);
+			
+			this->Covariance_ecef = Covariance_ecef_local;
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasCovEnuMatrixFound(std::string& line, gpstk::FFStream& ffs) {
+
+		if (line.find(startofcovmatrixenuTag) != string::npos) {
+
+			ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+			string line1;
+			strm.formattedGetLine(line1);
+			gpstk::StringUtils::stripTrailing(line1);
+
+			if (line1.find(endofcovmatrixenuTag) != string::npos) {
+				strm.lineNumber = strm.lineNumber - 1;
+				return false;
+			}
+			string line2;
+			strm.formattedGetLine(line2);
+			gpstk::StringUtils::stripTrailing(line2);
+
+			if (line2.find(endofcovmatrixenuTag) != string::npos) {
+				strm.lineNumber = strm.lineNumber - 2;
+				return false;
+			}
+
+			string line3;
+			strm.formattedGetLine(line3);
+			gpstk::StringUtils::stripTrailing(line3);
+
+			if (line3.find(endofcovmatrixenuTag) != string::npos) {
+				strm.lineNumber = strm.lineNumber - 3;
+				return false;
+			}
+
+			string line4;
+			strm.formattedGetLine(line4);
+			gpstk::StringUtils::stripTrailing(line4);
+
+			if (line4.find(endofcovmatrixenuTag) == string::npos) {
+				strm.lineNumber = strm.lineNumber - 4;
+				return false;
+			}
+
+			std::string infoStr = line1 + " " + line2 + " " + line3;
+			std::stringstream   ss(infoStr);
+
+			string dataStr1, dataStr2, dataStr3, dataStr4, dataStr5, dataStr6, dataStr7, dataStr8, dataStr9, dataStr_this_shall_be_empty;
+
+
+			ss >> dataStr1 >> dataStr2 >> dataStr3 >> dataStr4 >> dataStr5 >> dataStr6 >> dataStr7 >> dataStr8 >> dataStr9 >> dataStr_this_shall_be_empty;
+
+			if (dataStr1.empty() || dataStr9.empty() || dataStr_this_shall_be_empty.empty() == false) {
+				strm.lineNumber = strm.lineNumber - 4;
+				return false;
+			}
+			Eigen::MatrixXd Covariance_enu_local = Eigen::MatrixXd(3, 3);
+			Covariance_enu_local << stod(dataStr1), stod(dataStr2), stod(dataStr3),
+				stod(dataStr4), stod(dataStr5), stod(dataStr6),
+				stod(dataStr7), stod(dataStr8), stod(dataStr9);
+
+			this->Covariance_enu = Covariance_enu_local;
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasUsedSatsFound(std::string& line, gpstk::FFStream& ffs) {
+
+		if (line.find(startofusedsatTag) != string::npos) {
+
+			int numberOfSatLine = 0;
+			ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+			string lineSatId;
+			while (lineSatId.find(endofusedsatTag) == string::npos || lineSatId.find(endOfdataTag) == string::npos) {
+			
+				strm.formattedGetLine(lineSatId);
+				gpstk::StringUtils::stripTrailing(lineSatId);
+				numberOfSatLine++;
+
+				if (lineSatId.find(endofusedsatTag) != string::npos || lineSatId.find(endOfdataTag) != string::npos) {
+					break;
+				}
+
+				std::stringstream   ss(lineSatId);
+
+				string satSysStr, satIdStr;
+
+				ss >> satSysStr >> satIdStr;
+				if (satSysStr.empty() || satIdStr.empty()) {
+					strm.lineNumber = strm.lineNumber - numberOfSatLine;
+					return false;
+				}
+
+				gpstk::SatID satId;
+				switch (stoi(satSysStr)){
+				case 0:
+					satId.system = gpstk::SatID::SatelliteSystem::systemGPS;
+					break;
+				case 2:
+					satId.system = gpstk::SatID::SatelliteSystem::systemGalileo;
+					break;
+				case 6:
+					satId.system = gpstk::SatID::SatelliteSystem::systemGlonass;
+					break;
+				default:
+					satId.system = gpstk::SatID::SatelliteSystem::systemUnknown;
+					break;
+				}
+
+				satId.id = stoi(satIdStr);
+				this->includedSatIds.push_back(satId);
+
+			}
+			
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasUnusedSatsFound(std::string& line, gpstk::FFStream& ffs) {
+
+		if (line.find(startofunusedsatTag) != string::npos) {
+
+			int numberOfSatLine = 0;
+			ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+			string lineSatId;
+			while (lineSatId.find(endofunusedsatTag) == string::npos || lineSatId.find(endOfdataTag) == string::npos) {
+
+				strm.formattedGetLine(lineSatId);
+				gpstk::StringUtils::stripTrailing(lineSatId);
+				numberOfSatLine++;
+
+				if (lineSatId.find(endofunusedsatTag) != string::npos || lineSatId.find(endOfdataTag) != string::npos) {
+					break;
+				}
+
+				std::stringstream   ss(lineSatId);
+
+				string satSysStr, satIdStr;
+
+				ss >> satSysStr >> satIdStr;
+				if (satSysStr.empty() || satIdStr.empty()) {
+					strm.lineNumber = strm.lineNumber - numberOfSatLine;
+					return false;
+				}
+
+				gpstk::SatID satId;
+				switch (stoi(satSysStr)) {
+				case 0:
+					satId.system = gpstk::SatID::SatelliteSystem::systemGPS;
+					break;
+				case 2:
+					satId.system = gpstk::SatID::SatelliteSystem::systemGalileo;
+					break;
+				case 6:
+					satId.system = gpstk::SatID::SatelliteSystem::systemGlonass;
+					break;
+				default:
+					satId.system = gpstk::SatID::SatelliteSystem::systemUnknown;
+					break;
+				}
+
+				satId.id = stoi(satIdStr);
+				this->excludedSatIds.push_back(satId);
+
+			}
+
+			return true;
+		}
+
+		else {
+			return false;
+		}
+
+	}
+
+	bool ProtectionLevel_Data::hasEndofDataFound(std::string& line, gpstk::FFStream& ffs) {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (line == endOfdataTag) {
+			isDataEnd = true;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	bool ProtectionLevel_Data::hasTimeofDataFound(std::string& line) {
+		if (line.find(timeofdataTag) != std::string::npos) {
+
+			std::string timeString;
+
+			std::size_t index = line.find("#");
+			if (index != string::npos) {
+				timeString = line.substr(timeofdataTag.length() + 1, index - timeofdataTag.length() - 1);
+			}
+			else {
+				timeString = line.substr(timeofdataTag.length() + 1, -1);
+			}
+
+			gpstk::StringUtils::stripTrailing(timeString, std::string(1, ' '), std::string::npos);
+			gpstk::StringUtils::stripTrailing(timeString, std::string(1, '\t'), std::string::npos);
+
+			std::stringstream   ss(timeString);
+			std::string satId, year, month, day, hour, minute, second;
+
+			ss >> year >> month >> day >> hour >> minute >> second;
+
+			gpstk::CivilTime civTime;
+			civTime.year = std::stoi(year, nullptr);
+			civTime.month = std::stoi(month, nullptr);
+			civTime.day = std::stoi(day, nullptr);
+			civTime.hour = std::stoi(hour, nullptr);
+			civTime.minute = std::stoi(minute, nullptr);
+			civTime.second = std::stod(second, nullptr);
+
+			civTime.setTimeSystem(gpstk::TimeSystem::GPS);
+			gpstk::CommonTime commonTimefromCivTime(civTime);
+			this->dataTime = commonTimefromCivTime;
+
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	void ProtectionLevel_Data::parseLine(std::string& currentLine)
 		throw(gpstk::StringUtils::StringException, gpstk::FFStreamError)
 	{
 		try
 		{
 			
-			std::stringstream   ss(currentLine);
+			/*std::stringstream   ss(currentLine);
 			string satId, year, month, day, hour, minute, second, msgId, hex_message;
 				
 			ss >> satId >> year >> month >> day >> hour >> minute >> second >> msgId >> std::hex >> hex_message;
@@ -135,7 +963,7 @@ namespace ProtectionLevel_Parser
 			}
 
 			civTime.setTimeSystem(gpstk::TimeSystem::GPS);
-			this->messageTime = civTime;
+			this->messageTime = civTime;*/
 			
 		}
 		catch (std::exception &e)
@@ -146,84 +974,4 @@ namespace ProtectionLevel_Parser
 		}
 	}
 
-
-
-	std::string ProtectionLevel_Data::HexCharToBin(char c) {
-		switch (c) {
-		case '0': return "0000";
-		case '1': return "0001";
-		case '2': return "0010";
-		case '3': return "0011";
-		case '4': return "0100";
-		case '5': return "0101";
-		case '6': return "0110";
-		case '7': return "0111";
-		case '8': return "1000";
-		case '9': return "1001";
-		case 'A': return "1010";
-		case 'B': return "1011";
-		case 'C': return "1100";
-		case 'D': return "1101";
-		case 'E': return "1110";
-		case 'F': return "1111";
-		}
-	}
-
-	char ProtectionLevel_Data::getHexCharacter(std::string str) const
-	{
-		if (str.compare("1111") == 0) return 'F';
-		else if (str.compare("1110") == 0) return 'E';
-		else if (str.compare("1101") == 0) return 'D';
-		else if (str.compare("1100") == 0) return 'C';
-		else if (str.compare("1011") == 0) return 'B';
-		else if (str.compare("1010") == 0) return 'A';
-		else if (str.compare("1001") == 0) return '9';
-		else if (str.compare("1000") == 0) return '8';
-		else if (str.compare("0111") == 0) return '7';
-		else if (str.compare("0110") == 0) return '6';
-		else if (str.compare("0101") == 0) return '5';
-		else if (str.compare("0100") == 0) return '4';
-		else if (str.compare("0011") == 0) return '3';
-		else if (str.compare("0010") == 0) return '2';
-		else if (str.compare("0001") == 0) return '1';
-		else if (str.compare("0000") == 0) return '0';
-		else if (str.compare("111") == 0) return '7';
-		else if (str.compare("110") == 0) return '6';
-		else if (str.compare("101") == 0) return '5';
-		else if (str.compare("100") == 0) return '4';
-		else if (str.compare("011") == 0) return '3';
-		else if (str.compare("010") == 0) return '2';
-		else if (str.compare("001") == 0) return '1';
-		else if (str.compare("000") == 0) return '0';
-		else if (str.compare("11") == 0) return '3';
-		else if (str.compare("10") == 0) return '2';
-		else if (str.compare("01") == 0) return '1';
-		else if (str.compare("00") == 0) return '0';
-		else if (str.compare("1") == 0) return '1';
-		else if (str.compare("0") == 0) return '0';
-	}
-
-
-	std::string ProtectionLevel_Data::HexStrToBin(const std::string & hs) {
-		std::string bin;
-		for (auto c : hs) {
-			bin += this->HexCharToBin(c);
-		}
-		return bin;
-	}
-
-	std::string ProtectionLevel_Data::reverseStr(std::string& str) const
-	{
-		std::string str_out;
-		int n = str.length();
-
-		// Swap character starting from two 
-		// corners 
-		for (int i = 0; i < n / 2; i++)
-			std::swap(str[i], str[n - i - 1]);
-
-		str_out = str;
-
-		return str_out;
-	}
 }

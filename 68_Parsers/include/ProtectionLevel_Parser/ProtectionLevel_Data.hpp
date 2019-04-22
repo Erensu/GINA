@@ -1,6 +1,9 @@
 ﻿#ifndef PROTECTION_LEVEL_DATA_HPP
 #define PROTECTION_LEVEL_DATA_HPP
 
+// Primary Math Library
+#include <Eigen/Dense>
+
 #include <bitset>
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"
@@ -10,6 +13,7 @@
 
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
+#include "Position.hpp"
 
 namespace ProtectionLevel_Parser
 {
@@ -58,26 +62,76 @@ namespace ProtectionLevel_Parser
 				gpstk::StringUtils::StringException);
 
 		
-		gpstk::CommonTime messageTime;
+		gpstk::CommonTime dataTime;
+		gpstk::Position posData;
 
-		std::bitset<256> message;
-		unsigned int messageId;
-		unsigned int svId;
-
-		double getGPSWeek(void);
-		double getGPSToW(void);
-
-		void reset(void);
+		//void reset(void);
 		
+		bool isDataEnd = false;
+		bool isDataStart = false;
+		std::string typeOfCalcuation = "Unknown";
+		double HPL = 0;
+		double VPL = 0;
+		double AlarmLimit = 0;
+		double HorizontalAlarmLimit = 0;
+		double VerticalAlarmLimit = 0;
+		double posError = 0;
+		double horizontalPosError = 0;
+		double verticalPosError = 0;
+		double probabilityOfIntegrity = 0;
+		double elevationMask = 0;
+		Eigen::MatrixXd Covariance_ecef;
+		Eigen::MatrixXd Covariance_enu;
+		std::vector<gpstk::SatID> includedSatIds;
+		std::vector<gpstk::SatID> excludedSatIds;
+
+		static const std::string startofdataTag;
+		static const std::string endOfdataTag;
+		static const std::string timeofdataTag;
+		static const std::string positionTag;
+		static const std::string hplTag;
+		static const std::string vplTag;
+		static const std::string elevationTag;
+		static const std::string typeofcalculationTag;
+		static const std::string probabilitofintegrityTag;
+		static const std::string horizontalpositionerrorTag;
+		static const std::string verticalpositionerrorTag;
+		static const std::string positionerrorTag;
+		static const std::string horizontalalarmTag;
+		static const std::string verticalalarmTag;
+		static const std::string alarmTag;
+		static const std::string startofcovmatrixecefTag;
+		static const std::string endofcovmatrixecefTag;
+		static const std::string startofcovmatrixenuTag;
+		static const std::string endofcovmatrixenuTag;
+		static const std::string startofusedsatTag;
+		static const std::string endofusedsatTag;
+		static const std::string startofunusedsatTag;
+		static const std::string endofunusedsatTag;
+
 	private:
 		ProtectionLevel_Stream* strm;
 
-		std::string HexCharToBin(char c);
-		std::string HexStrToBin(const std::string & hs);
-		std::string reverseStr(std::string& str) const;
-		std::string int2string(unsigned int number) const;
-		char getHexCharacter(std::string str) const;
-		std::string bitset2hexstring(void) const;
+		// Read methods
+		bool hasStartofDataFound(std::string&, gpstk::FFStream&);
+		bool hasTimeofDataFound(std::string&);
+		bool hasPositionFound(std::string&);
+		bool hasVerticalProtectionLevelFound(std::string& line);
+		bool hasHorizontalProtectionLevelFound(std::string& line);
+		bool hasElevationMaskFound(std::string& line);
+		bool hasTypeOfCalculationFound(std::string& line);
+		bool hasProbabilityOfIntegrityFound(std::string& line);
+		bool hasHorizontalErrorFound(std::string& line);
+		bool hasVerticalErrorFound(std::string& line);
+		bool hasPositionErrorFound(std::string& line);
+		bool hasHorizontalAlarmLimitFound(std::string& line);
+		bool hasVerticalAlarmLimitFound(std::string& line);
+		bool hasAlarmLimitFound(std::string& line);
+		bool hasCovEcefMatrixFound(std::string& line, gpstk::FFStream& ffs);
+		bool hasCovEnuMatrixFound(std::string& line, gpstk::FFStream& ffs);
+		bool hasUsedSatsFound(std::string& line, gpstk::FFStream& ffs);
+		bool hasUnusedSatsFound(std::string& line, gpstk::FFStream& ffs);
+		bool hasEndofDataFound(std::string&, gpstk::FFStream&);
 
 		void parseLine(std::string& currentLine)
 			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);

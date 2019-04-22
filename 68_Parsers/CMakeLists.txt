@@ -61,16 +61,19 @@ include_directories( ${GINAPARSER_CORE_INC_DIRS} ${GPSTK_CORE_INC_DIRS})
 
 # add the Test
 if(test_GINAParser)
-	add_executable(test_GINAParser ${GINAPARSER_SRC_FILES} ${GINAPARSER_TEST_SRC} ${GINAPARSER_INC_FILES})
+	add_executable(test_GINAParser ${GINAPARSER_SRC_FILES} ${GINAPARSER_TEST_SRC} ${GINAPARSER_INC_FILES} )
 	target_link_libraries (test_GINAParser PUBLIC gpstk)		
 	target_include_directories(test_GINAParser PUBLIC ${GINAPARSER_CORE_INC_DIRS} ${GINAPARSER_TEST_INC_DIRS} ${GINAPARSER_TEST_INC} ${GPSTK_CORE_INC_DIRS})	
 endif()
 
 # GINAPArser library build target
 add_library(GINAParser	STATIC 	${GINAPARSER_SRC_FILES}
-								${GINAPARSER_INC_FILES})
+								${GINAPARSER_INC_FILES}
+								${EIGEN_CORE_INC_DIRS})
 target_link_libraries (GINAParser PUBLIC gpstk)		
-target_include_directories(GINAParser PUBLIC ${GINAPARSER_CORE_INC_DIRS} ${GPSTK_CORE_INC_DIRS})	
+target_include_directories(GINAParser 	PUBLIC ${EIGEN_CORE_INC_DIRS}
+										PUBLIC ${GINAPARSER_CORE_INC_DIRS} 
+										PUBLIC ${GPSTK_CORE_INC_DIRS})	
 
 # add the executable
 #add_executable(GINAParserproj ${GINAPARSER_SRC_FILES} ${GINAPARSER_INC_FILES})
