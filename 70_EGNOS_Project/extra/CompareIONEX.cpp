@@ -3,7 +3,14 @@
 using namespace std;
 int main(int argc, char **argv) {
 
-	if (argc < 3 || argc > 5) {
+	cout << "You have entered " << argc
+		<< " arguments:" << "\n";
+	for (int i = 0; i < argc; ++i)
+		cout << argv[i] << "\n";
+
+	cout << endl;
+
+	if (argc < 4 || argc > 5) {
 		std::cout << " Invalid argument. \n Expected arguments: \n #1 Ionex filename with absolute path -input \n #2 Ionex filename with absolute path - input " << std::endl;
 		std::cout << " #3 Differentiated IONEX filename with absolute path - output " << std::endl;
 		std::cout << " #4 Matching intervall - optional - default value is 60 - input" << std::endl;
@@ -13,11 +20,7 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
-	cout << "You have entered " << argc
-		<< " arguments:" << "\n";
-
-	for (int i = 0; i < argc; ++i)
-		cout << argv[i] << "\n";
+	
 
 	// "C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
 	// "C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
