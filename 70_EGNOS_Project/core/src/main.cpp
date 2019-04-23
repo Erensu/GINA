@@ -20,9 +20,9 @@ int main(int argc, char **argv) {
 	//ProtectionLevel Parser
 	//////////////////////////////////////////
 
-	string PL_FilewPath_In = ROOT "\\70_EGNOS_Project\\core\\files\\ProtectionLevelOutput.pl";
-	string PL_FilewPath_Out = ROOT "\\70_EGNOS_Project\\core\\files\\ProtectionLevelOutput_Out.pl";
-	string PL_FilewPath_Out2 = ROOT "\\70_EGNOS_Project\\core\\files\\ProtectionLevelOutput_Out_Out.pl";
+	string PL_FilewPath_In		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput.pl";
+	string PL_FilewPath_Out		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput_Out.pl";
+	string PL_FilewPath_Out2	= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput_Out_Out.pl";
 
 	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_in(PL_FilewPath_In.c_str(), std::ios::in);
 	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_in2(PL_FilewPath_Out.c_str(), std::ios::in);
