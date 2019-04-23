@@ -17,6 +17,8 @@
 
 namespace ProtectionLevel_Parser
 {
+
+	#define UNVALID_PL_DATA -1
 	/// @ingroup FileHandling
 	//@{
 
@@ -69,17 +71,17 @@ namespace ProtectionLevel_Parser
 		
 		bool isDataEnd = false;
 		bool isDataStart = false;
-		std::string typeOfCalcuation = "Unknown";
-		double HPL = 0;
-		double VPL = 0;
-		double AlarmLimit = 0;
-		double HorizontalAlarmLimit = 0;
-		double VerticalAlarmLimit = 0;
-		double posError = 0;
-		double horizontalPosError = 0;
-		double verticalPosError = 0;
-		double probabilityOfIntegrity = 0;
-		double elevationMask = 0;
+		std::string typeOfCalcuation = "UNKNOWN";
+		double HPL = UNVALID_PL_DATA;
+		double VPL = UNVALID_PL_DATA;
+		double AlarmLimit = UNVALID_PL_DATA;
+		double HorizontalAlarmLimit = UNVALID_PL_DATA;
+		double VerticalAlarmLimit = UNVALID_PL_DATA;
+		double posError = UNVALID_PL_DATA;
+		double horizontalPosError = UNVALID_PL_DATA;
+		double verticalPosError = UNVALID_PL_DATA;
+		double probabilityOfIntegrity = UNVALID_PL_DATA;
+		double elevationMask = UNVALID_PL_DATA;
 		Eigen::MatrixXd Covariance_ecef;
 		Eigen::MatrixXd Covariance_enu;
 		std::vector<gpstk::SatID> includedSatIds;
@@ -133,8 +135,28 @@ namespace ProtectionLevel_Parser
 		bool hasUnusedSatsFound(std::string& line, gpstk::FFStream& ffs);
 		bool hasEndofDataFound(std::string&, gpstk::FFStream&);
 
-		void parseLine(std::string& currentLine)
-			throw(gpstk::StringUtils::StringException, gpstk::FFStreamError);
+		// Write methods
+		bool writeStartofData(gpstk::FFStream& ffs) const;
+		bool writeEndtofData(gpstk::FFStream& ffs) const;
+		bool writeTimeOfData(gpstk::FFStream& ffs) const;
+		bool writePosition(gpstk::FFStream& ffs) const;
+		bool writeHPL(gpstk::FFStream& ffs) const;
+		bool writeVPL(gpstk::FFStream& ffs) const;
+		bool writeElevation(gpstk::FFStream& ffs) const;
+		bool writeTypeOfCalculation(gpstk::FFStream& ffs) const;
+		bool writeProbabilityOfIntegrity(gpstk::FFStream& ffs) const;
+		bool writeHorizontalPositionError(gpstk::FFStream& ffs) const;
+		bool writeVerticalPositionError(gpstk::FFStream& ffs) const;
+		bool writePositionError3D(gpstk::FFStream& ffs) const;
+		bool writeHorizontalAlarmLimit(gpstk::FFStream& ffs) const;
+		bool writeVerticalAlarmLimit(gpstk::FFStream& ffs) const;
+		bool writeAlarmLimit3D(gpstk::FFStream& ffs) const;
+		bool writeCovMatrixEcef(gpstk::FFStream& ffs) const;
+		bool writeCovMatrixEnu(gpstk::FFStream& ffs) const;
+		bool writeUsedSats(gpstk::FFStream& ffs) const;
+		bool writeUnusedSats(gpstk::FFStream& ffs) const;
+
+		void resetData(void);
 
 	};  // class 
 

@@ -36,6 +36,8 @@ namespace ProtectionLevel_Parser
 
 		isDataStart = false;
 
+		resetData();
+		
 		while (isDataStart == false) {
 			string line;
 			strm.formattedGetLine(line);
@@ -83,18 +85,52 @@ namespace ProtectionLevel_Parser
 
 		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
 
-		gpstk::CivilTime civTime = this->dataTime;
-		/*strm << this->int2string(civTime.year - EMS_YEAR_OFFSET) << " ";
-		strm << this->int2string(civTime.month) << " ";
-		strm << this->int2string(civTime.day) << " ";
-		strm << this->int2string(civTime.hour) << " ";
-		strm << this->int2string(civTime.minute) << " ";
-		strm << this->int2string(civTime.second) << " ";
-		strm << this->messageId << " ";
-		strm << this->bitset2hexstring();*/
+		writeStartofData(ffs);
+		writeTimeOfData(ffs);
+		writePosition(ffs);
+		writeHPL(ffs);
+		writeVPL(ffs);
+		writeElevation(ffs);
+		writeTypeOfCalculation(ffs);
+		writeProbabilityOfIntegrity(ffs);
+		writeHorizontalPositionError(ffs);
+		writeVerticalPositionError(ffs);
+		writePositionError3D(ffs);
+		writeHorizontalAlarmLimit(ffs);
+		writeVerticalAlarmLimit(ffs);
+		writeAlarmLimit3D(ffs);
+		writeCovMatrixEcef(ffs);
+		writeCovMatrixEnu(ffs);
+		writeUsedSats(ffs);
+		writeUnusedSats(ffs);
 
-		strm << endl;
-		strm.lineNumber++;
+		writeEndtofData(ffs);
+
+		//strm << endl;
+		//strm.lineNumber++;
+	}
+	void ProtectionLevel_Data::resetData(void){
+	
+		
+
+		isDataEnd = false;
+		isDataStart = false;
+		typeOfCalcuation = "UNKNOWN";
+		HPL = UNVALID_PL_DATA;
+		VPL = UNVALID_PL_DATA;
+		AlarmLimit = UNVALID_PL_DATA;
+		HorizontalAlarmLimit = UNVALID_PL_DATA;
+		VerticalAlarmLimit = UNVALID_PL_DATA;
+		posError = UNVALID_PL_DATA;
+		horizontalPosError = UNVALID_PL_DATA;
+		verticalPosError = UNVALID_PL_DATA;
+		probabilityOfIntegrity = UNVALID_PL_DATA;
+		elevationMask = UNVALID_PL_DATA;
+		Covariance_ecef = Eigen::MatrixXd::Zero(3,3);
+		Covariance_enu = Eigen::MatrixXd::Zero(3, 3);
+		includedSatIds.clear();
+		excludedSatIds.clear();
+
 	}
 
 	/*Read methods*/
@@ -110,8 +146,6 @@ namespace ProtectionLevel_Parser
 
 		return rtnv;
 	}
-
-	
 
 	bool ProtectionLevel_Data::hasPositionFound(std::string& line) {
 
@@ -885,6 +919,10 @@ namespace ProtectionLevel_Parser
 	bool ProtectionLevel_Data::hasTimeofDataFound(std::string& line) {
 		if (line.find(timeofdataTag) != std::string::npos) {
 
+			if (line.length() == timeofdataTag.length()) {
+				return false;
+			}
+
 			std::string timeString;
 
 			std::size_t index = line.find("#");
@@ -922,56 +960,333 @@ namespace ProtectionLevel_Parser
 		}
 	}
 
-	void ProtectionLevel_Data::parseLine(std::string& currentLine)
-		throw(gpstk::StringUtils::StringException, gpstk::FFStreamError)
-	{
-		try
-		{
-			
-			/*std::stringstream   ss(currentLine);
-			string satId, year, month, day, hour, minute, second, msgId, hex_message;
-				
-			ss >> satId >> year >> month >> day >> hour >> minute >> second >> msgId >> std::hex >> hex_message;
 
-			// Set raw message in binary form
-			// We have to reverse the binary string before bc of the properties of bitset.
-			string bin = this->HexStrToBin(hex_message);
-			this->reverseStr(bin);
-			std::bitset<256> message_temp(bin);
-			message = message_temp;
+	/*Write methods*/
+	bool ProtectionLevel_Data::writeStartofData(gpstk::FFStream& ffs) const {
 
-			// Set message Id
-			messageId = stoi(msgId, nullptr);
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+		strm << startofdataTag << endl;
+		strm.lineNumber++;
+		return true;
+	}
+	bool ProtectionLevel_Data::writeEndtofData(gpstk::FFStream& ffs) const {
 
-			// Set SvId
-			svId = stoi(satId, nullptr);
-			
-			// Set time
-			gpstk::CivilTime civTime;
-			civTime.year = EMS_YEAR_OFFSET + stoi(year, nullptr);
-			civTime.month = stoi(month, nullptr);
-			civTime.day = stoi(day, nullptr);
-			civTime.hour = stoi(hour, nullptr);
-			civTime.minute = stoi(minute, nullptr);
-			civTime.second = stoi(second, nullptr);
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+		strm << endOfdataTag << endl;
+		strm.lineNumber++;
+		return true;
+	}
+	
+	bool ProtectionLevel_Data::writeTimeOfData(gpstk::FFStream& ffs) const {
 
-			// EMS is in GPS time
-			if (civTime.hour == 24 && civTime.minute == 0 && civTime.second == 0) {
-				civTime.hour = 23;
-				civTime.minute = 59;  
-				civTime.second = 59.999;
-			}
-
-			civTime.setTimeSystem(gpstk::TimeSystem::GPS);
-			this->messageTime = civTime;*/
-			
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+		gpstk::CivilTime civTimeOfData(this->dataTime);
+		gpstk::CommonTime defaultTime;
+		if (dataTime == defaultTime) {
+			strm << timeofdataTag << std::endl;
 		}
-		catch (std::exception &e)
-		{
-			gpstk::FFStreamError err("std::exception: " +
-				string(e.what()));
-			GPSTK_THROW(err);
+		else {
+			strm << timeofdataTag << " " << civTimeOfData.year << " " << civTimeOfData.month << " " << civTimeOfData.day << " " << civTimeOfData.hour << " " << civTimeOfData.minute << " " << civTimeOfData.second << " " << std::endl;
 		}
+
+		strm.lineNumber++;
+		return true;
 	}
 
+	bool ProtectionLevel_Data::writePosition(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (posData.X() == 0 && posData.Y() == 0 && posData.Z() == 0) {
+			strm << positionTag << endl;
+		}
+		else {
+			strm << positionTag << " " << this->posData.getGeodeticLatitude() << " " << this->posData.getLongitude() << " " << this->posData.getHeight() << " " << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeHPL(gpstk::FFStream& ffs) const {
+
+		
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+		if (HPL == UNVALID_PL_DATA) {
+			strm << hplTag << endl;
+		}
+		else {
+			strm << hplTag << " " << HPL << endl;
+		}
+		
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeVPL(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (VPL == UNVALID_PL_DATA) {
+			strm << vplTag << endl;
+		}
+		else {
+			strm << vplTag << " " << VPL << endl;
+		}
+	
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeElevation(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (elevationMask == UNVALID_PL_DATA) {
+			strm << elevationTag << endl;
+		}
+		else {
+			strm << elevationTag << " " << elevationMask << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeTypeOfCalculation(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (typeOfCalcuation.empty()) {
+			strm << typeofcalculationTag << endl;
+		}
+		else {
+			strm << typeofcalculationTag << " " << typeOfCalcuation << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeProbabilityOfIntegrity(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (probabilityOfIntegrity == UNVALID_PL_DATA) {
+			strm << probabilitofintegrityTag << endl;
+		}
+		else {
+			strm << probabilitofintegrityTag << " " << probabilityOfIntegrity << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeHorizontalPositionError(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (horizontalPosError == UNVALID_PL_DATA) {
+			strm << horizontalpositionerrorTag << endl;
+		}
+		else {
+			strm << horizontalpositionerrorTag << " " << horizontalPosError << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeVerticalPositionError(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (verticalPosError == UNVALID_PL_DATA) {
+			strm << verticalpositionerrorTag << endl;
+		}
+		else {
+			strm << verticalpositionerrorTag << " " << verticalPosError << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writePositionError3D(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (posError == UNVALID_PL_DATA) {
+			strm << positionerrorTag << endl;
+		}
+		else {
+			strm << positionerrorTag << " " << posError << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeHorizontalAlarmLimit(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (HorizontalAlarmLimit == UNVALID_PL_DATA) {
+			strm << horizontalalarmTag << endl;
+		}
+		else {
+			strm << horizontalalarmTag << " " << HorizontalAlarmLimit << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeVerticalAlarmLimit(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (VerticalAlarmLimit == UNVALID_PL_DATA) {
+			strm << verticalalarmTag << endl;
+		}
+		else {
+			strm << verticalalarmTag << " " << VerticalAlarmLimit << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeAlarmLimit3D(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+		if (AlarmLimit == UNVALID_PL_DATA) {
+			strm << alarmTag << endl;
+		}
+		else {
+			strm << alarmTag << " " << AlarmLimit << endl;
+		}
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeCovMatrixEcef(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+	
+		strm << startofcovmatrixecefTag << endl;
+		strm.lineNumber++;
+
+		if (Covariance_ecef.rows() == 3 && Covariance_ecef.cols() == 3 && Covariance_ecef != Eigen::MatrixXd::Zero(3, 3)) {
+			strm.lineNumber++;
+			strm << Covariance_ecef(0, 0) << " " << Covariance_ecef(0, 1) << " " << Covariance_ecef(0, 2) << endl;
+			strm.lineNumber++;
+			strm << Covariance_ecef(1, 0) << " " << Covariance_ecef(1, 1) << " " << Covariance_ecef(1, 2) << endl;
+			strm.lineNumber++;
+			strm << Covariance_ecef(2, 0) << " " << Covariance_ecef(2, 1) << " " << Covariance_ecef(2, 2) << endl;
+			strm.lineNumber++;
+		}
+		
+
+		strm << endofcovmatrixecefTag << endl;
+		strm.lineNumber++;
+
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeCovMatrixEnu(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+
+		strm << startofcovmatrixenuTag << endl;
+		strm.lineNumber++;
+
+		if (Covariance_enu.rows() == 3 && Covariance_enu.cols() == 3 && Covariance_enu != Eigen::MatrixXd::Zero(3, 3)) {
+			strm.lineNumber++;
+			strm << Covariance_enu(0, 0) << " " << Covariance_enu(0, 1) << " " << Covariance_enu(0, 2) << endl;
+			strm.lineNumber++;
+			strm << Covariance_enu(1, 0) << " " << Covariance_enu(1, 1) << " " << Covariance_enu(1, 2) << endl;
+			strm.lineNumber++;
+			strm << Covariance_enu(2, 0) << " " << Covariance_enu(2, 1) << " " << Covariance_enu(2, 2) << endl;
+			strm.lineNumber++;
+		}
+
+		strm << endofcovmatrixenuTag << endl;
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeUsedSats(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+
+		strm << startofusedsatTag << endl;
+		strm.lineNumber++;
+
+		for (int i = 0; i < includedSatIds.size(); i++)	{
+
+			switch (includedSatIds[i].system) {
+			case gpstk::SatID::SatelliteSystem::systemGPS:
+				strm << "0" << " " << includedSatIds[i].id << endl;
+				break;
+			case gpstk::SatID::SatelliteSystem::systemGalileo:
+				strm << "2" << " " << includedSatIds[i].id << endl;
+				break;
+			case gpstk::SatID::SatelliteSystem::systemGlonass:
+				strm << "6" << " " << includedSatIds[i].id << endl;
+				break;
+			default:
+				continue;
+				break;
+			}	
+			strm.lineNumber++;
+		}
+
+		strm << endofusedsatTag << endl;
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	bool ProtectionLevel_Data::writeUnusedSats(gpstk::FFStream& ffs) const {
+
+		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
+
+
+		strm << startofunusedsatTag << endl;
+		strm.lineNumber++;
+
+		for (int i = 0; i < excludedSatIds.size(); i++) {
+
+			switch (excludedSatIds[i].system) {
+			case gpstk::SatID::SatelliteSystem::systemGPS:
+				strm << "0" << " " << excludedSatIds[i].id << endl;
+				break;
+			case gpstk::SatID::SatelliteSystem::systemGalileo:
+				strm << "2" << " " << excludedSatIds[i].id << endl;
+				break;
+			case gpstk::SatID::SatelliteSystem::systemGlonass:
+				strm << "6" << " " << excludedSatIds[i].id << endl;
+				break;
+			default:
+				continue;
+				break;
+			}
+			strm.lineNumber++;
+		}
+
+		strm << endofunusedsatTag << endl;
+
+		strm.lineNumber++;
+		return true;
+	}
+
+	
 }

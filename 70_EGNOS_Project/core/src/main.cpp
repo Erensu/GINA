@@ -20,12 +20,29 @@ int main(int argc, char **argv) {
 	//ProtectionLevel Parser
 	//////////////////////////////////////////
 
-	string PL_FilewPath = ROOT "\\70_EGNOS_Project\\core\\files\\ProtectionLevelOutput.pl";
-	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm(PL_FilewPath.c_str());
+	string PL_FilewPath_In = ROOT "\\70_EGNOS_Project\\core\\files\\ProtectionLevelOutput.pl";
+	string PL_FilewPath_Out = ROOT "\\70_EGNOS_Project\\core\\files\\ProtectionLevelOutput_Out.pl";
+	string PL_FilewPath_Out2 = ROOT "\\70_EGNOS_Project\\core\\files\\ProtectionLevelOutput_Out_Out.pl";
+
+	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_in(PL_FilewPath_In.c_str(), std::ios::in);
+	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_in2(PL_FilewPath_Out.c_str(), std::ios::in);
+	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_out(PL_FilewPath_Out.c_str(), std::ios::out);
+	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_out2(PL_FilewPath_Out2.c_str(), std::ios::out);
+
 	ProtectionLevel_Parser::ProtectionLevel_Data pl_data;
 	ProtectionLevel_Parser::ProtectionLevel_Data pl_data2;
-	pl_strm >> pl_data;
-	pl_strm >> pl_data2;
+
+	pl_strm_in >> pl_data;
+	pl_strm_in >> pl_data2;
+
+	pl_strm_out << pl_data;
+	pl_strm_out << pl_data2;
+
+	pl_strm_in2 >> pl_data;
+	pl_strm_in2 >> pl_data2;
+
+	pl_strm_out2 << pl_data;
+	pl_strm_out2 << pl_data2;
 
 	std::cout << "Job is finished" << std::endl;
 	//////////////////////////////////////////
