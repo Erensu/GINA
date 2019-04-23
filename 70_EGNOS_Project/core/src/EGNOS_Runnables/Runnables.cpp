@@ -178,8 +178,8 @@ namespace EGNOS
 				}
 				
 				if (it_target == ionoStoreTarget.inxMaps.end()) {
-
-					cout << "Times of map not matched" << endl;
+					gpstk::CivilTime unmatchedCivTime(epoch_ref);
+					cout << "Times of map not matched in " << unmatchedCivTime.asString() << endl;
 					continue;
 				}
 				else {
@@ -188,7 +188,8 @@ namespace EGNOS
 				}
 
 				if (abs(epoch_ref - epoch_target) > matchingIntervall) {
-					cout << "Times of map not matched" << endl;
+					gpstk::CivilTime unmatchedCivTime(epoch_ref);
+					cout << "Times of map not matched in " << unmatchedCivTime.asString() << endl;
 					continue;
 				}
 
@@ -563,8 +564,8 @@ namespace EGNOS
 
 				try
 				{
-					TECRMS1 = refreceStore.getIonexValue(epoch, RX, 1);
-					TECRMS2 = targetStore.getIonexValue(epoch, RX, 1);
+					TECRMS1 = refreceStore.getIonexValue(epoch, RX, 4);
+					TECRMS2 = targetStore.getIonexValue(epoch, RX, 4);
 
 					diffTEC = TECRMS1[0] - TECRMS2[0];
 					diffRMS = std::sqrt(TECRMS1[1] * TECRMS1[1] + TECRMS2[1] * TECRMS2[1]);
