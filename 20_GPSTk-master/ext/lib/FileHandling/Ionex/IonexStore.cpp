@@ -434,7 +434,7 @@ namespace gpstk
 			{
 				tecval[0] = tecval[0] + f[imap] * iod.getValue(pos);
 			}
-			catch (gpstk::Exception& e)
+			catch (gpstk::Exception&)
 			{
 				InvalidRequest e("IonexStore::getIonexValue() ... invalid TEC request!");
 				GPSTK_THROW(e);
@@ -452,7 +452,7 @@ namespace gpstk
 			{
 				tecval[1] = tecval[1] + f[imap] * iod.getValue(pos);
 			}
-			catch (gpstk::Exception& e)
+			catch (gpstk::Exception&)
 			{
 				InvalidRequest e("IonexStore::getIonexValue() ... invalid RMS request!");
 				GPSTK_THROW(e);
