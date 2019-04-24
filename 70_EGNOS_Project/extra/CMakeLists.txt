@@ -14,4 +14,10 @@ if( EGNOS_RUNNABLES_COMPARE_IONEX_FILES )
 											PUBLIC GINAParser)
 endif()
 
-											
+		
+if( EGNOS_RUNNABLES_PL_ENGINE )		
+	add_executable(EGNOS_PL_Engine EGNOS_PL_Engine.cpp)
+	target_link_libraries (EGNOS_PL_Engine 	PUBLIC EGNOS
+											PUBLIC gpstk 
+											PUBLIC GINAParser)
+endif()											

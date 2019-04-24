@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 	//ProtectionLevel Parser
 	//////////////////////////////////////////
 
-	string PL_FilewPath_In		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput.pl";
+	/*string PL_FilewPath_In		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput.pl";
 	string PL_FilewPath_Out		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput_Out.pl";
 	string PL_FilewPath_Out2	= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput_Out_Out.pl";
 
@@ -44,22 +44,31 @@ int main(int argc, char **argv) {
 	pl_strm_out2 << pl_data;
 	pl_strm_out2 << pl_data2;
 
-	std::cout << "Job is finished" << std::endl;
+	pl_strm_in.close();
+	pl_strm_out.close();
+	pl_strm_in2.close();
+	pl_strm_out2.close();
+
+	std::cout << "Job is finished" << std::endl;*/
 	//////////////////////////////////////////
 
 	//ProtectionLevel Calculation
 	//////////////////////////////////////////
 
-	/*string ephFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
+	string ephFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
 	string ionexFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
 	string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
-	string RTKPOST_out_gpstk = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GPSTK_EGNOSIono_NoTropo_elev10_out.pos";
-	string RTKPOST_out_navEngine = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\bute0190_GINA_EGNOSIono_NoTropo_elev10_out.pos";
-	string error_log = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\ErrorLog.txt";
+	string PLwPath_out = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136_brdc0190.pl";
 	double elevationMask = 10;
 	EGNOS::ProtectionLevel::IonoType ionoType = EGNOS::ProtectionLevel::IonoType::egnos;
 
-	EGNOS::ProtectionLevel::run_PL(ephFile, ionexFile, EDAS_FileNamewPath, elevationMask, ionoType);*/
+	double latgeodetic = 45;
+	double lon = 15;
+	double height = 0;
+	int intervallBetweenEpochsinSecs = 3600;
+	double probability_of_inner_circle = 0.99;
+
+	EGNOS::ProtectionLevel::run_PL(ephFile, ionexFile, EDAS_FileNamewPath, PLwPath_out, elevationMask, ionoType, latgeodetic, lon, height, intervallBetweenEpochsinSecs, probability_of_inner_circle);
 
 	//////////////////////////////////////////
 

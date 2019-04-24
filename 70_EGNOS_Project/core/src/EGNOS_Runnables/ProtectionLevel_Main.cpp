@@ -6,12 +6,14 @@
 namespace EGNOS {
 	namespace ProtectionLevel {
 
+	
 		static Eigen::MatrixXd createIonoCovMatrix(	gpstk::CommonTime &time, 
 													gpstk::GPSEphemerisStore &bcestore, 
 													vector<gpstk::SatID> &id, 
 													EGNOS::IonoModel &pIonoModel, 
 													gpstk::Position &Rx, 
-													Eigen::VectorXd& corrVector);
+													Eigen::VectorXd& corrVector,
+													std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> &satInfo);
 
 		static std::vector<gpstk::CommonTime> createVectorofEpochforPLCalc(EGNOS::IonoModel &iono, int intervallBetweenEpochsinSecs);
 		
@@ -28,7 +30,9 @@ namespace EGNOS {
 										gpstk::SatID &id,
 										EGNOS::IonoModel &pIonoModel,
 										gpstk::Position Rx, double &corrInMeter,
-										double &varianceInMeter);
+										double &varianceInMeter,
+										double &el, 
+										double &az);
 
 		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, std::string& PLwPath_out, double elevationMask, IonoType ionoType, double latgeodetic, double lon, double height, int intervallBetweenEpochsinSecs_in, double probability_of_inner_circle) {
 
@@ -45,7 +49,6 @@ namespace EGNOS {
 			EGNOS::ZeroIonoModel noIonoModel;
 			EGNOS::IonexModel ionexModel;
 			EGNOS::EGNOSIonoCorrectionModel egnosIonoModel;
-
 			EGNOS::IonoModel *ionoModel_PLEngine = &noIonoModel;
 
 			gpstk::IonexStore ionoStore;
@@ -182,7 +185,8 @@ namespace EGNOS {
 				try
 				{
 					original_prnVec = prnVec;
-					CovMatrix = createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *ionoModel_PLEngine, Rx, corrVector);
+					
+					CovMatrix = createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *ionoModel_PLEngine, Rx, corrVector, plData.satInfo);
 					for (int a = 0; a < original_prnVec.size(); a++){
 
 						std::vector<gpstk::SatID>::iterator SatId_it = std::find(prnVec.begin(), prnVec.end(), original_prnVec[a]);
@@ -228,7 +232,7 @@ namespace EGNOS {
 			exit(0);
 		}
 
-		static Eigen::MatrixXd createIonoCovMatrix(gpstk::CommonTime &time, gpstk::GPSEphemerisStore &bcestore, vector<gpstk::SatID> &id, EGNOS::IonoModel &pIonoModel, gpstk::Position &Rx, Eigen::VectorXd& corrVector) {
+		static Eigen::MatrixXd createIonoCovMatrix(gpstk::CommonTime &time, gpstk::GPSEphemerisStore &bcestore, vector<gpstk::SatID> &id, EGNOS::IonoModel &pIonoModel, gpstk::Position &Rx, Eigen::VectorXd& corrVector, std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> &satInfo) {
 		
 			vector<double> ionoCorrections;
 			vector<double> ionoVariance;
@@ -240,12 +244,37 @@ namespace EGNOS {
 			//applyIonoCorrection(time, bcestore, id, ionoCorrections, pIonoModel, Rx, &tempCorr, &tempVar);
 			for (int i = 0; i < tempId.size(); i++){
 
+				double elevation;
+				double azimuth;
 				try
 				{
-					applyIonoCorrection(time, bcestore, tempId[i], pIonoModel, Rx, tempCorr, tempVar);
+					applyIonoCorrection(time, bcestore, tempId[i], pIonoModel, Rx, tempCorr, tempVar, elevation, azimuth);
 					ionoCorrections.push_back(tempCorr);
 					ionoVariance.push_back(tempVar);
 					id.push_back(tempId[i]);
+
+					ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo info;
+
+					SlantIonoDelay_Input inputData;
+					IonosphericGridPoint igpPP;
+					SlantIonoDelay slantCalculator;
+
+					inputData.RoverPos.rlat = Rx.geodeticLatitude();
+					inputData.RoverPos.rlon = Rx.longitude();
+					inputData.RoverPos.rheight = Rx.height();
+					inputData.SatVisibility.elevationOfSatId = elevation;
+					inputData.SatVisibility.azimuthOfSatId = azimuth;
+
+					(void)slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
+					
+					info.ionoCorr_meter = tempCorr;
+					info.ionoRMS_meter = sqrt(tempVar);
+					info.satId = tempId[i];
+					info.az_deg = elevation;
+					info.el_deg = azimuth;
+					info.ippLat = igpPP.lat;
+					info.ippLon = igpPP.lon;
+					satInfo.push_back(info);
 				}
 				catch (const std::exception& e)
 				{
@@ -333,7 +362,7 @@ namespace EGNOS {
 
 		}
 
-		static void applyIonoCorrection(gpstk::CommonTime &time, gpstk::GPSEphemerisStore &bcestore, gpstk::SatID &id, EGNOS::IonoModel &pIonoModel, gpstk::Position Rx, double &corrInMeter, double &varianceInMeter ) {
+		static void applyIonoCorrection(gpstk::CommonTime &time, gpstk::GPSEphemerisStore &bcestore, gpstk::SatID &id, EGNOS::IonoModel &pIonoModel, gpstk::Position Rx, double &corrInMeter, double &varianceInMeter, double &el, double &az) {
 
 			vector<double> corrAndVariance;
 			gpstk::Xvt SVxvt;
@@ -348,8 +377,8 @@ namespace EGNOS {
 
 			gpstk::Position S(SVxvt);
 
-			double el = Rx.elevationGeodetic(S);
-			double az = Rx.azimuthGeodetic(S);
+			el = Rx.elevationGeodetic(S);
+			az = Rx.azimuthGeodetic(S);
 
 			if (el < 0.0) {
 				throw domain_error("Elevation is negative");
@@ -362,6 +391,10 @@ namespace EGNOS {
 				iCorrVar = pIonoModel.getCorrection(time, Rx, el, az);
 				corrInMeter = iCorrVar.CorrinMeter;
 				varianceInMeter = iCorrVar.Variance;
+			}
+			catch (const gpstk::Exception&)
+			{
+				throw domain_error("Correction calculated has failed.");
 			}
 			catch (const std::exception&)
 			{

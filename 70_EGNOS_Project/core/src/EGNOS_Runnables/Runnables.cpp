@@ -585,10 +585,6 @@ namespace EGNOS
 					valuesTEC(counter) = 999.9;
 					valuesRMS(counter) = 999.9;
 				}
-				catch (...) {
-					valuesTEC(counter) = 999.9;
-					valuesRMS(counter) = 999.9;
-				}
 
 				if (abs(currLon - lon2) < dlon) {
 					currLon = lon1 - dlon;
