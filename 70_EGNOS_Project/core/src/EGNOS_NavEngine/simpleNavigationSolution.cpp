@@ -461,7 +461,7 @@ namespace EGNOS {
 				gpstk::Position::CoordinateSystem::Cartesian,  
 				NULL, ReferenceFrame::WGS84);
 
-			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(rovllh.geocentricLatitude() * M_PI/ 180, rovllh.longitude() *  M_PI / 180);
+			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(rovllh.geodeticLatitude() * M_PI/ 180, rovllh.longitude() *  M_PI / 180);
 
 			Cov_ecef = DOP_ecef.block(0, 0, 3, 3);
 
