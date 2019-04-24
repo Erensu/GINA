@@ -573,10 +573,6 @@ namespace EGNOS
 					{
 						throw domain_error("TEC or RMS value are not available.");
 					}
-					catch (...) 
-					{
-						throw domain_error("TEC or RMS value are not available.");
-					}
 
 					diffTEC = TECRMS1[0] - TECRMS2[0];
 					diffRMS = std::sqrt(TECRMS1[1] * TECRMS1[1] + TECRMS2[1] * TECRMS2[1]);

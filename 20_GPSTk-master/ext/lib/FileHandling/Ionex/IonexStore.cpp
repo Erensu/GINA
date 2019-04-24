@@ -437,7 +437,7 @@ namespace gpstk
 			{
 				tecval[0] = tecval[0] + f[imap] * iod.getValue(pos);
 			}
-			catch (gpstk::InvalidRequest& e)
+			catch (gpstk::Exception& e)
 			{
 				GPSTK_THROW(e);
 			}
@@ -455,7 +455,7 @@ namespace gpstk
 			{
 				tecval[1] = tecval[1] + f[imap] * iod.getValue(pos);
 			}
-			catch (gpstk::InvalidRequest& e)
+			catch (gpstk::Exception& e)
 			{
 				GPSTK_THROW(e);
 			}
