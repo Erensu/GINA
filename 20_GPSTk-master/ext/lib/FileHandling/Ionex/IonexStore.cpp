@@ -434,14 +434,9 @@ namespace gpstk
 			{
 				tecval[0] = tecval[0] + f[imap] * iod.getValue(pos);
 			}
-			catch (gpstk::InvalidRequest& e)
+			catch (gpstk::Exception& e)
 			{
-				std::cout << e.getText() << std::endl;
-				GPSTK_THROW(e);
-			}
-			catch (gpstk::FFStreamError& e)
-			{
-				std::cout << e.getText() << std::endl;
+				InvalidRequest e("IonexStore::getIonexValue() ... invalid TEC request!");
 				GPSTK_THROW(e);
 			}
 
@@ -457,16 +452,12 @@ namespace gpstk
 			{
 				tecval[1] = tecval[1] + f[imap] * iod.getValue(pos);
 			}
-			catch (gpstk::InvalidRequest& e)
+			catch (gpstk::Exception& e)
 			{
-				std::cout << e.getText() << std::endl;
+				InvalidRequest e("IonexStore::getIonexValue() ... invalid RMS request!");
 				GPSTK_THROW(e);
 			}
-			catch (gpstk::FFStreamError& e)
-			{
-				std::cout << e.getText() << std::endl;
-				GPSTK_THROW(e);
-			}
+		
          }
 
       }  // End of 'for(int imap = 0; imap < nmap; imap++)...'
