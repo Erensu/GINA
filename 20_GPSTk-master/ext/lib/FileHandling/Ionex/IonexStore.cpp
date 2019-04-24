@@ -434,12 +434,16 @@ namespace gpstk
 			{
 				tecval[0] = tecval[0] + f[imap] * iod.getValue(pos);
 			}
-			catch (gpstk::Exception& e)
+			catch (gpstk::InvalidRequest& e)
 			{
 				std::cout << e.getText() << std::endl;
 				GPSTK_THROW(e);
 			}
-           
+			catch (gpstk::FFStreamError& e)
+			{
+				std::cout << e.getText() << std::endl;
+				GPSTK_THROW(e);
+			}
 
          }
 
@@ -453,7 +457,12 @@ namespace gpstk
 			{
 				tecval[1] = tecval[1] + f[imap] * iod.getValue(pos);
 			}
-			catch (gpstk::Exception& e)
+			catch (gpstk::InvalidRequest& e)
+			{
+				std::cout << e.getText() << std::endl;
+				GPSTK_THROW(e);
+			}
+			catch (gpstk::FFStreamError& e)
 			{
 				std::cout << e.getText() << std::endl;
 				GPSTK_THROW(e);
