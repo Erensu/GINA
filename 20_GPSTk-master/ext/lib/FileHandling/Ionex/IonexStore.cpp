@@ -302,11 +302,8 @@ namespace gpstk
       Position pos(RX);
       if ( pos.getSystemName() != "Geocentric" )
       {
-
          InvalidRequest e("Position object is not in GEOCENTRIC coordinates");
-
          GPSTK_THROW(e);
-
       }
 
          //let's define the number of maps to be considered
@@ -439,6 +436,7 @@ namespace gpstk
 			}
 			catch (gpstk::Exception& e)
 			{
+				std::cout << e.getText() << std::endl;
 				GPSTK_THROW(e);
 			}
            
@@ -457,6 +455,7 @@ namespace gpstk
 			}
 			catch (gpstk::Exception& e)
 			{
+				std::cout << e.getText() << std::endl;
 				GPSTK_THROW(e);
 			}
          }
