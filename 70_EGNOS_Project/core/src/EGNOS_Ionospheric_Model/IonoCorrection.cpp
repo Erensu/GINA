@@ -2413,7 +2413,7 @@ namespace EGNOS {
 		SlantIonoDelay_Input inputData;
 		IonosphericGridPoint igpPP;
 
-		inputData.RoverPos.rlat = RX.geocentricLatitude();
+		inputData.RoverPos.rlat = RX.geodeticLatitude();
 		inputData.RoverPos.rlon = RX.longitude();
 		inputData.RoverPos.rheight = RX.height();
 		inputData.SatVisibility.elevationOfSatId = elevation;
@@ -2507,7 +2507,7 @@ namespace EGNOS {
 	
 		// Update with slant factor
 		corr.CorrinMeter = F * corr.CorrinMeter;
-		corr.Variance = F * corr.Variance;
+		corr.Variance = F * F * corr.Variance;
 		return corr;
 	}
 
@@ -2554,7 +2554,7 @@ namespace EGNOS {
 		SlantIonoDelay_Input inputData;
 		IonosphericGridPoint igpPP;
 
-		inputData.RoverPos.rlat = RX.geocentricLatitude();
+		inputData.RoverPos.rlat = RX.geodeticLatitude();
 		inputData.RoverPos.rlon = RX.longitude();
 		inputData.RoverPos.rheight = RX.height();
 		inputData.SatVisibility.elevationOfSatId = elevation;
@@ -2579,12 +2579,28 @@ namespace EGNOS {
 							NULL, gpstk::ReferenceFrame::WGS84);
 
 		PP.transformTo(gpstk::Position::CoordinateSystem::Geocentric);
-		gpstk::Triple tecval = this->ionoStore.getIonexValue(epoch, PP, 3);
+		gpstk::Triple tecval;
+		try
+		{
+			tecval = this->ionoStore.getIonexValue(epoch, PP, 3);
+		}
+		catch (const gpstk::InvalidRequest&)
+		{
+			try
+			{
+				tecval = this->ionoStore.getIonexValue(epoch, PP, 4);
+			}
+			catch (const gpstk::InvalidRequest&)
+			{
+				throw domain_error("Iono value is not available");
+			}
+		}
+		
 
 		IonCorrandVar corr;
-
-		corr.CorrinMeter = tecval[0];
-		corr.Variance = tecval[1] * tecval[1];
+ 
+		corr.CorrinMeter = F * tecval[0]*TEC_IN_METER;
+		corr.Variance = F* F * tecval[1]* TEC_IN_METER * tecval[1]* TEC_IN_METER;
 
 		return corr;
 
