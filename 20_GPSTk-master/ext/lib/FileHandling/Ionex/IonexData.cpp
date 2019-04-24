@@ -658,15 +658,37 @@ namespace gpstk
 
          // get E10's position index
       inarg = Triple( ABC[0][0], ABC[0][1]+lon[2], ABC[0][2] );
-      e[1] = getIndex( inarg, 1, ABC[1] );
+	  try
+	  {
+		  e[1] = getIndex(inarg, 1, ABC[1]);
+	  }
+	  catch (gpstk::InvalidRequest& e)
+	  {
+		  GPSTK_THROW(e);
+	  }
 
          // get E01's position index
       inarg = Triple( ABC[0][0]+lat[2], ABC[0][1], ABC[0][2] );
-      e[2] = getIndex( inarg, 1, ABC[2] );
+   
+	  try
+	  {
+		  e[2] = getIndex(inarg, 1, ABC[2]);
+	  }
+	  catch (gpstk::InvalidRequest& e)
+	  {
+		  GPSTK_THROW(e);
+	  }
 
          // get E11's position index
       inarg = Triple( ABC[0][0]+lat[2], ABC[0][1]+lon[2], ABC[0][2] );
-      e[3] = getIndex( inarg, 1, ABC[3] );
+	  try
+	  {
+		  e[3] = getIndex(inarg, 1, ABC[3]);
+	  }
+	  catch (gpstk::InvalidRequest& e)
+	  {
+		  GPSTK_THROW(e);
+	  }
 
          // let's fetch the values
       double pntval[4];
