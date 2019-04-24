@@ -30,6 +30,10 @@ namespace ProtectionLevel_Parser
 	*/
 	class ProtectionLevel_Data : public ProtectionLevel_Base
 	{
+
+
+		
+
 	public:
 		/**
 		* Constructor
@@ -63,10 +67,19 @@ namespace ProtectionLevel_Parser
 			throw(std::exception, gpstk::FFStreamError,
 				gpstk::StringUtils::StringException);
 
+		typedef struct {
+			double el_deg;
+			double az_deg;
+			gpstk::SatID satId;
+			double ippLat;
+			double ippLon;
+			double ionoCorr_meter;
+			double ionoRMS_meter;
+		}SatInfo;
 		
 		gpstk::CommonTime dataTime;
 		gpstk::Position posData;
-
+		std::vector<SatInfo> satInfo;
 		//void reset(void);
 		
 		bool isDataEnd = false;

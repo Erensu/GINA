@@ -130,7 +130,7 @@ namespace ProtectionLevel_Parser
 		Covariance_enu = Eigen::MatrixXd::Zero(3, 3);
 		includedSatIds.clear();
 		excludedSatIds.clear();
-
+		satInfo.clear();
 	}
 
 	/*Read methods*/
