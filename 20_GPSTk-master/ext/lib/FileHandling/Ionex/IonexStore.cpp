@@ -433,7 +433,15 @@ namespace gpstk
          {
 
             iod = ivtm[IonexData::TEC];
-            tecval[0] = tecval[0] + f[imap]*iod.getValue(pos);
+			try
+			{
+				tecval[0] = tecval[0] + f[imap] * iod.getValue(pos);
+			}
+			catch (gpstk::InvalidRequest& e)
+			{
+				GPSTK_THROW(e);
+			}
+           
 
          }
 
@@ -442,8 +450,15 @@ namespace gpstk
          {
 
             iod = ivtm[IonexData::RMS];
-            tecval[1] = tecval[1] + f[imap]*iod.getValue(pos);
-
+           
+			try
+			{
+				tecval[1] = tecval[1] + f[imap] * iod.getValue(pos);
+			}
+			catch (gpstk::InvalidRequest& e)
+			{
+				GPSTK_THROW(e);
+			}
          }
 
       }  // End of 'for(int imap = 0; imap < nmap; imap++)...'

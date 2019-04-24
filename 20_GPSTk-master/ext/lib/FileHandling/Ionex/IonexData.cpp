@@ -633,7 +633,15 @@ namespace gpstk
 
          // get position of lower left hand grid point E00
       inarg = Triple( beta, lambda, height);
-      e[0] = getIndex( inarg, 2, ABC[0] );
+	  try
+	  {
+		  e[0] = getIndex(inarg, 2, ABC[0]);
+	  }
+	  catch (gpstk::InvalidRequest& e)
+	  {
+		  GPSTK_THROW(e);
+	  }
+      
 
 
          // compute factors P and Q

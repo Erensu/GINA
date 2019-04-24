@@ -564,8 +564,16 @@ namespace EGNOS
 
 				try
 				{
-					TECRMS1 = refreceStore.getIonexValue(epoch, RX, 4);
-					TECRMS2 = targetStore.getIonexValue(epoch, RX, 4);
+					try
+					{
+						TECRMS1 = refreceStore.getIonexValue(epoch, RX, 4);
+						TECRMS2 = targetStore.getIonexValue(epoch, RX, 4);
+					}
+					catch (gpstk::Exception& e)
+					{
+						throw domain_error("TEC or RMS value are not available.");
+					}
+					
 
 					diffTEC = TECRMS1[0] - TECRMS2[0];
 					diffRMS = std::sqrt(TECRMS1[1] * TECRMS1[1] + TECRMS2[1] * TECRMS2[1]);
@@ -573,7 +581,7 @@ namespace EGNOS
 					valuesTEC(counter) = diffTEC;
 					valuesRMS(counter) = diffRMS;
 				}
-				catch (...)
+				catch (const std::domain_error& e)
 				{
 					valuesTEC(counter) = 999.9;
 					valuesRMS(counter) = 999.9;
