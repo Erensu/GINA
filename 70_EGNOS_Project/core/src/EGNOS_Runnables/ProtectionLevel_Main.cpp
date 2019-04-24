@@ -1,6 +1,7 @@
 ﻿#include "ProtectionLevel_Main.hpp"
-
-
+#include <algorithm>
+#include <algorithm>   
+#include <vector>     
 
 namespace EGNOS {
 	namespace ProtectionLevel {
@@ -29,12 +30,12 @@ namespace EGNOS {
 										gpstk::Position Rx, double &corrInMeter,
 										double &varianceInMeter);
 
-		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, double elevationMask, IonoType ionoType) {
+		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, std::string& PLwPath_out, double elevationMask, IonoType ionoType, double latgeodetic, double lon, double height, int intervallBetweenEpochsinSecs_in, double probability_of_inner_circle) {
 
-			int intervallBetweenEpochsinSecs = 600;
-			gpstk::Position Rx(	{45, 15, 0},
-								gpstk::Position::CoordinateSystem::Geodetic,
-								NULL, gpstk::ReferenceFrame::WGS84);
+		    double intervallBetweenEpochsinSecs = intervallBetweenEpochsinSecs_in;
+			gpstk::Position Rx({ latgeodetic, lon, height },
+				gpstk::Position::CoordinateSystem::Geodetic,
+				NULL, gpstk::ReferenceFrame::WGS84);
 
 			// Declaration of objects for storing ephemerides and handling RAIM
 			gpstk::GPSEphemerisStore bcestoreGps; 
@@ -151,11 +152,18 @@ namespace EGNOS {
 			
 			EGNOS::ProtectionLevel::EGNOS_PL plEngine(bcestoreGps, bcestoreGal, bcestoreGlo);
 			double hp_radius = 0;
-			double probability_of_inner_circle = 0.99;
+
+			ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_out(PLwPath_out.c_str(), std::ios::out);
+			ProtectionLevel_Parser::ProtectionLevel_Data plData;
+
 			for (int epochIndex = 0; epochIndex < epochsForPL.size(); epochIndex++)	{
 
 				// Apply elevation mask
 				vector<gpstk::SatID> prnVec;
+				vector<gpstk::SatID> original_prnVec;
+				vector<gpstk::SatID> excluded_prnVec;
+				std::vector<gpstk::SatID>::iterator SatId_it;
+
 				createVectorofCandidateSV(prnVec);
 
 				applyElevationMask(	elevationMask,
@@ -164,36 +172,59 @@ namespace EGNOS {
 									bcestoreGps,
 									epochsForPL[epochIndex]);
 
-				for (size_t i = 0; i < prnVec.size(); i++) {
+				/*for (size_t i = 0; i < prnVec.size(); i++) {
 
 					std::cout << "prnVec: " << prnVec[i] << std::endl;
-				}
-				//Eigen::MatrixXd CovMatrix = Eigen::MatrixXd::Identity(prnVec.size(), prnVec.size());
+				}*/
+
 				Eigen::VectorXd corrVector;
 				Eigen::MatrixXd CovMatrix;
 				try
 				{
+					original_prnVec = prnVec;
 					CovMatrix = createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *ionoModel_PLEngine, Rx, corrVector);
+					for (int a = 0; a < original_prnVec.size(); a++){
+
+						std::vector<gpstk::SatID>::iterator SatId_it = std::find(prnVec.begin(), prnVec.end(), original_prnVec[a]);
+						if (SatId_it == prnVec.end()) {
+							excluded_prnVec.push_back(original_prnVec[a]);
+						}
+							
+					}
+						
 				}
 				catch (const std::exception&)
 				{
 					continue;
 				}
 				
-				for (size_t i = 0; i < prnVec.size(); i++){
+				/*for (size_t i = 0; i < prnVec.size(); i++){
 
 					std::cout << "prnVec: " << prnVec[i] << std::endl;
-				}
+				}*/
 				
-				std::cout << "CovMatrix: " << std::endl << CovMatrix << std::endl;
+				//std::cout << "CovMatrix: " << std::endl << CovMatrix << std::endl;
 
 				hp_radius = plEngine.calculatePL(epochsForPL[epochIndex], Rx, prnVec, CovMatrix, probability_of_inner_circle);
 				
-				std::cout << "Radius of PL: "<< hp_radius << std::endl;
+				//std::cout << "Radius of PL: "<< hp_radius << std::endl;
+
+				plData.dataTime = epochsForPL[epochIndex];
+				plData.posData = Rx;
+				plData.elevationMask = 10;
+				plData.Covariance_enu = plEngine.PosCovMatrix;
+				plData.Covariance_ecef = plEngine.PosCovMatrix_ecef;
+				plData.probabilityOfIntegrity = probability_of_inner_circle;
+				plData.includedSatIds = prnVec;
+				plData.excludedSatIds = excluded_prnVec;
+				plData.HPL = hp_radius;
+				
+				pl_strm_out << plData;
 				//applyIonoCorrection(rod.time, bcestore, prnVec_gpstk, rangeVec_gpstk, *ionoModel_gpstk, Rx_gpstk);
 
 			}  // End of 'while( roffs >> rod )'
 
+			pl_strm_out.close();
 			exit(0);
 		}
 

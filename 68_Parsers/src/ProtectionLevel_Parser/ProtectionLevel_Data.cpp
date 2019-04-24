@@ -1181,7 +1181,7 @@ namespace ProtectionLevel_Parser
 		strm << startofcovmatrixecefTag << endl;
 		strm.lineNumber++;
 
-		if (Covariance_ecef.rows() == 3 && Covariance_ecef.cols() == 3 && Covariance_ecef != Eigen::MatrixXd::Zero(3, 3)) {
+		if (Covariance_ecef.size() >=9 ) {
 			strm.lineNumber++;
 			strm << Covariance_ecef(0, 0) << " " << Covariance_ecef(0, 1) << " " << Covariance_ecef(0, 2) << endl;
 			strm.lineNumber++;
@@ -1206,7 +1206,7 @@ namespace ProtectionLevel_Parser
 		strm << startofcovmatrixenuTag << endl;
 		strm.lineNumber++;
 
-		if (Covariance_enu.rows() == 3 && Covariance_enu.cols() == 3 && Covariance_enu != Eigen::MatrixXd::Zero(3, 3)) {
+		if (Covariance_enu.size() >= 9) {
 			strm.lineNumber++;
 			strm << Covariance_enu(0, 0) << " " << Covariance_enu(0, 1) << " " << Covariance_enu(0, 2) << endl;
 			strm.lineNumber++;

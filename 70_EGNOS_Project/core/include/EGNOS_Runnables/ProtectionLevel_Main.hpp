@@ -48,8 +48,10 @@
 // RTKPOS interface
 #include "RTKPOST_Data.hpp"
 
-// Protection Level Engine
+// Protection Level
 #include "ProtectionLevelEngine.hpp"
+#include "ProtectionLevel_Data.hpp"
+#include "ProtectionLevel_Stream.hpp"
 
 // GPSTK Iono models
 #include <ComputeIonoModel.hpp>
@@ -64,7 +66,7 @@ namespace EGNOS {
 			zero
 		}IonoType;
 
-		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, double elevationMask, IonoType ionoType);
+		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, std::string& PLwPath_out, double elevationMask, IonoType ionoType, double latgeodetic, double lon, double height, int intervallBetweenEpochsinSecs_in, double probability_of_inner_circle);
 	};
 };
 

@@ -20,12 +20,6 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
-	
-
-	// "C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
-	// "C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
-	// "C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\Difference_IONEX_CODG0190-y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
-
 	// #1 argument
 	std::string IonexFileNamewPath_1 = argv[1];
 	// #2 argument
