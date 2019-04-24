@@ -1230,22 +1230,83 @@ namespace ProtectionLevel_Parser
 		strm << startofusedsatTag << endl;
 		strm.lineNumber++;
 
-		for (int i = 0; i < includedSatIds.size(); i++)	{
+		for (int a = 0; a < includedSatIds.size(); a++) {
 
-			switch (includedSatIds[i].system) {
+			switch (includedSatIds[a].system) {
 			case gpstk::SatID::SatelliteSystem::systemGPS:
-				strm << "0" << " " << includedSatIds[i].id << endl;
+				strm << "0" << " " << includedSatIds[a].id << " ";
 				break;
 			case gpstk::SatID::SatelliteSystem::systemGalileo:
-				strm << "2" << " " << includedSatIds[i].id << endl;
+				strm << "2" << " " << includedSatIds[a].id << " ";
 				break;
 			case gpstk::SatID::SatelliteSystem::systemGlonass:
-				strm << "6" << " " << includedSatIds[i].id << endl;
+				strm << "6" << " " << includedSatIds[a].id << " ";
 				break;
 			default:
 				continue;
 				break;
-			}	
+			}
+
+			bool satFound = false;
+			for (int b = 0; b < satInfo.size(); b++) {
+
+				if (includedSatIds[a] == satInfo[b].satId) {
+					satFound = true;
+					if (satInfo[b].el_deg_valid == true) {
+						strm << "el " << to_string(satInfo[b].el_deg) << " ";
+					}
+					else {
+						strm << "el " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].az_deg_valid == true) {
+						strm << "az " << to_string(satInfo[b].az_deg) << " ";
+					}
+					else {
+						strm << "az " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].ippLat_valid == true) {
+						strm << "IPP lat " << to_string(satInfo[b].ippLat) << " ";
+					}
+					else {
+						strm << "IPP lat " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].ippLon_valid == true) {
+						strm << "IPP lon " << to_string(satInfo[b].ippLon) << " ";
+					}
+					else {
+						strm << "IPP lon " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].ionoCorr_meter_valid == true) {
+						strm << "Iono Delay [m] " << to_string(satInfo[b].ionoCorr_meter) << " ";
+					}
+					else {
+						strm << "Iono Delay [m] " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].ionoRMS_meter_valid == true) {
+						strm << "Iono RMS [m] " << to_string(satInfo[b].ionoRMS_meter) << " ";
+					}
+					else {
+						strm << "Iono RMS [m] " << "UNKNOWN" << " ";
+					}
+					break;
+				}
+			}
+
+			if (satFound == false) {
+				strm << "el " << "UNKNOWN" << " ";
+				strm << "az " << "UNKNOWN" << " ";
+				strm << "IPP lat " << "UNKNOWN" << " ";
+				strm << "IPP lon " << "UNKNOWN" << " ";
+				strm << "Iono Delay [m] " << "UNKNOWN" << " ";
+				strm << "Iono RMS [m] " << "UNKNOWN" << " ";
+			}
+		
+			strm << endl;
 			strm.lineNumber++;
 		}
 
@@ -1263,22 +1324,84 @@ namespace ProtectionLevel_Parser
 		strm << startofunusedsatTag << endl;
 		strm.lineNumber++;
 
-		for (int i = 0; i < excludedSatIds.size(); i++) {
+		for (int a = 0; a < excludedSatIds.size(); a++) {
 
-			switch (excludedSatIds[i].system) {
+			switch (excludedSatIds[a].system) {
 			case gpstk::SatID::SatelliteSystem::systemGPS:
-				strm << "0" << " " << excludedSatIds[i].id << endl;
+				strm << "0" << " " << excludedSatIds[a].id << " ";
 				break;
 			case gpstk::SatID::SatelliteSystem::systemGalileo:
-				strm << "2" << " " << excludedSatIds[i].id << endl;
+				strm << "2" << " " << excludedSatIds[a].id << " ";
 				break;
 			case gpstk::SatID::SatelliteSystem::systemGlonass:
-				strm << "6" << " " << excludedSatIds[i].id << endl;
+				strm << "6" << " " << excludedSatIds[a].id << " ";
 				break;
 			default:
 				continue;
 				break;
 			}
+			bool satFound = false;
+			for (int b = 0; b < satInfo.size(); b++) {
+
+				if (excludedSatIds[a] == satInfo[b].satId) {
+
+					satFound = true;
+
+					if (satInfo[b].el_deg_valid == true) {
+						strm << "el " << to_string(satInfo[b].el_deg) << " ";
+					}
+					else {
+						strm << "el " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].az_deg_valid == true) {
+						strm << "az " << to_string(satInfo[b].az_deg) << " ";
+					}
+					else {
+						strm << "az " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].ippLat_valid == true) {
+						strm << "IPP lat " << to_string(satInfo[b].ippLat) << " ";
+					}
+					else {
+						strm << "IPP lat " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].ippLon_valid == true) {
+						strm << "IPP lon " << to_string(satInfo[b].ippLon) << " ";
+					}
+					else {
+						strm << "IPP lon " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].ionoCorr_meter_valid == true) {
+						strm << "Iono Delay [m] " << to_string(satInfo[b].ionoCorr_meter) << " ";
+					}
+					else {
+						strm << "Iono Delay [m] " << "UNKNOWN" << " ";
+					}
+
+					if (satInfo[b].ionoRMS_meter_valid == true) {
+						strm << "Iono RMS [m] " << to_string(satInfo[b].ionoRMS_meter) << " ";
+					}
+					else {
+						strm << "Iono RMS [m] " << "UNKNOWN" << " ";
+					}
+					break;
+				}
+			}
+
+			if (satFound == false) {
+				strm << "el " << "UNKNOWN" << " ";	
+				strm << "az " << "UNKNOWN" << " ";		
+				strm << "IPP lat " << "UNKNOWN" << " ";		
+				strm << "IPP lon " << "UNKNOWN" << " ";		
+				strm << "Iono Delay [m] " << "UNKNOWN" << " ";
+				strm << "Iono RMS [m] " << "UNKNOWN" << " ";
+			}
+
+			strm << endl;
 			strm.lineNumber++;
 		}
 

@@ -68,13 +68,19 @@ namespace ProtectionLevel_Parser
 				gpstk::StringUtils::StringException);
 
 		typedef struct {
-			double el_deg;
-			double az_deg;
+			bool el_deg_valid = false;
+			double el_deg = 0;
+			bool az_deg_valid = false;
+			double az_deg = 0;
 			gpstk::SatID satId;
-			double ippLat;
-			double ippLon;
-			double ionoCorr_meter;
-			double ionoRMS_meter;
+			bool ippLat_valid = false;
+			double ippLat = 0;
+			bool ippLon_valid = false;
+			double ippLon = 0;
+			bool ionoCorr_meter_valid = false;
+			double ionoCorr_meter = 0;
+			bool ionoRMS_meter_valid = false;
+			double ionoRMS_meter = 0;
 		}SatInfo;
 		
 		gpstk::CommonTime dataTime;

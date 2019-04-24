@@ -157,11 +157,12 @@ namespace EGNOS {
 			double hp_radius = 0;
 
 			ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_out(PLwPath_out.c_str(), std::ios::out);
-			ProtectionLevel_Parser::ProtectionLevel_Data plData;
+			
 
 			for (int epochIndex = 0; epochIndex < epochsForPL.size(); epochIndex++)	{
 
 				// Apply elevation mask
+				ProtectionLevel_Parser::ProtectionLevel_Data plData;
 				vector<gpstk::SatID> prnVec;
 				vector<gpstk::SatID> original_prnVec;
 				vector<gpstk::SatID> excluded_prnVec;
@@ -197,8 +198,9 @@ namespace EGNOS {
 					}
 						
 				}
-				catch (const std::exception&)
+				catch (const std::exception&e)
 				{
+					std::cout << e.what() << std::endl;
 					continue;
 				}
 				
@@ -215,7 +217,7 @@ namespace EGNOS {
 
 				plData.dataTime = epochsForPL[epochIndex];
 				plData.posData = Rx;
-				plData.elevationMask = 10;
+				plData.elevationMask = elevationMask;
 				plData.Covariance_enu = plEngine.PosCovMatrix;
 				plData.Covariance_ecef = plEngine.PosCovMatrix_ecef;
 				plData.probabilityOfIntegrity = probability_of_inner_circle;
@@ -266,19 +268,80 @@ namespace EGNOS {
 					inputData.SatVisibility.azimuthOfSatId = azimuth;
 
 					(void)slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
-					
-					info.ionoCorr_meter = tempCorr;
-					info.ionoRMS_meter = sqrt(tempVar);
+				
 					info.satId = tempId[i];
-					info.az_deg = elevation;
-					info.el_deg = azimuth;
+
+					info.ionoCorr_meter = tempCorr;
+					info.ionoCorr_meter_valid = true;
+
+					info.ionoRMS_meter = sqrt(tempVar);
+					info.ionoRMS_meter_valid = true;
+
+					info.az_deg = azimuth;
+					info.az_deg_valid = true;
+
+					info.el_deg = elevation;
+					info.el_deg_valid = true;
+
 					info.ippLat = igpPP.lat;
+					info.ippLat_valid = true;
+
 					info.ippLon = igpPP.lon;
+					info.ippLon_valid = true;
+
 					satInfo.push_back(info);
 				}
 				catch (const std::exception& e)
 				{
-					//std::cout << e.what() << std::endl;
+					ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo info;
+					try
+					{
+						gpstk::Xvt SVxvt;
+						SVxvt = bcestore.getXvt(tempId[i], time);
+						gpstk::Position S(SVxvt);
+						elevation = Rx.elevationGeodetic(S);
+						azimuth = Rx.azimuthGeodetic(S);
+					}
+					catch (gpstk::Exception& e) {
+						
+						info.az_deg_valid = false;
+						info.el_deg_valid = false;
+						info.ippLat_valid = false;
+						info.ippLon_valid = false;
+
+						continue;
+					}
+
+					SlantIonoDelay_Input inputData;
+					IonosphericGridPoint igpPP;
+					SlantIonoDelay slantCalculator;
+
+					inputData.RoverPos.rlat = Rx.geodeticLatitude();
+					inputData.RoverPos.rlon = Rx.longitude();
+					inputData.RoverPos.rheight = Rx.height();
+					inputData.SatVisibility.elevationOfSatId = elevation;
+					inputData.SatVisibility.azimuthOfSatId = azimuth;
+
+					(void)slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
+
+					info.satId = tempId[i];
+
+					info.ionoCorr_meter_valid = false;
+					info.ionoRMS_meter_valid = false;
+
+					info.az_deg = azimuth;
+					info.az_deg_valid = true;
+
+					info.el_deg = elevation;
+					info.el_deg_valid = true;
+
+					info.ippLat = igpPP.lat;
+					info.ippLat_valid = true;
+
+					info.ippLon = igpPP.lon;
+					info.ippLon_valid = true;
+
+					satInfo.push_back(info);
 					continue;
 				}
 				
