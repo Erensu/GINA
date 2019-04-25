@@ -27,6 +27,14 @@ namespace ProtectionLevel_Parser
 	const std::string ProtectionLevel_Data::endofusedsatTag = "END OF USED SAT";
 	const std::string ProtectionLevel_Data::startofunusedsatTag = "START OF UNUSED SAT";
 	const std::string ProtectionLevel_Data::endofunusedsatTag = "END OF UNUSED SAT";
+	
+	const std::string ProtectionLevel_Data::satElevationTag = "el";
+	const std::string ProtectionLevel_Data::azimuthTag = "az";
+	const std::string ProtectionLevel_Data::ippLatTag = "IPP_lat";
+	const std::string ProtectionLevel_Data::ippLonTag = "IPP_lon";
+	const std::string ProtectionLevel_Data::ionoDelayTag = "Iono_Delay_[m]";
+	const std::string ProtectionLevel_Data::ionoRMSTag = "Iono_RMS_[m]";
+	const std::string ProtectionLevel_Data::unknownInfoTag = "UNKNOWN";
 
 	void ProtectionLevel_Data::reallyGetRecord(gpstk::FFStream& ffs)
 		throw(exception,
@@ -834,6 +842,82 @@ namespace ProtectionLevel_Parser
 				satId.id = stoi(satIdStr);
 				this->includedSatIds.push_back(satId);
 
+				ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo info;
+				info.satId = satId;
+				
+				while (true) {
+					string tempTagStr, ValueStr;
+					ss >> tempTagStr >> ValueStr;
+
+					if (tempTagStr.empty() || ValueStr.empty()) {
+						break;
+					}
+
+					switch (hashit(tempTagStr)) {
+					case eSatElevationTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.el_deg_valid = false;
+						}
+						else {
+							info.el_deg = stod(ValueStr);
+							info.el_deg_valid = true;
+						}
+						break;
+					case eAzimuthTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.az_deg_valid = false;
+						}
+						else {
+							info.az_deg = stod(ValueStr);
+							info.az_deg_valid = true;
+						}
+						break;
+					case eIppLatTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ippLat_valid = false;
+						}
+						else {
+							info.ippLat = stod(ValueStr);
+							info.ippLat_valid = true;
+						}
+						break;
+					case eIppLonTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ippLon_valid = false;
+						}
+						else {
+							info.ippLon = stod(ValueStr);
+							info.ippLon_valid = true;
+						}
+						break;
+					case eIonoDelayTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ionoCorr_meter_valid = false;
+						}
+						else {
+							info.ionoCorr_meter = stod(ValueStr);
+							info.ionoCorr_meter_valid = true;
+						}
+						break;
+					case eIonoRMSTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ionoRMS_meter_valid = false;
+						}
+						else {
+							info.ionoRMS_meter = stod(ValueStr);
+							info.ionoRMS_meter_valid = true;
+						}
+						break;
+					case eUnknownInfoTagFound:
+						break;
+					default:
+						break;
+					}
+
+				}
+
+				satInfo.push_back(info);
+
 			}
 			
 			return true;
@@ -892,6 +976,81 @@ namespace ProtectionLevel_Parser
 				satId.id = stoi(satIdStr);
 				this->excludedSatIds.push_back(satId);
 
+				ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo info;
+				info.satId = satId;
+
+				while (true) {
+					string tempTagStr, ValueStr;
+					ss >> tempTagStr >> ValueStr;
+
+					if (tempTagStr.empty() || ValueStr.empty()) {
+						break;
+					}
+
+					switch (hashit(tempTagStr)) {
+					case eSatElevationTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.el_deg_valid = false;
+						}
+						else {
+							info.el_deg = stod(ValueStr);
+							info.el_deg_valid = true;
+						}
+						break;
+					case eAzimuthTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.az_deg_valid = false;
+						}
+						else {
+							info.az_deg = stod(ValueStr);
+							info.az_deg_valid = true;
+						}
+						break;
+					case eIppLatTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ippLat_valid = false;
+						}
+						else {
+							info.ippLat = stod(ValueStr);
+							info.ippLat_valid = true;
+						}
+						break;
+					case eIppLonTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ippLon_valid = false;
+						}
+						else {
+							info.ippLon = stod(ValueStr);
+							info.ippLon_valid = true;
+						}
+						break;
+					case eIonoDelayTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ionoCorr_meter_valid = false;
+						}
+						else {
+							info.ionoCorr_meter = stod(ValueStr);
+							info.ionoCorr_meter_valid = true;
+						}
+						break;
+					case eIonoRMSTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ionoRMS_meter_valid = false;
+						}
+						else {
+							info.ionoRMS_meter = stod(ValueStr);
+							info.ionoRMS_meter_valid = true;
+						}
+						break;
+					case eUnknownInfoTagFound:
+						break;
+					default:
+						break;
+					}
+
+				}
+
+				satInfo.push_back(info);
 			}
 
 			return true;
@@ -1253,57 +1412,57 @@ namespace ProtectionLevel_Parser
 				if (includedSatIds[a] == satInfo[b].satId) {
 					satFound = true;
 					if (satInfo[b].el_deg_valid == true) {
-						strm << "el " << to_string(satInfo[b].el_deg) << " ";
+						strm << satElevationTag << " " << to_string(satInfo[b].el_deg) << " ";
 					}
 					else {
-						strm << "el " << "UNKNOWN" << " ";
+						strm << satElevationTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].az_deg_valid == true) {
-						strm << "az " << to_string(satInfo[b].az_deg) << " ";
+						strm << azimuthTag << " " << to_string(satInfo[b].az_deg) << " ";
 					}
 					else {
-						strm << "az " << "UNKNOWN" << " ";
+						strm << azimuthTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ippLat_valid == true) {
-						strm << "IPP lat " << to_string(satInfo[b].ippLat) << " ";
+						strm << ippLatTag << " " << to_string(satInfo[b].ippLat) << " ";
 					}
 					else {
-						strm << "IPP lat " << "UNKNOWN" << " ";
+						strm << ippLatTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ippLon_valid == true) {
-						strm << "IPP lon " << to_string(satInfo[b].ippLon) << " ";
+						strm << ippLonTag << " " << to_string(satInfo[b].ippLon) << " ";
 					}
 					else {
-						strm << "IPP lon " << "UNKNOWN" << " ";
+						strm << ippLonTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ionoCorr_meter_valid == true) {
-						strm << "Iono Delay [m] " << to_string(satInfo[b].ionoCorr_meter) << " ";
+						strm << ionoDelayTag << " " << to_string(satInfo[b].ionoCorr_meter) << " ";
 					}
 					else {
-						strm << "Iono Delay [m] " << "UNKNOWN" << " ";
+						strm << ionoDelayTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ionoRMS_meter_valid == true) {
-						strm << "Iono RMS [m] " << to_string(satInfo[b].ionoRMS_meter) << " ";
+						strm << ionoRMSTag << " " << to_string(satInfo[b].ionoRMS_meter) << " ";
 					}
 					else {
-						strm << "Iono RMS [m] " << "UNKNOWN" << " ";
+						strm << ionoRMSTag << " " << unknownInfoTag << " ";
 					}
 					break;
 				}
 			}
 
 			if (satFound == false) {
-				strm << "el " << "UNKNOWN" << " ";
-				strm << "az " << "UNKNOWN" << " ";
-				strm << "IPP lat " << "UNKNOWN" << " ";
-				strm << "IPP lon " << "UNKNOWN" << " ";
-				strm << "Iono Delay [m] " << "UNKNOWN" << " ";
-				strm << "Iono RMS [m] " << "UNKNOWN" << " ";
+				strm << satElevationTag << " " << unknownInfoTag << " ";
+				strm << azimuthTag << " " << unknownInfoTag << " ";
+				strm << ippLatTag << " " << unknownInfoTag << " ";
+				strm << ippLonTag << " " << unknownInfoTag << " ";
+				strm << ionoDelayTag << " " << unknownInfoTag << " ";
+				strm << ionoRMSTag << " " << unknownInfoTag << " ";
 			}
 		
 			strm << endl;
@@ -1344,61 +1503,59 @@ namespace ProtectionLevel_Parser
 			for (int b = 0; b < satInfo.size(); b++) {
 
 				if (excludedSatIds[a] == satInfo[b].satId) {
-
 					satFound = true;
-
 					if (satInfo[b].el_deg_valid == true) {
-						strm << "el " << to_string(satInfo[b].el_deg) << " ";
+						strm << satElevationTag << " " << to_string(satInfo[b].el_deg) << " ";
 					}
 					else {
-						strm << "el " << "UNKNOWN" << " ";
+						strm << satElevationTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].az_deg_valid == true) {
-						strm << "az " << to_string(satInfo[b].az_deg) << " ";
+						strm << azimuthTag << " " << to_string(satInfo[b].az_deg) << " ";
 					}
 					else {
-						strm << "az " << "UNKNOWN" << " ";
+						strm << azimuthTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ippLat_valid == true) {
-						strm << "IPP lat " << to_string(satInfo[b].ippLat) << " ";
+						strm << ippLatTag << " " << to_string(satInfo[b].ippLat) << " ";
 					}
 					else {
-						strm << "IPP lat " << "UNKNOWN" << " ";
+						strm << ippLatTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ippLon_valid == true) {
-						strm << "IPP lon " << to_string(satInfo[b].ippLon) << " ";
+						strm << ippLonTag << " " << to_string(satInfo[b].ippLon) << " ";
 					}
 					else {
-						strm << "IPP lon " << "UNKNOWN" << " ";
+						strm << ippLonTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ionoCorr_meter_valid == true) {
-						strm << "Iono Delay [m] " << to_string(satInfo[b].ionoCorr_meter) << " ";
+						strm << ionoDelayTag << " " << to_string(satInfo[b].ionoCorr_meter) << " ";
 					}
 					else {
-						strm << "Iono Delay [m] " << "UNKNOWN" << " ";
+						strm << ionoDelayTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ionoRMS_meter_valid == true) {
-						strm << "Iono RMS [m] " << to_string(satInfo[b].ionoRMS_meter) << " ";
+						strm << ionoRMSTag << " " << to_string(satInfo[b].ionoRMS_meter) << " ";
 					}
 					else {
-						strm << "Iono RMS [m] " << "UNKNOWN" << " ";
+						strm << ionoRMSTag << " " << unknownInfoTag << " ";
 					}
 					break;
 				}
 			}
 
 			if (satFound == false) {
-				strm << "el " << "UNKNOWN" << " ";	
-				strm << "az " << "UNKNOWN" << " ";		
-				strm << "IPP lat " << "UNKNOWN" << " ";		
-				strm << "IPP lon " << "UNKNOWN" << " ";		
-				strm << "Iono Delay [m] " << "UNKNOWN" << " ";
-				strm << "Iono RMS [m] " << "UNKNOWN" << " ";
+				strm << satElevationTag << " " << unknownInfoTag << " ";
+				strm << azimuthTag << " " << unknownInfoTag << " ";
+				strm << ippLatTag << " " << unknownInfoTag << " ";
+				strm << ippLonTag << " " << unknownInfoTag << " ";
+				strm << ionoDelayTag << " " << unknownInfoTag << " ";
+				strm << ionoRMSTag << " " << unknownInfoTag << " ";
 			}
 
 			strm << endl;
@@ -1411,5 +1568,17 @@ namespace ProtectionLevel_Parser
 		return true;
 	}
 
+	// Utility
+	ProtectionLevel_Data::info_code ProtectionLevel_Data::hashit(std::string const& inString) {
+		if (inString == satElevationTag) return eSatElevationTagFound;
+		if (inString == azimuthTag) return eAzimuthTagFound;
+		if (inString == ippLatTag) return eIppLatTagFound;
+		if (inString == ippLonTag) return eIppLonTagFound;
+		if (inString == ionoDelayTag) return eIonoDelayTagFound;
+		if (inString == ionoRMSTag) return eIonoRMSTagFound;
+		if (inString == unknownInfoTag) return eUnknownInfoTagFound;
+
+		return eUnknownInfoTagFound;
+	}
 	
 }

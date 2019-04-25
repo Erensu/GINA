@@ -31,6 +31,15 @@ namespace ProtectionLevel_Parser
 	class ProtectionLevel_Data : public ProtectionLevel_Base
 	{
 
+		enum info_code {
+			eSatElevationTagFound,
+			eAzimuthTagFound,
+			eIppLatTagFound,
+			eIppLonTagFound,
+			eIonoDelayTagFound,
+			eIonoRMSTagFound,
+			eUnknownInfoTagFound
+		};
 
 		
 
@@ -130,6 +139,14 @@ namespace ProtectionLevel_Parser
 		static const std::string startofunusedsatTag;
 		static const std::string endofunusedsatTag;
 
+		static const std::string satElevationTag;
+		static const std::string azimuthTag;
+		static const std::string ippLatTag;
+		static const std::string ippLonTag;
+		static const std::string ionoDelayTag;
+		static const std::string ionoRMSTag;
+		static const std::string unknownInfoTag;
+
 	private:
 		ProtectionLevel_Stream* strm;
 
@@ -175,6 +192,7 @@ namespace ProtectionLevel_Parser
 		bool writeUsedSats(gpstk::FFStream& ffs) const;
 		bool writeUnusedSats(gpstk::FFStream& ffs) const;
 
+		ProtectionLevel_Data::info_code hashit(std::string const& inString);
 		void resetData(void);
 
 	};  // class 

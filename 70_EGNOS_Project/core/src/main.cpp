@@ -20,41 +20,49 @@ int main(int argc, char **argv) {
 	//ProtectionLevel Parser
 	//////////////////////////////////////////
 
-	/*string PL_FilewPath_In		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput.pl";
-	string PL_FilewPath_Out		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput_Out.pl";
-	string PL_FilewPath_Out2	= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\ProtectionLevelOutput_Out_Out.pl";
+	string PL_FilewPath_In		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\Pos_lat49lon40h0_deltaT3600_el0_y2019_d019_136_brdc0190.pl";
+	string PL_FilewPath_Out		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\Pos_lat49lon40h0_deltaT3600_el0_y2019_d019_136_brdc0190_Out.pl";
+	string PL_FilewPath_Out2	= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\Pos_lat49lon40h0_deltaT3600_el0_y2019_d019_136_brdc0190_Out_Out.pl";
 
 	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_in(PL_FilewPath_In.c_str(), std::ios::in);
 	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_in2(PL_FilewPath_Out.c_str(), std::ios::in);
 	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_out(PL_FilewPath_Out.c_str(), std::ios::out);
 	ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_out2(PL_FilewPath_Out2.c_str(), std::ios::out);
 
-	ProtectionLevel_Parser::ProtectionLevel_Data pl_data;
-	ProtectionLevel_Parser::ProtectionLevel_Data pl_data2;
+	ProtectionLevel_Parser::ProtectionLevel_Data pl_data01;
+	ProtectionLevel_Parser::ProtectionLevel_Data pl_data02;
+	ProtectionLevel_Parser::ProtectionLevel_Data pl_data03;
+	ProtectionLevel_Parser::ProtectionLevel_Data pl_data11;
+	ProtectionLevel_Parser::ProtectionLevel_Data pl_data12;
+	ProtectionLevel_Parser::ProtectionLevel_Data pl_data13;
 
-	pl_strm_in >> pl_data;
-	pl_strm_in >> pl_data2;
+	pl_strm_in >> pl_data01;
+	pl_strm_in >> pl_data02;
 
-	pl_strm_out << pl_data;
-	pl_strm_out << pl_data2;
+	pl_strm_out << pl_data01;
+	pl_strm_out << pl_data02;
+	pl_strm_out << pl_data03;
 
-	pl_strm_in2 >> pl_data;
-	pl_strm_in2 >> pl_data2;
+	pl_strm_in2 >> pl_data11;
+	pl_strm_in2 >> pl_data12;
+	pl_strm_in2 >> pl_data13;
 
-	pl_strm_out2 << pl_data;
-	pl_strm_out2 << pl_data2;
+	pl_strm_out2 << pl_data11;
+	pl_strm_out2 << pl_data12;
+	pl_strm_out2 << pl_data13;
 
 	pl_strm_in.close();
 	pl_strm_out.close();
 	pl_strm_in2.close();
 	pl_strm_out2.close();
 
-	std::cout << "Job is finished" << std::endl;*/
+	std::cout << "Job is finished" << std::endl;
 	//////////////////////////////////////////
 
 	//ProtectionLevel Calculation
 	//////////////////////////////////////////
 
+	/*
 	string ephFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
 	string ionexFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
 	string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
@@ -69,7 +77,7 @@ int main(int argc, char **argv) {
 	double probability_of_inner_circle = 0.99;
 
 	EGNOS::ProtectionLevel::run_PL(ephFile, ionexFile, EDAS_FileNamewPath, PLwPath_out, elevationMask, ionoType, latgeodetic, lon, height, intervallBetweenEpochsinSecs, probability_of_inner_circle);
-
+	*/
 	//////////////////////////////////////////
 
 	// Run RTKPOST parser
