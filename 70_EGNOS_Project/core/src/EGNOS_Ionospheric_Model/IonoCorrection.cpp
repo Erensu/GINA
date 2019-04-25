@@ -2513,21 +2513,33 @@ namespace EGNOS {
 
 	std::vector<gpstk::CommonTime> EGNOSIonoCorrectionModel::getFirstandLastEpoch(void) {
 
-		std::vector<gpstk::CommonTime> e;
-		e.push_back(this->getFirstEpoch());
-		e.push_back(this->getLastEpoch());
+		std::vector<gpstk::CommonTime> fl;
+		try
+		{
+			fl.push_back(this->getFirstEpoch());
+			fl.push_back(this->getLastEpoch());
+		}
+		catch (const std::exception& e)
+		{
 
-		return e;
+		}
+
+		return fl;
 	}
 
 	gpstk::CommonTime EGNOSIonoCorrectionModel::getFirstEpoch(void) {
 		std::vector<gpstk::CommonTime> availableEpochs = this->ptrIonoMapStore->getEpochTimes();
-
+		if (availableEpochs.empty() == true) {
+			throw domain_error("There are no available epochs");
+		}
 		return availableEpochs.front();
 	}
 
 	gpstk::CommonTime EGNOSIonoCorrectionModel::getLastEpoch(void) {
 		std::vector<gpstk::CommonTime> availableEpochs = this->ptrIonoMapStore->getEpochTimes();
+		if (availableEpochs.empty() == true) {
+			throw domain_error("There are no available epochs");
+		}
 		return availableEpochs.back();
 	}
 

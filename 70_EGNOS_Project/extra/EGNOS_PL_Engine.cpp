@@ -22,8 +22,8 @@ int main(int argc, char **argv) {
 	string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
 	string PLwPath_out = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\Pos_lat49lon40h0_deltaT3600_el0_Tar_y2019_d019_136_Ref_CODG0190_brdc0190.pl";
 	double elevationMask = 0;
-	EGNOS::ProtectionLevel::IonoType referenceIonoType = EGNOS::ProtectionLevel::IonoType::ionex;
-	EGNOS::ProtectionLevel::IonoType targetIonoType = EGNOS::ProtectionLevel::IonoType::egnos;
+	EGNOS::ProtectionLevel::IonoType referenceIonoType = EGNOS::ProtectionLevel::IonoType::zero;
+	EGNOS::ProtectionLevel::IonoType targetIonoType = EGNOS::ProtectionLevel::IonoType::ionex;
 
 	double latgeodetic = 49;
 	double lon = 40;
