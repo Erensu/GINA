@@ -18,7 +18,7 @@
 namespace ProtectionLevel_Parser
 {
 
-	#define UNVALID_PL_DATA -1
+	
 	/// @ingroup FileHandling
 	//@{
 
@@ -97,6 +97,8 @@ namespace ProtectionLevel_Parser
 		std::vector<SatInfo> satInfo;
 		//void reset(void);
 		
+		
+
 		bool isDataEnd = false;
 		bool isDataStart = false;
 		std::string typeOfCalcuation = "UNKNOWN";
@@ -114,6 +116,8 @@ namespace ProtectionLevel_Parser
 		Eigen::MatrixXd Covariance_enu;
 		std::vector<gpstk::SatID> includedSatIds;
 		std::vector<gpstk::SatID> excludedSatIds;
+
+		static const double UNVALID_PL_DATA;
 
 		static const std::string startofdataTag;
 		static const std::string endOfdataTag;

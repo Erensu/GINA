@@ -4,6 +4,8 @@ namespace ProtectionLevel_Parser
 {
 	using namespace std;
 
+	const double ProtectionLevel_Data::UNVALID_PL_DATA = -1;
+
 	const std::string ProtectionLevel_Data::startofdataTag = "START OF DATA";
 	const std::string ProtectionLevel_Data::endOfdataTag = "END OF DATA";
 	const std::string ProtectionLevel_Data::timeofdataTag = "TIME OF DATA";
@@ -119,8 +121,6 @@ namespace ProtectionLevel_Parser
 	}
 	void ProtectionLevel_Data::resetData(void){
 	
-		
-
 		isDataEnd = false;
 		isDataStart = false;
 		typeOfCalcuation = "UNKNOWN";
@@ -176,10 +176,8 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(posString, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(posString, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(posString);
 			string lat, lon, height;
-
 			ss >> lat >> lon >> height;
 
 			if (lat.empty() || lon.empty() || height.empty()) {
@@ -194,7 +192,6 @@ namespace ProtectionLevel_Parser
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasVerticalProtectionLevelFound(std::string& line) {
@@ -218,10 +215,8 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
-
 			ss >> dataStr;
 
 			if (dataStr.empty()) {
@@ -232,11 +227,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasHorizontalProtectionLevelFound(std::string& line) {
@@ -260,10 +253,8 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
-
 			ss >> dataStr;
 
 			if (dataStr.empty()) {
@@ -274,11 +265,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasElevationMaskFound(std::string& line) {
@@ -302,7 +291,6 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
 
@@ -316,11 +304,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasTypeOfCalculationFound(std::string& line) {
@@ -344,10 +330,8 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
-
 			ss >> dataStr;
 
 			if (dataStr.empty()) {
@@ -358,11 +342,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasProbabilityOfIntegrityFound(std::string& line) {
@@ -386,10 +368,8 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
-
 			ss >> dataStr;
 
 			if (dataStr.empty()) {
@@ -400,11 +380,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasHorizontalErrorFound(std::string& line) {
@@ -428,10 +406,8 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
-
 			ss >> dataStr;
 
 			if (dataStr.empty()) {
@@ -442,11 +418,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasVerticalErrorFound(std::string& line) {
@@ -470,7 +444,6 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
 
@@ -484,11 +457,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasPositionErrorFound(std::string& line) {
@@ -512,7 +483,6 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
 
@@ -526,11 +496,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasHorizontalAlarmLimitFound(std::string& line) {
@@ -554,10 +522,8 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
-
 			ss >> dataStr;
 
 			if (dataStr.empty()) {
@@ -568,11 +534,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasVerticalAlarmLimitFound(std::string& line) {
@@ -596,10 +560,8 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
-
 			ss >> dataStr;
 
 			if (dataStr.empty()) {
@@ -610,11 +572,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasAlarmLimitFound(std::string& line) {
@@ -638,7 +598,6 @@ namespace ProtectionLevel_Parser
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, ' '), std::string::npos);
 			gpstk::StringUtils::stripTrailing(infoStr, std::string(1, '\t'), std::string::npos);
 
-
 			std::stringstream   ss(infoStr);
 			string dataStr;
 
@@ -652,11 +611,9 @@ namespace ProtectionLevel_Parser
 
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasCovEcefMatrixFound(std::string& line, gpstk::FFStream& ffs) {
@@ -703,9 +660,7 @@ namespace ProtectionLevel_Parser
 			std::string infoStr = line1 + " " + line2 + " " + line3;
 			std::stringstream   ss(infoStr);
 
-			string dataStr1, dataStr2, dataStr3, dataStr4, dataStr5, dataStr6, dataStr7, dataStr8, dataStr9, dataStr_this_shall_be_empty;
-				
-
+			string dataStr1, dataStr2, dataStr3, dataStr4, dataStr5, dataStr6, dataStr7, dataStr8, dataStr9, dataStr_this_shall_be_empty;	
 			ss >> dataStr1 >> dataStr2 >> dataStr3 >> dataStr4 >> dataStr5 >> dataStr6 >> dataStr7 >> dataStr8 >> dataStr9 >> dataStr_this_shall_be_empty;
 
 			if (dataStr1.empty() || dataStr9.empty() || dataStr_this_shall_be_empty.empty() == false) {
@@ -720,11 +675,9 @@ namespace ProtectionLevel_Parser
 			this->Covariance_ecef = Covariance_ecef_local;
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasCovEnuMatrixFound(std::string& line, gpstk::FFStream& ffs) {
@@ -772,8 +725,6 @@ namespace ProtectionLevel_Parser
 			std::stringstream   ss(infoStr);
 
 			string dataStr1, dataStr2, dataStr3, dataStr4, dataStr5, dataStr6, dataStr7, dataStr8, dataStr9, dataStr_this_shall_be_empty;
-
-
 			ss >> dataStr1 >> dataStr2 >> dataStr3 >> dataStr4 >> dataStr5 >> dataStr6 >> dataStr7 >> dataStr8 >> dataStr9 >> dataStr_this_shall_be_empty;
 
 			if (dataStr1.empty() || dataStr9.empty() || dataStr_this_shall_be_empty.empty() == false) {
@@ -792,7 +743,6 @@ namespace ProtectionLevel_Parser
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasUsedSatsFound(std::string& line, gpstk::FFStream& ffs) {
@@ -814,7 +764,6 @@ namespace ProtectionLevel_Parser
 				}
 
 				std::stringstream   ss(lineSatId);
-
 				string satSysStr, satIdStr;
 
 				ss >> satSysStr >> satIdStr;
@@ -917,16 +866,12 @@ namespace ProtectionLevel_Parser
 				}
 
 				satInfo.push_back(info);
-
 			}
-			
 			return true;
 		}
-
 		else {
 			return false;
 		}
-
 	}
 
 	bool ProtectionLevel_Data::hasUnusedSatsFound(std::string& line, gpstk::FFStream& ffs) {
@@ -1336,7 +1281,6 @@ namespace ProtectionLevel_Parser
 
 		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
 
-	
 		strm << startofcovmatrixecefTag << endl;
 		strm.lineNumber++;
 
@@ -1349,7 +1293,6 @@ namespace ProtectionLevel_Parser
 			strm << Covariance_ecef(2, 0) << " " << Covariance_ecef(2, 1) << " " << Covariance_ecef(2, 2) << endl;
 			strm.lineNumber++;
 		}
-		
 
 		strm << endofcovmatrixecefTag << endl;
 		strm.lineNumber++;
@@ -1360,7 +1303,6 @@ namespace ProtectionLevel_Parser
 	bool ProtectionLevel_Data::writeCovMatrixEnu(gpstk::FFStream& ffs) const {
 
 		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
-
 
 		strm << startofcovmatrixenuTag << endl;
 		strm.lineNumber++;
@@ -1384,7 +1326,6 @@ namespace ProtectionLevel_Parser
 	bool ProtectionLevel_Data::writeUsedSats(gpstk::FFStream& ffs) const {
 
 		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
-
 
 		strm << startofusedsatTag << endl;
 		strm.lineNumber++;
@@ -1470,7 +1411,6 @@ namespace ProtectionLevel_Parser
 		}
 
 		strm << endofusedsatTag << endl;
-
 		strm.lineNumber++;
 		return true;
 	}
@@ -1478,7 +1418,6 @@ namespace ProtectionLevel_Parser
 	bool ProtectionLevel_Data::writeUnusedSats(gpstk::FFStream& ffs) const {
 
 		ProtectionLevel_Stream& strm = dynamic_cast<ProtectionLevel_Stream&>(ffs);
-
 
 		strm << startofunusedsatTag << endl;
 		strm.lineNumber++;
@@ -1563,7 +1502,6 @@ namespace ProtectionLevel_Parser
 		}
 
 		strm << endofunusedsatTag << endl;
-
 		strm.lineNumber++;
 		return true;
 	}
@@ -1580,5 +1518,4 @@ namespace ProtectionLevel_Parser
 
 		return eUnknownInfoTagFound;
 	}
-	
 }
