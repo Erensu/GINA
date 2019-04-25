@@ -77,7 +77,7 @@ namespace EGNOS {
 	public:
 
 		virtual ~IonoModel() {};
-		virtual IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) = 0; // elevation and azimuth in degree
+		virtual IonCorrandVar getCorrection(const gpstk::CommonTime &epoch, const gpstk::Position RX, double elevation, double azimuth) = 0; // elevation and azimuth in degree
 		virtual std::string name(void) = 0;
 		virtual std::vector<gpstk::CommonTime> getFirstandLastEpoch(void) = 0;
 	};
@@ -86,7 +86,7 @@ namespace EGNOS {
 	public:
 
 		~ZeroIonoModel() {};
-		IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) { IonCorrandVar corr = {0,0};  return corr; };
+		IonCorrandVar getCorrection(const gpstk::CommonTime &epoch, const gpstk::Position RX, double elevation, double azimuth) { IonCorrandVar corr = {0,0};  return corr; };
 		std::string name(void) { return "Zero"; };
 		std::vector<gpstk::CommonTime> getFirstandLastEpoch(void) { std::vector<gpstk::CommonTime> e; return e;}
 	};
@@ -98,7 +98,7 @@ namespace EGNOS {
 			IonexModel(gpstk::IonexStore &ionoStore);
 			IonexModel(gpstk::IonexStore &ionoStore, double heightOfIonoLayerinMeter);
 			~IonexModel() {};
-			IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth);	// elevation and azimuth in degree
+			IonCorrandVar getCorrection(const gpstk::CommonTime &epoch, const gpstk::Position RX, double elevation, double azimuth);	// elevation and azimuth in degree
 			std::string name(void) { return "Ionex model"; };
 			std::vector<gpstk::CommonTime> getFirstandLastEpoch(void);
 
@@ -291,7 +291,7 @@ namespace EGNOS {
 		gpstk::CommonTime getFirstEpoch(void);
 		gpstk::CommonTime getLastEpoch(void);
 
-		IonCorrandVar getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth); // elevation and azimuth in degree
+		IonCorrandVar getCorrection(const gpstk::CommonTime &epoch, const gpstk::Position RX, double elevation, double azimuth); // elevation and azimuth in degree
 		std::string name(void) { return std::string("EGNOS brdc iono modell"); };
 		std::vector<gpstk::CommonTime> getFirstandLastEpoch(void);
 

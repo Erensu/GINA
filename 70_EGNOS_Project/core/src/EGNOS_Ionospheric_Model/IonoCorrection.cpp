@@ -2392,7 +2392,7 @@ namespace EGNOS {
 		return ionexStore;
 	}
 
-	IonCorrandVar EGNOSIonoCorrectionModel::getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) {
+	IonCorrandVar EGNOSIonoCorrectionModel::getCorrection(const gpstk::CommonTime &epoch, const gpstk::Position RX, double elevation, double azimuth) {
 	
 		std::vector<gpstk::CommonTime> availableEpochs;
 		if (this->ptrIonoMapStore != NULL) {
@@ -2548,7 +2548,7 @@ namespace EGNOS {
 		this->heightOfIonoLayerinMeter = 350000;
 	};
 
-	IonCorrandVar IonexModel::getCorrection(gpstk::CommonTime &epoch, gpstk::Position RX, double elevation, double azimuth) {
+	IonCorrandVar IonexModel::getCorrection(const gpstk::CommonTime &epoch, const gpstk::Position RX, double elevation, double azimuth) {
 	
 
 		SlantIonoDelay_Input inputData;

@@ -1,13 +1,54 @@
 #include "ProtectionLevelEngine.hpp"
 
-
-
 namespace EGNOS {
 	namespace ProtectionLevel {
+
+		Eigen::Vector3d EGNOS_PL::calculatePositionError_in_enu(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::VectorXd &prError, Eigen::MatrixXd &WeightMatrix) {
+			
+			if (prError.size() == 0) {
+				throw domain_error("Error vector is empty. Enu error is not calculable.");
+			}
+
+			setParameters(time, Rover, prnVec);
+			calcDesignMatrix();
+			Eigen::MatrixXd S_ecef			= (designMatrix_ecef.transpose() * WeightMatrix * designMatrix_ecef).inverse() * designMatrix_ecef.transpose() * WeightMatrix;
+			Eigen::Vector4d posError_ecef	= S_ecef * prError;
+
+			Eigen::Vector3d pos_ecef;
+			Eigen::Vector3d pos_w_Error_ecef;
+			Eigen::Vector3d pos_w_Error_enu;
+			
+			pos_ecef(0)			= Rover.X();
+			pos_ecef(1)			= Rover.Y();
+			pos_ecef(2)			= Rover.Z();
+			pos_w_Error_ecef(0) = Rover.X() + posError_ecef(0);
+			pos_w_Error_ecef(1) = Rover.Y() + posError_ecef(1);
+			pos_w_Error_ecef(2) = Rover.Z() + posError_ecef(2);
+
+			Eigen::MatrixXd ecef2enu = getECEF2ENUMatrix(Rover.geodeticLatitude() * M_PI / 180, Rover.longitude() * M_PI / 180);
+
+			Eigen::Vector3d	pos_w_error_enu = ecef2enu * pos_w_Error_ecef;
+			Eigen::Vector3d	pos_enu			= ecef2enu * pos_ecef;
+			
+			Eigen::Vector3d	pos_error_enu = pos_enu - pos_w_error_enu;
+
+			return pos_error_enu;
+		}
 
 		double EGNOS_PL::calculatePL(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::MatrixXd &CovMatrix, double probabilityThatWeAreinTheCircle) {
 
 			setParameters(time, Rover, prnVec, CovMatrix);
+			calcDesignMatrix();
+			calcCovarianceMatrix();
+			calcHorizontalCovariance();
+			calcEigenValues();
+			calcScaleFactor2Gaussian2d(probabilityThatWeAreinTheCircle);
+
+			return K*semiMajorAxis;
+		}
+		double EGNOS_PL::calculatePL(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::MatrixXd &CovMatrix, Eigen::MatrixXd &WeightMatrix, double probabilityThatWeAreinTheCircle) {
+
+			setParameters(time, Rover, prnVec, CovMatrix, WeightMatrix);
 			calcDesignMatrix();
 			calcCovarianceMatrix();
 			calcHorizontalCovariance();
@@ -139,6 +180,13 @@ namespace EGNOS {
 			return sqrt(dist);
 		}
 
+		void EGNOS_PL::setParameters(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec) {
+
+			this->Rover = Rover;
+			this->prnVec = prnVec;
+			this->time = time;
+		};
+
 		void EGNOS_PL::setParameters(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::MatrixXd &MesCovMatrix) {
 			
 			this->Rover = Rover; 
@@ -146,6 +194,15 @@ namespace EGNOS {
 			this->time = time; 
 			this->MesCovMatrix = MesCovMatrix;
 			this->WeightMatrix = MesCovMatrix.inverse();
+		};
+
+		void EGNOS_PL::setParameters(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::MatrixXd &MesCovMatrix, Eigen::MatrixXd &WeightMatrix) {
+
+			this->Rover = Rover;
+			this->prnVec = prnVec;
+			this->time = time;
+			this->MesCovMatrix = MesCovMatrix;
+			this->WeightMatrix = WeightMatrix;
 		};
 
 		gpstk::Xvt EGNOS_PL::getSatXvt(gpstk::CommonTime &time, gpstk::SatID &id) {

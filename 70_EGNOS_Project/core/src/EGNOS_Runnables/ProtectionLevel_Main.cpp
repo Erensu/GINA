@@ -7,11 +7,18 @@ namespace EGNOS {
 	namespace ProtectionLevel {
 
 	
-		static Eigen::MatrixXd createIonoCovMatrix(	gpstk::CommonTime &time, 
-													gpstk::GPSEphemerisStore &bcestore, 
+		static Eigen::MatrixXd createIonoCovMatrix(const gpstk::CommonTime &time,
+			const gpstk::GPSEphemerisStore &bcestore,
+			const vector<gpstk::SatID> &id,
+			EGNOS::IonoModel &pIonoModel,
+			const gpstk::Position &Rx,
+			Eigen::VectorXd& corrVector);
+
+		static Eigen::MatrixXd createIonoCovMatrix(	const gpstk::CommonTime &time,
+													const gpstk::GPSEphemerisStore &bcestore,
 													vector<gpstk::SatID> &id, 
-													EGNOS::IonoModel &pIonoModel, 
-													gpstk::Position &Rx, 
+													EGNOS::IonoModel &pIonoModel,
+													const gpstk::Position &Rx,
 													Eigen::VectorXd& corrVector,
 													std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> &satInfo);
 
@@ -19,22 +26,23 @@ namespace EGNOS {
 		
 		static void createVectorofCandidateSV(vector<gpstk::SatID> &prnVec);
 
-		static void applyElevationMask(double elevationMask,
-										gpstk::Position &R, 
+		static void applyElevationMask( double elevationMask,
+										const gpstk::Position &R, 
 										vector<gpstk::SatID> &prnVec, 
-										gpstk::GPSEphemerisStore &bcestore, 
-										gpstk::CommonTime &gpstime);
+										const gpstk::GPSEphemerisStore &bcestore,
+										const gpstk::CommonTime &gpstime);
 
-		static void applyIonoCorrection(gpstk::CommonTime &time,
-										gpstk::GPSEphemerisStore &bcestore,
+		static void applyIonoCorrection(const gpstk::CommonTime &time,
+										const gpstk::GPSEphemerisStore &bcestore,
 										gpstk::SatID &id,
 										EGNOS::IonoModel &pIonoModel,
-										gpstk::Position Rx, double &corrInMeter,
+										const gpstk::Position Rx, 
+										double &corrInMeter,
 										double &varianceInMeter,
 										double &el, 
 										double &az);
 
-		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, std::string& PLwPath_out, double elevationMask, IonoType ionoType, double latgeodetic, double lon, double height, int intervallBetweenEpochsinSecs_in, double probability_of_inner_circle) {
+		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, std::string& PLwPath_out, double elevationMask, IonoType referenceIonoType, IonoType targetIonoType, double latgeodetic, double lon, double height, int intervallBetweenEpochsinSecs_in, double probability_of_inner_circle) {
 
 		    double intervallBetweenEpochsinSecs = intervallBetweenEpochsinSecs_in;
 			gpstk::Position Rx({ latgeodetic, lon, height },
@@ -47,100 +55,174 @@ namespace EGNOS {
 			gpstk::GloEphemerisStore bcestoreGlo;
 
 			EGNOS::ZeroIonoModel noIonoModel;
-			EGNOS::IonexModel ionexModel;
-			EGNOS::EGNOSIonoCorrectionModel egnosIonoModel;
-			EGNOS::IonoModel *ionoModel_PLEngine = &noIonoModel;
+
+			EGNOS::IonoModel *referenceIonoModel_PLEngine = &noIonoModel;
+			EGNOS::IonoModel *targetIonoModel_PLEngine = &noIonoModel;
 
 			gpstk::IonexStore ionoStore;
 
 			std::vector<gpstk::CommonTime> epochsForPL;
 
-			switch (ionoType) {
-				case IonoType::egnos:
-				{
-					egnosIonoModel.updateIntervalinSeconds = intervallBetweenEpochsinSecs;
-					egnosIonoModel.load(EMSData);
-					epochsForPL = createVectorofEpochforPLCalc(egnosIonoModel, intervallBetweenEpochsinSecs);
+			switch (targetIonoType) {
+			case IonoType::egnos:
+			{
 
-					ionoModel_PLEngine = &egnosIonoModel;
-					break;
+				EGNOS::EGNOSIonoCorrectionModel *egnosIonoModel = new EGNOS::EGNOSIonoCorrectionModel();
+				egnosIonoModel->updateIntervalinSeconds = intervallBetweenEpochsinSecs;
+				egnosIonoModel->load(EMSData);
+				epochsForPL = createVectorofEpochforPLCalc(*egnosIonoModel, intervallBetweenEpochsinSecs);
+
+				targetIonoModel_PLEngine = egnosIonoModel;
+				break;
+			}
+			case IonoType::ionex:
+			{
+				// Stream creation
+				gpstk::IonexStream strm(ionexFile.c_str(), std::ios::in);
+
+				if (!strm) {
+
+					gpstk::FileMissingException e("File " + ionexFile +
+						" could not be opened.");
+					GPSTK_THROW(e);
 				}
-				case IonoType::ionex:
-				{
-					//ionoStore.loadFile(ionexFile);
 
-					// Stream creation
-					gpstk::IonexStream strm(ionexFile.c_str(), std::ios::in);
+				// create the header object
+				gpstk::IonexHeader header;
+				strm >> header;
 
-					if (!strm) {
+				if (!header.valid) {
 
-						gpstk::FileMissingException e("File " + ionexFile +
-							" could not be opened.");
-						GPSTK_THROW(e);
-					}
-
-					// create the header object
-					gpstk::IonexHeader header;
-					strm >> header;
-
-					if (!header.valid) {
-
-						gpstk::FileMissingException e("File " + ionexFile +
-							" could not be opened. Check again " +
-							"the path or the name provided!");
-						GPSTK_THROW(e);
-					}
-
-					header.firstEpoch.setTimeSystem(gpstk::TimeSystem::GPS);
-					header.lastEpoch.setTimeSystem(gpstk::TimeSystem::GPS);
-
-					// keep an inventory of the loaded files 
-					ionoStore.addFile(ionexFile, header);
-
-					// this map is useful in finding DCB value
-					ionoStore.inxDCBMap[header.firstEpoch] = header.svsmap;
-
-					// object data. If valid, add to the map
-					gpstk::IonexData iod;
-					while (strm >> iod && iod.isValid()) {
-
-						iod.time.setTimeSystem(gpstk::TimeSystem::GPS);
-						ionoStore.addMap(iod);
-					}
-
-					ionexModel.addIonexStore(ionoStore);
-
-					epochsForPL = createVectorofEpochforPLCalc(ionexModel, intervallBetweenEpochsinSecs);
-					ionoModel_PLEngine = &ionexModel;
-					break;
+					gpstk::FileMissingException e("File " + ionexFile +
+						" could not be opened. Check again " +
+						"the path or the name provided!");
+					GPSTK_THROW(e);
 				}
-				case IonoType::zero:
-				{
-					epochsForPL = createVectorofEpochforPLCalc(noIonoModel, intervallBetweenEpochsinSecs);
-					ionoModel_PLEngine = &noIonoModel;
-					break;
+
+				header.firstEpoch.setTimeSystem(gpstk::TimeSystem::GPS);
+				header.lastEpoch.setTimeSystem(gpstk::TimeSystem::GPS);
+
+				// keep an inventory of the loaded files 
+				ionoStore.addFile(ionexFile, header);
+
+				// this map is useful in finding DCB value
+				ionoStore.inxDCBMap[header.firstEpoch] = header.svsmap;
+
+				// object data. If valid, add to the map
+				gpstk::IonexData iod;
+				while (strm >> iod && iod.isValid()) {
+
+					iod.time.setTimeSystem(gpstk::TimeSystem::GPS);
+					ionoStore.addMap(iod);
 				}
-				default:
-				{
-					epochsForPL = createVectorofEpochforPLCalc(noIonoModel, intervallBetweenEpochsinSecs);
-					ionoModel_PLEngine = &noIonoModel;
-					break;
-				}
+
+				EGNOS::IonexModel *ionexModel = new EGNOS::IonexModel();
+				ionexModel->addIonexStore(ionoStore);
+
+				epochsForPL = createVectorofEpochforPLCalc(*ionexModel, intervallBetweenEpochsinSecs);
+				targetIonoModel_PLEngine = ionexModel;
+				break;
+			}
+			case IonoType::zero:
+			{
+				epochsForPL = createVectorofEpochforPLCalc(noIonoModel, intervallBetweenEpochsinSecs);
+				targetIonoModel_PLEngine = &noIonoModel;
+				break;
+			}
+			default:
+			{
+				epochsForPL = createVectorofEpochforPLCalc(noIonoModel, intervallBetweenEpochsinSecs);
+				targetIonoModel_PLEngine = &noIonoModel;
+				break;
+			}
 			}
 
+			switch (referenceIonoType) {
+			case IonoType::egnos:
+			{
+
+				EGNOS::EGNOSIonoCorrectionModel *egnosIonoModel = new EGNOS::EGNOSIonoCorrectionModel();
+				egnosIonoModel->updateIntervalinSeconds = intervallBetweenEpochsinSecs;
+				egnosIonoModel->load(EMSData);
+				epochsForPL = createVectorofEpochforPLCalc(*egnosIonoModel, intervallBetweenEpochsinSecs);
+
+				referenceIonoModel_PLEngine = egnosIonoModel;
+				break;
+			}
+			case IonoType::ionex:
+			{
+				// Stream creation
+				gpstk::IonexStream strm(ionexFile.c_str(), std::ios::in);
+
+				if (!strm) {
+
+					gpstk::FileMissingException e("File " + ionexFile +
+						" could not be opened.");
+					GPSTK_THROW(e);
+				}
+
+				// create the header object
+				gpstk::IonexHeader header;
+				strm >> header;
+
+				if (!header.valid) {
+
+					gpstk::FileMissingException e("File " + ionexFile +
+						" could not be opened. Check again " +
+						"the path or the name provided!");
+					GPSTK_THROW(e);
+				}
+
+				header.firstEpoch.setTimeSystem(gpstk::TimeSystem::GPS);
+				header.lastEpoch.setTimeSystem(gpstk::TimeSystem::GPS);
+
+				// keep an inventory of the loaded files 
+				ionoStore.addFile(ionexFile, header);
+
+				// this map is useful in finding DCB value
+				ionoStore.inxDCBMap[header.firstEpoch] = header.svsmap;
+
+				// object data. If valid, add to the map
+				gpstk::IonexData iod;
+				while (strm >> iod && iod.isValid()) {
+
+					iod.time.setTimeSystem(gpstk::TimeSystem::GPS);
+					ionoStore.addMap(iod);
+				}
+
+				EGNOS::IonexModel *ionexModel = new EGNOS::IonexModel();
+				ionexModel->addIonexStore(ionoStore);
+
+				epochsForPL = createVectorofEpochforPLCalc(*ionexModel, intervallBetweenEpochsinSecs);
+				referenceIonoModel_PLEngine = ionexModel;
+				break;
+			}
+			case IonoType::zero:
+			{
+				epochsForPL = createVectorofEpochforPLCalc(noIonoModel, intervallBetweenEpochsinSecs);
+				referenceIonoModel_PLEngine = &noIonoModel;
+				break;
+			}
+			default:
+			{
+				epochsForPL = createVectorofEpochforPLCalc(noIonoModel, intervallBetweenEpochsinSecs);
+				referenceIonoModel_PLEngine = &noIonoModel;
+				break;
+			}
+			}
+			
 			std::cout << "IonoModel is set " << std::endl;
 			gpstk::FFTextStream debugStrm;
 		
 			// Read nav file and store unique list of ephemerides
-			//Rinex3NavStream rnffs(argv[2].c_str());    // Open ephemerides data file
 			gpstk::Rinex3NavStream rnffs(ephData.c_str());    // Open ephemerides data file
 			gpstk::Rinex3NavData rne;
 			gpstk::Rinex3NavHeader hdr;
 
-				// Let's read the header (may be skipped)
+			// Let's read the header (may be skipped)
 			rnffs >> hdr;
 
-				// Storing the ephemeris in "bcstore"
+			// Storing the ephemeris in "bcstore"
 			while (rnffs >> rne) {
 				try {
 					bcestoreGps.addEphemeris(rne);
@@ -158,7 +240,6 @@ namespace EGNOS {
 
 			ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_out(PLwPath_out.c_str(), std::ios::out);
 			
-
 			for (int epochIndex = 0; epochIndex < epochsForPL.size(); epochIndex++)	{
 
 				// Apply elevation mask
@@ -175,19 +256,21 @@ namespace EGNOS {
 									prnVec,
 									bcestoreGps,
 									epochsForPL[epochIndex]);
-
-				/*for (size_t i = 0; i < prnVec.size(); i++) {
-
-					std::cout << "prnVec: " << prnVec[i] << std::endl;
-				}*/
-
+			
 				Eigen::VectorXd corrVector;
 				Eigen::MatrixXd CovMatrix;
+				Eigen::MatrixXd WeightMatrix;
 				try
 				{
 					original_prnVec = prnVec;
-					
-					CovMatrix = createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *ionoModel_PLEngine, Rx, corrVector, plData.satInfo);
+					if (targetIonoModel_PLEngine->name() == noIonoModel.name()) {
+						std::cout << "Error. No target Iono model was set.";
+						exit(1);
+					}
+
+					CovMatrix = createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *targetIonoModel_PLEngine, Rx, corrVector, plData.satInfo);
+					WeightMatrix = CovMatrix.inverse();
+
 					for (int a = 0; a < original_prnVec.size(); a++){
 
 						std::vector<gpstk::SatID>::iterator SatId_it = std::find(prnVec.begin(), prnVec.end(), original_prnVec[a]);
@@ -196,25 +279,55 @@ namespace EGNOS {
 						}
 							
 					}
+
+					if (referenceIonoModel_PLEngine->name() != noIonoModel.name()) {
+						Eigen::VectorXd corrVector_reff;
+						try
+						{
+							(void)createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *referenceIonoModel_PLEngine, Rx, corrVector_reff, plData.satInfo);
+							
+							std::cout << "diff corrVector = corrVector - corrVector_reff" << endl;
+							for (int i = 0; i < corrVector.size(); i++)
+							{
+								std::cout << corrVector(i) - corrVector_reff(i) << " " << corrVector(i) << " " << corrVector_reff(i) << " " << endl;
+							}
 						
+							corrVector -= corrVector_reff;
+						}
+						catch (const std::exception& e)
+						{
+							gpstk::CivilTime errorTime(epochsForPL[epochIndex]);
+							std::cout << errorTime.asString() << " ";
+							std::cout << e.what() << std::endl;
+							continue;
+						}
+					}
 				}
 				catch (const std::exception&e)
 				{
+					gpstk::CivilTime errorTime(epochsForPL[epochIndex]);
+					std::cout << errorTime.asString() << " ";
 					std::cout << e.what() << std::endl;
 					continue;
 				}
 				
-				/*for (size_t i = 0; i < prnVec.size(); i++){
-
-					std::cout << "prnVec: " << prnVec[i] << std::endl;
-				}*/
-				
-				//std::cout << "CovMatrix: " << std::endl << CovMatrix << std::endl;
-
 				hp_radius = plEngine.calculatePL(epochsForPL[epochIndex], Rx, prnVec, CovMatrix, probability_of_inner_circle);
 				
-				//std::cout << "Radius of PL: "<< hp_radius << std::endl;
+				try
+				{
+					Eigen::Vector3d enuError = plEngine.calculatePositionError_in_enu(epochsForPL[epochIndex], Rx, prnVec, corrVector, WeightMatrix);
 
+					plData.posError = enuError.norm();
+					plData.horizontalPosError = std::sqrt(std::pow(enuError(0), 2) + std::pow(enuError(1), 2));
+					plData.verticalPosError = std::abs(enuError(2));
+				}
+				catch (const std::domain_error& e)
+				{
+					plData.posError = ProtectionLevel_Parser::ProtectionLevel_Data::UNVALID_PL_DATA;
+					plData.horizontalPosError = ProtectionLevel_Parser::ProtectionLevel_Data::UNVALID_PL_DATA;
+					plData.verticalPosError = ProtectionLevel_Parser::ProtectionLevel_Data::UNVALID_PL_DATA;
+				}
+				
 				plData.dataTime = epochsForPL[epochIndex];
 				plData.posData = Rx;
 				plData.elevationMask = elevationMask;
@@ -226,16 +339,21 @@ namespace EGNOS {
 				plData.HPL = hp_radius;
 				
 				pl_strm_out << plData;
-				//applyIonoCorrection(rod.time, bcestore, prnVec_gpstk, rangeVec_gpstk, *ionoModel_gpstk, Rx_gpstk);
 
-			}  // End of 'while( roffs >> rod )'
+			} 
 
 			pl_strm_out.close();
 			exit(0);
 		}
 
-		static Eigen::MatrixXd createIonoCovMatrix(gpstk::CommonTime &time, gpstk::GPSEphemerisStore &bcestore, vector<gpstk::SatID> &id, EGNOS::IonoModel &pIonoModel, gpstk::Position &Rx, Eigen::VectorXd& corrVector, std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> &satInfo) {
-		
+		static Eigen::MatrixXd createIonoCovMatrix(	const gpstk::CommonTime &time, 
+													const gpstk::GPSEphemerisStore &bcestore, 
+													vector<gpstk::SatID> &id, 
+													EGNOS::IonoModel &pIonoModel, 
+													const gpstk::Position &Rx,
+													Eigen::VectorXd& corrVector, 
+													std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> &satInfo) {
+
 			vector<double> ionoCorrections;
 			vector<double> ionoVariance;
 			vector<gpstk::SatID> tempId = id;
@@ -244,7 +362,7 @@ namespace EGNOS {
 			double tempCorr;
 			double tempVar;
 			//applyIonoCorrection(time, bcestore, id, ionoCorrections, pIonoModel, Rx, &tempCorr, &tempVar);
-			for (int i = 0; i < tempId.size(); i++){
+			for (int i = 0; i < tempId.size(); i++) {
 
 				double elevation;
 				double azimuth;
@@ -268,7 +386,7 @@ namespace EGNOS {
 					inputData.SatVisibility.azimuthOfSatId = azimuth;
 
 					(void)slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
-				
+
 					info.satId = tempId[i];
 
 					info.ionoCorr_meter = tempCorr;
@@ -303,7 +421,7 @@ namespace EGNOS {
 						azimuth = Rx.azimuthGeodetic(S);
 					}
 					catch (gpstk::Exception& e) {
-						
+
 						info.az_deg_valid = false;
 						info.el_deg_valid = false;
 						info.ippLat_valid = false;
@@ -344,20 +462,40 @@ namespace EGNOS {
 					satInfo.push_back(info);
 					continue;
 				}
-				
+
 			}
 
 			if (ionoCorrections.size() == 0) {
 				throw domain_error("No corrections and variances had been calculated.");
 			}
 
+
+
+			Eigen::Map<Eigen::VectorXd> corrVector_local(&ionoCorrections[0], id.size());
+			corrVector = corrVector_local;
 			Eigen::Map<Eigen::VectorXd> varVector(&ionoVariance[0], id.size());
 			Eigen::MatrixXd CovMatrix = varVector.asDiagonal();
 
 			return CovMatrix;
 		}
 
-		static std::vector<gpstk::CommonTime> createVectorofEpochforPLCalc(EGNOS::IonoModel &iono, int intervallBetweenEpochsinSecs) {
+		static Eigen::MatrixXd createIonoCovMatrix(	const gpstk::CommonTime &time, 
+													const gpstk::GPSEphemerisStore &bcestore, 
+													const vector<gpstk::SatID> &id, 
+													EGNOS::IonoModel &pIonoModel, 
+													const gpstk::Position &Rx, 
+													Eigen::VectorXd& corrVector) {
+			
+			std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> satInfo;
+			Eigen::MatrixXd returnCovMatrix;
+			vector<gpstk::SatID> local_id = id;
+			returnCovMatrix = createIonoCovMatrix(time, bcestore, local_id, pIonoModel, Rx, corrVector, satInfo);
+
+			return returnCovMatrix;
+		}
+
+		static std::vector<gpstk::CommonTime> createVectorofEpochforPLCalc(	EGNOS::IonoModel &iono, 
+																			int intervallBetweenEpochsinSecs) {
 		
 			std::vector<gpstk::CommonTime> epochs;
 			std::vector<gpstk::CommonTime> firs_and_last = iono.getFirstandLastEpoch();
@@ -391,7 +529,11 @@ namespace EGNOS {
 			
 		}
 
-		static void applyElevationMask(double elevationMask, gpstk::Position &R, vector<gpstk::SatID> &prnVec, gpstk::GPSEphemerisStore &bcestore, gpstk::CommonTime &gpstime) {
+		static void applyElevationMask(	double elevationMask, 
+										const gpstk::Position &R,
+										vector<gpstk::SatID> &prnVec, 
+										const gpstk::GPSEphemerisStore &bcestore, 
+										const gpstk::CommonTime &gpstime) {
 
 			vector<gpstk::SatID> prnVec_old;
 			vector<double> rangeVec_old;
@@ -425,7 +567,15 @@ namespace EGNOS {
 
 		}
 
-		static void applyIonoCorrection(gpstk::CommonTime &time, gpstk::GPSEphemerisStore &bcestore, gpstk::SatID &id, EGNOS::IonoModel &pIonoModel, gpstk::Position Rx, double &corrInMeter, double &varianceInMeter, double &el, double &az) {
+		static void applyIonoCorrection(	const gpstk::CommonTime &time, 
+											const gpstk::GPSEphemerisStore &bcestore, 
+											gpstk::SatID &id, 
+											EGNOS::IonoModel &pIonoModel, 
+											const gpstk::Position Rx, 
+											double &corrInMeter, 
+											double &varianceInMeter,
+											double &el, 
+											double &az) {
 
 			vector<double> corrAndVariance;
 			gpstk::Xvt SVxvt;

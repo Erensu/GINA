@@ -68,6 +68,7 @@ namespace EGNOS {
 				vector<gpstk::SatID> prnVec;
 				gpstk::CommonTime time;
 
+				Eigen::VectorXd prError;
 				Eigen::MatrixXd designMatrix_ecef;
 				Eigen::MatrixXd designMatrix_from_ElAz;
 				Eigen::MatrixXd MesCovMatrix;
@@ -81,14 +82,19 @@ namespace EGNOS {
 				double K;
 
 				double calculatePL(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::MatrixXd &WeightMatrix, double probabilityThatWeAreinTheCircle);
-
+				double calculatePL(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::MatrixXd &CovMatrix, Eigen::MatrixXd &WeightMatrix, double probabilityThatWeAreinTheCircle);
+				
+				Eigen::Vector3d calculatePositionError_in_enu(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::VectorXd &prError, Eigen::MatrixXd &WeightMatrix);
+				
 				gpstk::GPSEphemerisStore bcestoreGps;
 				gpstk::GalEphemerisStore bcestoreGal;
 				gpstk::GloEphemerisStore bcestoreGlo;
 
 			private:
 
+				void setParameters(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec);
 				void setParameters(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::MatrixXd &MesCovMatrix);
+				void setParameters(gpstk::CommonTime &time, gpstk::Position &Rover, vector<gpstk::SatID> &prnVec, Eigen::MatrixXd &MesCovMatrix, Eigen::MatrixXd &WeightMatrix);
 				gpstk::Xvt getSatXvt(gpstk::CommonTime &time, gpstk::SatID &id);
 				void calcDesignMatrix(void);
 				void calcCovarianceMatrix(void);
