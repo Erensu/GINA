@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 		std::cout << "#2 Rover Position - Longitude [degree]- input " << std::endl;
 		std::cout << "#3 Rover Position - Height [m]- input" << std::endl;
 		std::cout << "#4 Time Interval between PL calculations [s] - input" << std::endl;
-		std::cout << "#5 Integrity probability. Probability of the real position is within the given Horizontal protection level - 0 < p < 1- input" << std::endl;
+		std::cout << "#5 Integrity probability. Probability of the real position (horizontal in ENU) is within the given Horizontal Protection Level - 0 < p < 1- input" << std::endl;
 		std::cout << "#6 Elevaion mask [degree] - input" << std::endl;
 		std::cout << "#7 Protection Level File with absolute path - output" << std::endl;
 		std::cout << "#8 RINEX NAVIGATION File with absolute path - GPS ephermis are required - input" << std::endl;
@@ -96,7 +96,6 @@ int main(int argc, char **argv) {
 		}
 	}
 	
-
 	/*string ephFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n";
 	string ionexFile = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
 	string EDAS_FileNamewPath = ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems";
