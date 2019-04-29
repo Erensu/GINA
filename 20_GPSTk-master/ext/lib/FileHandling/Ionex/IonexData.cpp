@@ -55,12 +55,14 @@ namespace gpstk
    const string IonexData::startTecMapString    =  "START OF TEC MAP";
    const string IonexData::startRmsMapString    =  "START OF RMS MAP";
    const string IonexData::startMlhMapString	=  "START OF MLH MAP";
+   const string IonexData::startCh2MapString	=  "START OF CH2 MAP";
    const string IonexData::startHgtMapString    =  "START OF HEIGHT MAP";
    const string IonexData::currentEpochString   =  "EPOCH OF CURRENT MAP";
    const string IonexData::dataBlockString      =  "LAT/LON1/LON2/DLON/H";
    const string IonexData::endTecMapString      =  "END OF TEC MAP";
    const string IonexData::endRmsMapString      =  "END OF RMS MAP";
    const string IonexData::endMlhMapString		=  "END OF MLH MAP";
+   const string IonexData::endCh2MapString		=  "END OF CH2 MAP";
    const string IonexData::endHgtMapString      =  "END OF HEIGHT MAP";
    const string IonexData::endOfFile            =  "END OF FILE";
 
@@ -79,7 +81,10 @@ namespace gpstk
    const IonexData::IonexValType IonexData::MLH("MLH",
 												"Maximum Likelihood",
 												"Unitless");
-
+   const IonexData::IonexValType IonexData::CH2("CH2",
+											    "Chi2 probability",
+											    "Unitless");
+   
 
    //--------------------------------------------------------------------
    //--------------------------------------------------------------------
@@ -111,6 +116,10 @@ namespace gpstk
 	  else if (type == IonexData::MLH)
 	  {
 		  line += leftJustify(startMlhMapString, 20);
+	  }
+	  else if (type == IonexData::CH2)
+	  {
+		  line += leftJustify(startCh2MapString, 20);
 	  }
       else
       {
@@ -201,7 +210,11 @@ namespace gpstk
       }
 	  else if (type == IonexData::MLH)
 	  {
-		  line += leftJustify(endRmsMapString, 20);
+		  line += leftJustify(endMlhMapString, 20);
+	  }
+	  else if (type == IonexData::CH2)
+	  {
+		  line += leftJustify(endCh2MapString, 20);
 	  }
       else
       {
@@ -308,6 +321,15 @@ namespace gpstk
 		 {
 
 			 type = IonexData::MLH;
+			 ityp = 2;
+			 mapID = asInt(line.substr(0, 6));
+			 ilat = 0;
+
+		 }
+		 else if (label == startCh2MapString)
+		 {
+
+			 type = IonexData::CH2;
 			 ityp = 2;
 			 mapID = asInt(line.substr(0, 6));
 			 ilat = 0;
@@ -422,6 +444,13 @@ namespace gpstk
 
          }
 		 else if (label == endMlhMapString)
+		 {
+
+			 ityp = 0;
+			 valid = true;
+
+		 }
+		 else if (label == endCh2MapString)
 		 {
 
 			 ityp = 0;

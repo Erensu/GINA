@@ -123,8 +123,11 @@ namespace EGNOS
 
 			std::vector<std::string> names = ionoStoreTarget.getFileNames();
 			ionoHeader_Out = ionoStoreTarget.getHeader(names[0]);
-			ionoHeader_Out.commentList.push_back("MLH stand for Maximum Likelihood. Unitless.");
+			ionoHeader_Out.commentList.push_back("MLH stands for Maximum Likelihood. Unitless.");
 			ionoHeader_Out.commentList.push_back("MLH values in 0.0001. Max value is 9998.");
+			ionoHeader_Out.commentList.push_back("Values greater than 0.9999 are downconverted to 0.9998");
+			ionoHeader_Out.commentList.push_back("CH2 stands for Chi2 probability. Unitless.");
+			ionoHeader_Out.commentList.push_back("CH2 values in 0.0001. Max value is 9998.");
 			ionoHeader_Out.commentList.push_back("Values greater than 0.9999 are downconverted to 0.9998");
 			outIonexStoreStream << ionoHeader_Out;
 
@@ -519,6 +522,7 @@ namespace EGNOS
 			gpstk::IonexData ionexDataTEC;
 			gpstk::IonexData ionexDataRMS;
 			gpstk::IonexData ionexMaxLikeliHood;
+			gpstk::IonexData ionexChi2Prob;
 
 			double lat1, lat2, dlat;
 			double lon1, lon2, dlon;
@@ -556,12 +560,14 @@ namespace EGNOS
 			double diffTEC;
 			double diffRMS;
 			double maxLikeliHood;
+			double Chi2Prob;
 
 			gpstk::Triple TECRMS1, TECRMS2;
 
 			gpstk::Vector<double> valuesTEC(numberOfValues);
 			gpstk::Vector<double> valuesRMS(numberOfValues);
 			gpstk::Vector<double> valuesMLH(numberOfValues);
+			gpstk::Vector<double> valuesChi2(numberOfValues);
 			gpstk::Position RX;
 
 			while (counter < numberOfValues)
@@ -585,7 +591,7 @@ namespace EGNOS
 					diffRMS = std::sqrt(TECRMS1[1] * TECRMS1[1] + TECRMS2[1] * TECRMS2[1]);
 
 					maxLikeliHood = calcMaximumLikeliHood(TECRMS1[0], TECRMS1[1], TECRMS2[0], TECRMS2[1]);
-					(void)calcChi2Probability(TECRMS1[0], TECRMS1[1], TECRMS2[0], TECRMS2[1]);
+					Chi2Prob = calcChi2Probability(TECRMS1[0], TECRMS1[1], TECRMS2[0], TECRMS2[1]);
 
 					valuesTEC(counter) = diffTEC;
 					valuesRMS(counter) = diffRMS;
@@ -597,12 +603,21 @@ namespace EGNOS
 
 						valuesMLH(counter) = maxLikeliHood;
 					}
+
+					if (Chi2Prob >= 0.9999) {
+						valuesChi2(counter) = 0.9998;
+					}
+					else {
+
+						valuesChi2(counter) = Chi2Prob;
+					}
 				}
 				catch (const std::domain_error& e)
 				{
 					valuesTEC(counter) = 999.9;
 					valuesRMS(counter) = 999.9;
 					valuesMLH(counter) = 0.9999;
+					valuesChi2(counter) = 0.9999;
 				}
 
 				if (abs(currLon - lon2) < dlon) {
@@ -613,6 +628,9 @@ namespace EGNOS
 				counter++;
 			}
 
+			ionexChi2Prob.data = valuesChi2;
+			ionexChi2Prob.mapID = mapID;
+
 			ionexMaxLikeliHood.data = valuesMLH;
 			ionexMaxLikeliHood.mapID = mapID;
 
@@ -621,6 +639,10 @@ namespace EGNOS
 
 			ionexDataRMS.data = valuesRMS;
 			ionexDataRMS.mapID = mapID;
+
+			ionexChi2Prob.dim[0] = dimlat;
+			ionexChi2Prob.dim[1] = dimlon;
+			ionexChi2Prob.dim[2] = dimhgt;
 
 			ionexMaxLikeliHood.dim[0] = dimlat;
 			ionexMaxLikeliHood.dim[1] = dimlon;
@@ -633,6 +655,11 @@ namespace EGNOS
 			ionexDataRMS.dim[0] = dimlat;
 			ionexDataRMS.dim[1] = dimlon;
 			ionexDataRMS.dim[2] = dimhgt;
+
+			ionexChi2Prob.exponent = -4;
+			ionexChi2Prob.lat[0] = lat1;
+			ionexChi2Prob.lat[1] = lat2;
+			ionexChi2Prob.lat[2] = dlat;
 
 			ionexMaxLikeliHood.exponent = -4;
 			ionexMaxLikeliHood.lat[0] = lat1;
@@ -649,6 +676,10 @@ namespace EGNOS
 			ionexDataRMS.lat[1] = lat2;
 			ionexDataRMS.lat[2] = dlat;
 
+			ionexChi2Prob.lon[0] = lon1;
+			ionexChi2Prob.lon[1] = lon2;
+			ionexChi2Prob.lon[2] = dlon;
+
 			ionexMaxLikeliHood.lon[0] = lon1;
 			ionexMaxLikeliHood.lon[1] = lon2;
 			ionexMaxLikeliHood.lon[2] = dlon;
@@ -660,6 +691,10 @@ namespace EGNOS
 			ionexDataRMS.lon[0] = lon1;
 			ionexDataRMS.lon[1] = lon2;
 			ionexDataRMS.lon[2] = dlon;
+
+			ionexChi2Prob.hgt[0] = hgt1;
+			ionexChi2Prob.hgt[1] = hgt2;
+			ionexChi2Prob.hgt[2] = dhgt;
 
 			ionexMaxLikeliHood.hgt[0] = hgt1;
 			ionexMaxLikeliHood.hgt[1] = hgt2;
@@ -673,29 +708,35 @@ namespace EGNOS
 			ionexDataRMS.hgt[1] = hgt2;
 			ionexDataRMS.hgt[2] = dhgt;
 
+			ionexChi2Prob.valid = true;
 			ionexMaxLikeliHood.valid = true;
 			ionexDataTEC.valid = true;
 			ionexDataRMS.valid = true;
 
-			ionexMaxLikeliHood.type.type = "MLH";
-			ionexDataTEC.type.type = "TEC";
-			ionexDataRMS.type.type = "RMS";
+			ionexChi2Prob.type.type			= "CH2";
+			ionexMaxLikeliHood.type.type	= "MLH";
+			ionexDataTEC.type.type			= "TEC";
+			ionexDataRMS.type.type			= "RMS";
 
-			ionexMaxLikeliHood.type.units = "10e-3";
-			ionexDataTEC.type.units = "10e-1 [TEC]";
-			ionexDataRMS.type.units = "10e-1 [TEC]";
+			ionexChi2Prob.type.units		= "10e-4";
+			ionexMaxLikeliHood.type.units	= "10e-4";
+			ionexDataTEC.type.units			= "10e-1 [TEC]";
+			ionexDataRMS.type.units			= "10e-1 [TEC]";
 
-			ionexMaxLikeliHood.type.description = "Maximum Likelihood";
-			ionexDataTEC.type.description = "Total Electron Content Difference map";
-			ionexDataRMS.type.description = "Total Electron Content Difference map";
+			ionexChi2Prob.type.description		= "Chi2 Probability Map";
+			ionexMaxLikeliHood.type.description = "Maximum Likelihood Map";
+			ionexDataTEC.type.description		= "Total Electron Content Difference map";
+			ionexDataRMS.type.description		= "Total Electron Content Difference map";
 
+			ionexChi2Prob.time		= epoch;
 			ionexMaxLikeliHood.time = epoch;
-			ionexDataTEC.time = epoch;
-			ionexDataRMS.time = epoch;
+			ionexDataTEC.time		= epoch;
+			ionexDataRMS.time		= epoch;
 
 			rtv.push_back(ionexDataTEC);
 			rtv.push_back(ionexDataRMS);
 			rtv.push_back(ionexMaxLikeliHood);
+			rtv.push_back(ionexChi2Prob);
 
 			return rtv;
 		}

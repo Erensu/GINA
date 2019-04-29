@@ -77,12 +77,14 @@ namespace gpstk
       static const std::string startTecMapString;     ///<"START OF TEC MAP"
       static const std::string startRmsMapString;     ///<"START OF RMS MAP"
 	  static const std::string startMlhMapString;	  ///<"START OF MLH MAP"
+	  static const std::string startCh2MapString;	  ///<"START OF Ch2 MAP"
       static const std::string startHgtMapString;     ///<"START OF HEIGHT MAP"
       static const std::string currentEpochString;    ///<"EPOCH OF CURRENT MAP"
       static const std::string dataBlockString;       ///<"LAT/LON1/LON2/DLON/H"
       static const std::string endTecMapString;       ///<"END OF TEC MAP"
       static const std::string endRmsMapString;       ///<"END OF RMS MAP"
 	  static const std::string endMlhMapString;       ///<"END OF MLH MAP"
+	  static const std::string endCh2MapString;       ///<"END OF Ch2 MAP"
       static const std::string endHgtMapString;       ///<"END OF HEIGHT MAP"
       static const std::string endOfFile;             ///<"END OF FILE"
          //@}
@@ -116,6 +118,7 @@ namespace gpstk
       static const IonexValType TEC;
       static const IonexValType RMS;
 	  static const IonexValType MLH;			// New type. Not part of the Ionex standard. Maximum Likelihood 
+	  static const IonexValType CH2;			// New type. Not part of the Ionex standard. Chi2 probability 
          //@}
 
 
