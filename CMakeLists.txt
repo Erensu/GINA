@@ -55,7 +55,7 @@ add_subdirectory (10_MathPckgs)
 	############
 	#################################################################
 	get_property(STATSLIB_CORE_INC_DIRS DIRECTORY "${PROJECT_SOURCE_DIR}/10_MathPckgs/StatsLib" PROPERTY STATSLIB_CORE_INC_DIRS)
-	message("Property for root directory root read from STATSLIB_CORE_INC_DIRS: " ${STATSLIB_CORE_INC_DIRS})
+	#message("Property for root directory root read from STATSLIB_CORE_INC_DIRS: " ${STATSLIB_CORE_INC_DIRS})
 
 #########
 # GPSTK #
