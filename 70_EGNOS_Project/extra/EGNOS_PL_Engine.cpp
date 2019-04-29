@@ -15,7 +15,13 @@ using namespace std;
 #include "ProtectionLevel_Data.hpp"
 #include "ProtectionLevel_Stream.hpp"
 
+
 int main(int argc, char **argv) {
+
+	std::cout << "" << std::endl;
+	std::cout << "WARNING: Vertical Protection calculation is not embedded to the PL engine. " << std::endl;
+	std::cout << "Only calculates the VPL for 3 sigma, so the INTEGRITY PROBABITY is  always 99,73 % for the Vertical Protection Level." << std::endl;
+	std::cout << "" << std::endl;
 
 	cout << "You have entered " << argc
 		<< " arguments:" << "\n";
@@ -23,6 +29,8 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < argc; ++i)
 		cout << argv[i] << "\n";
 
+	
+	
 	if (argc < 11 || argc > 13) {
 
 		std::cout << " Invalid arguments. Expected arguments: " << std::endl;

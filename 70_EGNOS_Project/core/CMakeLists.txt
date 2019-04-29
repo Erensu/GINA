@@ -26,14 +26,14 @@ add_library(EGNOS	STATIC 	${EGNOS_SRC}
 #										PUBLIC gpstk 
 #										PUBLIC GINAParser)	
 										
-target_include_directories(EGNOS PUBLIC ${EGNOS_INC_DIRS} ${GPSTK_CORE_INC_DIRS} ${GPSTK_EXT_INC_DIRS} ${GINAPARSER_CORE_INC_DIRS} ${EIGEN_CORE_INC_DIRS} )
+target_include_directories(EGNOS PUBLIC ${EGNOS_INC_DIRS} ${GPSTK_CORE_INC_DIRS} ${GPSTK_EXT_INC_DIRS} ${GINAPARSER_CORE_INC_DIRS} ${EIGEN_CORE_INC_DIRS} ${STATSLIB_CORE_INC_DIRS} )
 
 include_directories (include)
 add_executable(EGNOS_Project ${EGNOS_SRC} ${EGNOS_INCL} )
 target_link_libraries (EGNOS_Project	PUBLIC ${GPSTK_LIBS}
 										PUBLIC gpstk 
 										PUBLIC GINAParser)
-target_include_directories(EGNOS_Project PUBLIC ${EGNOS_INC_DIRS} ${GPSTK_CORE_INC_DIRS} ${GPSTK_EXT_INC_DIRS} ${GINAPARSER_CORE_INC_DIRS} ${EIGEN_CORE_INC_DIRS})
+target_include_directories(EGNOS_Project PUBLIC ${EGNOS_INC_DIRS} ${GPSTK_CORE_INC_DIRS} ${GPSTK_EXT_INC_DIRS} ${GINAPARSER_CORE_INC_DIRS} ${EIGEN_CORE_INC_DIRS} ${STATSLIB_CORE_INC_DIRS})
 
 # Create VS Filters	
 set( EGNOS_All_FILES "" )	

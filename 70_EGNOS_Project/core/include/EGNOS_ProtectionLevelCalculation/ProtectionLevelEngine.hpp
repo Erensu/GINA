@@ -1,8 +1,12 @@
 #ifndef PROTECTION_LEVEL_ENGINE_HPP
 #define PROTECTION_LEVEL_ENGINE_HPP
 
-// Primary Math Library
+#define STATS_DONT_USE_OPENMP
+#define STATS_USE_EIGEN
+
+// Math Library
 #include <Eigen/Dense>
+//#include "statslib.hpp"
 
 // First, let's include Standard Template Library classes
 #include <string>

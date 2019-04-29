@@ -236,7 +236,7 @@ namespace EGNOS {
 				plData.includedSatIds = prnVec;
 				plData.excludedSatIds = excluded_prnVec;
 				plData.HPL = hp_radius;
-				
+				plData.VPL = 3*std::sqrt(plEngine.PosCovMatrix(2, 2));
 				pl_strm_out << plData;
 			} 
 

@@ -15,12 +15,19 @@ using namespace std;
 #include "ProtectionLevel_Data.hpp"
 #include "ProtectionLevel_Stream.hpp"
 
+//#include "statslib.hpp"
+
 int main(int argc, char **argv) {
+
+	/*std::cout << stats::pnorm(0, 0, 1) << std::endl;
+	std::cout <<  1 - 2 * (1 - stats::pnorm(3, 0, 1)) << std::endl;
+	std::cout <<  stats::pinvgamma((0.6827+1)/2,0,1) << std::endl;
+	std::cout << stats::pgamma(0.5, 1, 2) << std::endl;*/
 
 	//ProtectionLevel Parser
 	//////////////////////////////////////////
 
-	string PL_FilewPath_In		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\Pos_lat49lon40h0_deltaT3600_el0_y2019_d019_136_brdc0190.pl";
+	/*string PL_FilewPath_In		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\Pos_lat49lon40h0_deltaT3600_el0_y2019_d019_136_brdc0190.pl";
 	string PL_FilewPath_Out		= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\Pos_lat49lon40h0_deltaT3600_el0_y2019_d019_136_brdc0190_Out.pl";
 	string PL_FilewPath_Out2	= ROOT "\\70_EGNOS_Project\\core\\files\\DebugFiles\\Pos_lat49lon40h0_deltaT3600_el0_y2019_d019_136_brdc0190_Out_Out.pl";
 
@@ -56,7 +63,7 @@ int main(int argc, char **argv) {
 	pl_strm_in2.close();
 	pl_strm_out2.close();
 
-	std::cout << "Job is finished" << std::endl;
+	std::cout << "Job is finished" << std::endl;*/
 	//////////////////////////////////////////
 
 	//ProtectionLevel Calculation
