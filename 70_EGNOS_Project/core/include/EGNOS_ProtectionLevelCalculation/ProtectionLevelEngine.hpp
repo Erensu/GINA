@@ -6,7 +6,7 @@
 
 // Math Library
 #include <Eigen/Dense>
-//#include "statslib.hpp"
+#include "statslib.hpp"
 
 // First, let's include Standard Template Library classes
 #include <string>

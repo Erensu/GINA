@@ -90,7 +90,7 @@ namespace EGNOS
 								double matchingIntervall) {
 
 			gpstk::IonexStore ionoStoreRef, ionoStoreTarget;
-			gpstk::IonexHeader ionoHeader1, ionoHeader2;
+			gpstk::IonexHeader ionoHeader1, ionoHeader2, ionoHeader_Out;
 
 			try
 			{
@@ -121,24 +121,28 @@ namespace EGNOS
 			gpstk::IonexStream outIonexStoreStream;
 			outIonexStoreStream.open(IonexFileNamewPath_Out.c_str(), std::ios::out);
 
-			std::vector<std::string> names = ionoStoreRef.getFileNames();
-			outIonexStoreStream << ionoStoreRef.getHeader(names[0]);
+			std::vector<std::string> names = ionoStoreTarget.getFileNames();
+			ionoHeader_Out = ionoStoreTarget.getHeader(names[0]);
+			ionoHeader_Out.commentList.push_back("MLH stand for Maximum Likelihood. Unitless.");
+			ionoHeader_Out.commentList.push_back("MLH values in 0.0001. Max value is 9998.");
+			ionoHeader_Out.commentList.push_back("Values greater than 0.9999 are downconverted to 0.9998");
+			outIonexStoreStream << ionoHeader_Out;
 
 			gpstk::IonexStore::IonexMap::iterator it_ref;
 			gpstk::IonexStore::IonexMap::iterator it_target;
 			gpstk::IonexStore::IonexMap::iterator it_target_iterator;
 			gpstk::CommonTime epoch_ref, epoch_target;
 
-			gpstk::IonexHeader refHeader = ionoStoreRef.getHeader(names[0]);
+			gpstk::IonexHeader targetHeader = ionoStoreTarget.getHeader(names[0]);
 
 			// Narrow difference ionex's region to Europe
-			refHeader.lat[0] = 90;
-			refHeader.lat[1] = 10;
-			refHeader.lat[2] = -abs(5);
+			targetHeader.lat[0] = 90;
+			targetHeader.lat[1] = 10;
+			targetHeader.lat[2] = -abs(5);
 
-			refHeader.lon[0] = -60;
-			refHeader.lon[1] = 60;
-			refHeader.lon[2] = abs(5);
+			targetHeader.lon[0] = -60;
+			targetHeader.lon[1] = 60;
+			targetHeader.lon[2] = abs(5);
 
 			int mapID = 0;
 
@@ -193,7 +197,7 @@ namespace EGNOS
 					continue;
 				}
 
-				ionexDataVector = EGNOS_RUNNABLE_UTILITY::createDifferenceDataBlock(refHeader,
+				ionexDataVector = EGNOS_RUNNABLE_UTILITY::createDifferenceDataBlock(targetHeader,
 																					ionoStoreRef,
 																					ionoStoreTarget,
 																					epoch_ref,
@@ -514,6 +518,7 @@ namespace EGNOS
 			std::vector<gpstk::IonexData> rtv;
 			gpstk::IonexData ionexDataTEC;
 			gpstk::IonexData ionexDataRMS;
+			gpstk::IonexData ionexMaxLikeliHood;
 
 			double lat1, lat2, dlat;
 			double lon1, lon2, dlon;
@@ -544,17 +549,19 @@ namespace EGNOS
 			double currLat = lat1;
 			double currLon = lon1;
 			double TECorRMS;
-
+			
 			gpstk::CommonTime initTime = refreceStore.getInitialTime();
 			gpstk::CommonTime finalTime = refreceStore.getFinalTime();
 
 			double diffTEC;
 			double diffRMS;
+			double maxLikeliHood;
 
 			gpstk::Triple TECRMS1, TECRMS2;
 
 			gpstk::Vector<double> valuesTEC(numberOfValues);
 			gpstk::Vector<double> valuesRMS(numberOfValues);
+			gpstk::Vector<double> valuesMLH(numberOfValues);
 			gpstk::Position RX;
 
 			while (counter < numberOfValues)
@@ -577,13 +584,25 @@ namespace EGNOS
 					diffTEC = TECRMS1[0] - TECRMS2[0];
 					diffRMS = std::sqrt(TECRMS1[1] * TECRMS1[1] + TECRMS2[1] * TECRMS2[1]);
 
+					maxLikeliHood = calcMaximumLikeliHood(TECRMS1[0], TECRMS1[1], TECRMS2[0], TECRMS2[1]);
+					(void)calcChi2Probability(TECRMS1[0], TECRMS1[1], TECRMS2[0], TECRMS2[1]);
+
 					valuesTEC(counter) = diffTEC;
 					valuesRMS(counter) = diffRMS;
+
+					if (maxLikeliHood >= 0.9999) {
+						valuesMLH(counter) = 0.9998;
+					}
+					else {
+
+						valuesMLH(counter) = maxLikeliHood;
+					}
 				}
 				catch (const std::domain_error& e)
 				{
 					valuesTEC(counter) = 999.9;
 					valuesRMS(counter) = 999.9;
+					valuesMLH(counter) = 0.9999;
 				}
 
 				if (abs(currLon - lon2) < dlon) {
@@ -594,11 +613,18 @@ namespace EGNOS
 				counter++;
 			}
 
+			ionexMaxLikeliHood.data = valuesMLH;
+			ionexMaxLikeliHood.mapID = mapID;
+
 			ionexDataTEC.data = valuesTEC;
 			ionexDataTEC.mapID = mapID;
 
 			ionexDataRMS.data = valuesRMS;
 			ionexDataRMS.mapID = mapID;
+
+			ionexMaxLikeliHood.dim[0] = dimlat;
+			ionexMaxLikeliHood.dim[1] = dimlon;
+			ionexMaxLikeliHood.dim[2] = dimhgt;
 
 			ionexDataTEC.dim[0] = dimlat;
 			ionexDataTEC.dim[1] = dimlon;
@@ -607,6 +633,11 @@ namespace EGNOS
 			ionexDataRMS.dim[0] = dimlat;
 			ionexDataRMS.dim[1] = dimlon;
 			ionexDataRMS.dim[2] = dimhgt;
+
+			ionexMaxLikeliHood.exponent = -4;
+			ionexMaxLikeliHood.lat[0] = lat1;
+			ionexMaxLikeliHood.lat[1] = lat2;
+			ionexMaxLikeliHood.lat[2] = dlat;
 
 			ionexDataTEC.exponent = -1;
 			ionexDataTEC.lat[0] = lat1;
@@ -618,6 +649,10 @@ namespace EGNOS
 			ionexDataRMS.lat[1] = lat2;
 			ionexDataRMS.lat[2] = dlat;
 
+			ionexMaxLikeliHood.lon[0] = lon1;
+			ionexMaxLikeliHood.lon[1] = lon2;
+			ionexMaxLikeliHood.lon[2] = dlon;
+
 			ionexDataTEC.lon[0] = lon1;
 			ionexDataTEC.lon[1] = lon2;
 			ionexDataTEC.lon[2] = dlon;
@@ -625,6 +660,10 @@ namespace EGNOS
 			ionexDataRMS.lon[0] = lon1;
 			ionexDataRMS.lon[1] = lon2;
 			ionexDataRMS.lon[2] = dlon;
+
+			ionexMaxLikeliHood.hgt[0] = hgt1;
+			ionexMaxLikeliHood.hgt[1] = hgt2;
+			ionexMaxLikeliHood.hgt[2] = dhgt;
 
 			ionexDataTEC.hgt[0] = hgt1;
 			ionexDataTEC.hgt[1] = hgt2;
@@ -634,26 +673,68 @@ namespace EGNOS
 			ionexDataRMS.hgt[1] = hgt2;
 			ionexDataRMS.hgt[2] = dhgt;
 
+			ionexMaxLikeliHood.valid = true;
 			ionexDataTEC.valid = true;
 			ionexDataRMS.valid = true;
 
+			ionexMaxLikeliHood.type.type = "MLH";
 			ionexDataTEC.type.type = "TEC";
 			ionexDataRMS.type.type = "RMS";
 
+			ionexMaxLikeliHood.type.units = "10e-3";
 			ionexDataTEC.type.units = "10e-1 [TEC]";
 			ionexDataRMS.type.units = "10e-1 [TEC]";
 
+			ionexMaxLikeliHood.type.description = "Maximum Likelihood";
 			ionexDataTEC.type.description = "Total Electron Content Difference map";
 			ionexDataRMS.type.description = "Total Electron Content Difference map";
 
+			ionexMaxLikeliHood.time = epoch;
 			ionexDataTEC.time = epoch;
 			ionexDataRMS.time = epoch;
 
 			rtv.push_back(ionexDataTEC);
 			rtv.push_back(ionexDataRMS);
+			rtv.push_back(ionexMaxLikeliHood);
 
 			return rtv;
 		}
+
+		// Priori gaussian is given: [mean1, std1] ||  Likelihood gaussian is given: [mean2, std2]
+		double calcMaximumLikeliHood(double mean1, double std1, double mean2, double std2) {
+		
+			// Caluclation 
+			// Calculate the the mean and std parameters of the probability density of the posterior.
+			// Normal[mean1, std1](mu) * Normal[mean2, std2](mu) where mu is coming from a weighted least square or bayesian inference or simple Kalman filter
+			// Best Mean: (mean1^2*std2^2 + mean2^2*std1^2) / (std1^2 + std2^2)
+
+			double bestMean = (mean1 * std::pow(std2, 2) + mean2 * std::pow(std1, 2)) / (std::pow(std1, 2) + std::pow(std2, 2));
+			double mlh = stats::dnorm(bestMean, mean1, std1 ) * stats::dnorm(bestMean, mean2, std2 );
+
+			// Alternative Calculation
+			// MLH = Normal[mean1,sqrt(std1^2+std2^2)](mean2) * Normal[Best Mean, Best Std](Best Mean)
+			// Best Mean: (mean1^2*std2^2 + mean2^2*std1^2) / (std1^2 + std2^2)
+			// Best Std: (std2^2 * std1^2) / (std1^2 + std2^2)
+			// double bestStd = std::sqrt( ( std::pow(std1, 2) * std::pow(std2, 2) ) / ( std::pow(std1, 2) + std::pow(std2, 2) ) );
+			// double NormFactor = stats::dnorm(mean1, mean2, std::sqrt( std::pow(std1, 2) + std::pow(std2, 2) ) );
+			// double MaxLikelihood = stats::dnorm(bestMean, bestMean, bestStd );
+			// double mlh_alter = NormFactor * MaxLikelihood;
+
+			return mlh;
+		}
+
+		double calcChi2Probability(double mean1, double std1, double mean2, double std2) {
+		
+			double bestMean = (mean1 * std::pow(std2, 2) + mean2 * std::pow(std1, 2)) / (std::pow(std1, 2) + std::pow(std2, 2));
+			double summaOfNormedSquaredValues = std::pow((mean1 - bestMean), 2) / std::pow(std1, 2) + std::pow((mean2 - bestMean), 2) / std::pow(std2, 2);
+			return probChi2_2D(summaOfNormedSquaredValues);
+		}
+
+		double probChi2_2D(double x) {
+			
+			return 0.5 * std::exp(-x/2);
+		}
+
 		std::string EGNOSMapType2String(EGNOS::EGNOSMapType mapType) {
 		
 			std::string mapTypeStr;

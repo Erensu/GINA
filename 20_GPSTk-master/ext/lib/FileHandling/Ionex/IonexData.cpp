@@ -54,11 +54,13 @@ namespace gpstk
 {
    const string IonexData::startTecMapString    =  "START OF TEC MAP";
    const string IonexData::startRmsMapString    =  "START OF RMS MAP";
+   const string IonexData::startMlhMapString	=  "START OF MLH MAP";
    const string IonexData::startHgtMapString    =  "START OF HEIGHT MAP";
    const string IonexData::currentEpochString   =  "EPOCH OF CURRENT MAP";
    const string IonexData::dataBlockString      =  "LAT/LON1/LON2/DLON/H";
    const string IonexData::endTecMapString      =  "END OF TEC MAP";
    const string IonexData::endRmsMapString      =  "END OF RMS MAP";
+   const string IonexData::endMlhMapString		=  "END OF MLH MAP";
    const string IonexData::endHgtMapString      =  "END OF HEIGHT MAP";
    const string IonexData::endOfFile            =  "END OF FILE";
 
@@ -73,6 +75,10 @@ namespace gpstk
    const IonexData::IonexValType IonexData::RMS( "RMS",
                                                  "Root Mean Square error",
                                                  "TECU" );
+
+   const IonexData::IonexValType IonexData::MLH("MLH",
+												"Maximum Likelihood",
+												"Unitless");
 
 
    //--------------------------------------------------------------------
@@ -102,6 +108,10 @@ namespace gpstk
       {
          line += leftJustify(startRmsMapString,20);
       }
+	  else if (type == IonexData::MLH)
+	  {
+		  line += leftJustify(startMlhMapString, 20);
+	  }
       else
       {
          FFStreamError err("This isn't a valid standard IONEX value type: " + 
@@ -189,6 +199,10 @@ namespace gpstk
       {
          line += leftJustify(endRmsMapString,20);
       }
+	  else if (type == IonexData::MLH)
+	  {
+		  line += leftJustify(endRmsMapString, 20);
+	  }
       else
       {
          FFStreamError err("This isn't a valid standard IONEX value type: " + 
@@ -290,6 +304,15 @@ namespace gpstk
             ilat = 0;
 
          }
+		 else if (label == startMlhMapString)
+		 {
+
+			 type = IonexData::MLH;
+			 ityp = 2;
+			 mapID = asInt(line.substr(0, 6));
+			 ilat = 0;
+
+		 }
          else if (label == startHgtMapString)
          {
 
@@ -398,6 +421,13 @@ namespace gpstk
             valid = true;
 
          }
+		 else if (label == endMlhMapString)
+		 {
+
+			 ityp = 0;
+			 valid = true;
+
+		 }
          else if (label == endOfFile)
          {
 

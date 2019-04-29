@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "statslib.hpp"
+
 #include "GPSWeekSecond.hpp"
 #include "BasicFramework.hpp"
 #include "PRSolution.hpp"
@@ -70,6 +72,10 @@ namespace EGNOS
 			EGNOS::EGNOSMapType mapType,
 			bool interPolationOn,
 			unsigned int updateIntervalinSeconds);
+
+		double calcMaximumLikeliHood(double mean1, double mean2, double std1, double std2);
+		double calcChi2Probability(double mean1, double std1, double mean2, double std2);
+		double probChi2_2D(double x);
 
 		std::string EGNOSMapType2String(EGNOS::EGNOSMapType mapType);
 		int calcDim(int lat1, int lat2, double dlat);
