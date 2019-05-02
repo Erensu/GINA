@@ -7,7 +7,7 @@ C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionC
 
 EGNOS_PL_Engine:
 start of arg
-47.464085 19.154686 100 3600 0.99 10 
+47.464085 19.154686 100 3600 0.99 10 0
 C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\Pos_lat47.464085lon19.154686h100_deltaT3600_el0_Tar_y2019_d019_136_Ref_CODG0190_brdc0190.pl 
 C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n 
 -e C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems 

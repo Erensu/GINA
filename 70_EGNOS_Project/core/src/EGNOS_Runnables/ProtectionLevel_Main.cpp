@@ -6,6 +6,8 @@
 namespace EGNOS {
 	namespace ProtectionLevel {
 
+		gpstk::IonoModel setKlobucharModel(gpstk::Rinex3NavHeader &hdr);
+
 		static void loadIonoModel(	IonoType IonoType,
 									int intervallBetweenEpochsinSecs,
 									std::string& ionexFile,
@@ -16,17 +18,25 @@ namespace EGNOS {
 		static void createIonexModel(std::string &ionexFile, 
 									gpstk::IonexStore &ionoStore);
 
-		static Eigen::MatrixXd createIonoCovMatrix(const gpstk::CommonTime &time,
-			const gpstk::GPSEphemerisStore &bcestore,
-			const vector<gpstk::SatID> &id,
-			EGNOS::IonoModel &pIonoModel,
-			const gpstk::Position &Rx,
-			Eigen::VectorXd& corrVector);
+		static double calcKlobucharCorrection(	const gpstk::CommonTime &time,
+												const gpstk::Position &rxgeo,
+												double svel,
+												double svaz,
+												const gpstk::IonoModel &klobucharModel);
+
+		/*static Eigen::MatrixXd createIonoCovMatrix(	const gpstk::CommonTime &time,
+													const gpstk::GPSEphemerisStore &bcestore,
+													const vector<gpstk::SatID> &id,
+													const EGNOS::IonoModel &pIonoModel,
+													const gpstk::IonoModel &klobucharModel,
+													const gpstk::Position &Rx,
+													Eigen::VectorXd& corrVector);*/
 
 		static Eigen::MatrixXd createIonoCovMatrix(	const gpstk::CommonTime &time,
 													const gpstk::GPSEphemerisStore &bcestore,
-													vector<gpstk::SatID> &id, 
+													vector<gpstk::SatID> &id,
 													EGNOS::IonoModel &pIonoModel,
+													const gpstk::IonoModel &klobucharModel,
 													const gpstk::Position &Rx,
 													Eigen::VectorXd& corrVector,
 													std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> &satInfo);
@@ -45,19 +55,21 @@ namespace EGNOS {
 										const gpstk::GPSEphemerisStore &bcestore,
 										gpstk::SatID &id,
 										EGNOS::IonoModel &pIonoModel,
+										const gpstk::IonoModel &klobucharModel,
 										const gpstk::Position Rx, 
 										double &corrInMeter,
 										double &varianceInMeter,
 										double &el, 
 										double &az);
 
-		void run_PL(std::string &ephData, 
+		void run_PL(std::string &ephData,
 					string& ionexFile,
-					std::string& EMSData, 
-					std::string& PLwPath_out, 
-					double elevationMask, 
-					IonoType referenceIonoType, 
-					IonoType targetIonoType, 
+					std::string& EMSData,
+					std::string& PLwPath_out,
+					double elevationMask,
+					IonoType referenceIonoType,
+					IonoType targetIonoType,
+					bool useKlobucharasSecunderModel,
 					double latgeodetic, 
 					double lon, 
 					double height, 
@@ -82,23 +94,8 @@ namespace EGNOS {
 			std::vector<gpstk::CommonTime> epochsForPL;
 			std::vector<gpstk::CommonTime> refEpochsForPL;
 
+			gpstk::IonoModel klobucharModel;
 
-			loadIonoModel(	targetIonoType,
-							intervallBetweenEpochsinSecs,
-							ionexFile,
-							EMSData,
-							epochsForPL,
-							&targetIonoModel_PLEngine);
-
-			loadIonoModel(	referenceIonoType,
-							intervallBetweenEpochsinSecs,
-							ionexFile,
-							EMSData,
-							refEpochsForPL,
-							&referenceIonoModel_PLEngine);
-
-			std::cout << "IonoModel is set " << std::endl;
-			
 			// Read nav file and store unique list of ephemerides
 			gpstk::Rinex3NavStream rnffs(ephData.c_str());    // Open ephemerides data file
 			gpstk::Rinex3NavData rne;
@@ -124,6 +121,37 @@ namespace EGNOS {
 			}
 			// Setting the criteria for looking up ephemeris
 			bcestoreGps.SearchNear();
+
+			// Set Klobuchar model if required
+			if (useKlobucharasSecunderModel == true) {
+				try
+				{
+					klobucharModel = setKlobucharModel(hdr);
+				}
+				catch (const std::domain_error& e)
+				{
+					std::cout << e.what() << std::endl;
+					exit(1);
+				}
+			}
+
+			// Load Iono models
+			loadIonoModel(	targetIonoType,
+							intervallBetweenEpochsinSecs,
+							ionexFile,
+							EMSData,
+							epochsForPL,
+							&targetIonoModel_PLEngine);
+
+			loadIonoModel(	referenceIonoType,
+							intervallBetweenEpochsinSecs,
+							ionexFile,
+							EMSData,
+							refEpochsForPL,
+							&referenceIonoModel_PLEngine);
+
+			std::cout << "IonoModel is set " << std::endl;
+			
 			
 			EGNOS::ProtectionLevel::EGNOS_PL plEngine(bcestoreGps, bcestoreGal, bcestoreGlo);
 			double hp_radius = 0;
@@ -158,7 +186,7 @@ namespace EGNOS {
 						std::exit(1);
 					}
 
-					CovMatrix = createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *targetIonoModel_PLEngine, Rx, corrVector, plData.satInfo);
+					CovMatrix = createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *targetIonoModel_PLEngine, klobucharModel, Rx, corrVector, plData.satInfo);
 					WeightMatrix = CovMatrix.inverse();
 
 					for (int a = 0; a < original_prnVec.size(); a++){
@@ -174,7 +202,7 @@ namespace EGNOS {
 						Eigen::VectorXd corrVector_reff;
 						try
 						{
-							(void)createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *referenceIonoModel_PLEngine, Rx, corrVector_reff, plData.satInfo);
+							(void)createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *referenceIonoModel_PLEngine, klobucharModel, Rx, corrVector_reff, plData.satInfo);
 							
 							gpstk::CivilTime errorTime(epochsForPL[epochIndex]);
 							if (corrVector_reff.size() != corrVector.size()) {
@@ -246,6 +274,51 @@ namespace EGNOS {
 			delete referenceIonoModel_PLEngine;
 			delete targetIonoModel_PLEngine;
 			std::exit(0);
+		}
+
+		static gpstk::IonoModel setKlobucharModel(gpstk::Rinex3NavHeader &hdr) {
+
+			std::map<std::string, gpstk::IonoCorr>::iterator it;
+
+			gpstk::IonoCorr alfa;
+			gpstk::IonoCorr beta;
+
+			it = hdr.mapIonoCorr.find("GPSA");
+
+			if (it != hdr.mapIonoCorr.end()){
+			
+				alfa = it->second;
+			}
+			else {
+				throw std::domain_error("Alpha parameters are missing for Klobuchar model");
+			}
+
+			it = hdr.mapIonoCorr.find("GPSB");
+
+			if (it != hdr.mapIonoCorr.end()){
+				
+				beta = it->second;
+			}
+			else {
+				throw std::domain_error("Beta parameters are missing for Klobuchar model");
+			}
+
+			double a[4];
+			double b[4];
+
+			a[0] = alfa.param[0];
+			a[1] = alfa.param[1];
+			a[2] = alfa.param[2];
+			a[3] = alfa.param[3];
+
+			b[0] = beta.param[0];
+			b[1] = beta.param[1];
+			b[2] = beta.param[2];
+			b[3] = beta.param[3];
+
+			gpstk::IonoModel klobucharModel(a,b);
+
+			return klobucharModel;
 		}
 
 		static void loadIonoModel(	IonoType IonoType, 
@@ -339,10 +412,30 @@ namespace EGNOS {
 				}
 		}
 
+		static double calcKlobucharCorrection(	const gpstk::CommonTime &time, 
+												const gpstk::Position &rxgeo, 
+												double svel, 
+												double svaz, 
+												const gpstk::IonoModel &klobucharModel) {
+
+			double ionoCorr = 0;
+			try
+			{
+				ionoCorr = klobucharModel.getCorrection(time, rxgeo, svel, svaz, gpstk::IonoModel::Frequency::L1);
+			}
+			catch (const std::exception&)
+			{
+				throw domain_error("Klobuschar correction is uncalculable.");
+			}
+			
+			return ionoCorr;
+		}
+
 		static Eigen::MatrixXd createIonoCovMatrix(	const gpstk::CommonTime &time, 
 													const gpstk::GPSEphemerisStore &bcestore, 
 													vector<gpstk::SatID> &id, 
 													EGNOS::IonoModel &pIonoModel, 
+													const gpstk::IonoModel &klobucharModel,
 													const gpstk::Position &Rx,
 													Eigen::VectorXd& corrVector, 
 													std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> &satInfo) {
@@ -359,103 +452,117 @@ namespace EGNOS {
 
 				double elevation;
 				double azimuth;
+				double F = 0;
+
+				SlantIonoDelay_Input inputData;
+				IonosphericGridPoint igpPP;
+				SlantIonoDelay slantCalculator;
+				ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo info;
+
+				info.az_deg_valid = false;
+				info.el_deg_valid = false;
+				info.ippLat_valid = false;
+				info.ippLon_valid = false;
+				info.satId = tempId[i];
+				info.ionoCorr_meter_valid = false;
+				info.ionoRMS_meter_valid = false;
+
 				try
 				{
-					applyIonoCorrection(time, bcestore, tempId[i], pIonoModel, Rx, tempCorr, tempVar, elevation, azimuth);
+					gpstk::Xvt SVxvt;
+					SVxvt = bcestore.getXvt(tempId[i], time);
+					gpstk::Position S(SVxvt);
+					elevation = Rx.elevationGeodetic(S);
+					azimuth = Rx.azimuthGeodetic(S);
+
+					inputData.RoverPos.rlat = Rx.geodeticLatitude();
+					inputData.RoverPos.rlon = Rx.longitude();
+					inputData.RoverPos.rheight = Rx.height();
+					inputData.SatVisibility.elevationOfSatId = elevation;
+					inputData.SatVisibility.azimuthOfSatId = azimuth;
+
+					F = slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
+
+					info.az_deg = azimuth;
+					info.az_deg_valid = true;
+					info.el_deg = elevation;
+					info.el_deg_valid = true;
+					info.ippLat = igpPP.lat;
+					info.ippLat_valid = true;
+					info.ippLon = igpPP.lon;
+					info.ippLon_valid = true;
+				}
+				catch (const std::exception& e)
+				{
+					continue;
+				}
+				
+				try
+				{
+					applyIonoCorrection(time, bcestore, tempId[i], pIonoModel, klobucharModel, Rx, tempCorr, tempVar, elevation, azimuth);
 					ionoCorrections.push_back(tempCorr);
 					ionoVariance.push_back(tempVar);
 					id.push_back(tempId[i]);
 
-					ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo info;
-
-					SlantIonoDelay_Input inputData;
-					IonosphericGridPoint igpPP;
-					SlantIonoDelay slantCalculator;
-
-					inputData.RoverPos.rlat = Rx.geodeticLatitude();
-					inputData.RoverPos.rlon = Rx.longitude();
-					inputData.RoverPos.rheight = Rx.height();
-					inputData.SatVisibility.elevationOfSatId = elevation;
-					inputData.SatVisibility.azimuthOfSatId = azimuth;
-
-					(void)slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
-
-					info.satId = tempId[i];
-
 					info.ionoCorr_meter = tempCorr;
 					info.ionoCorr_meter_valid = true;
-
 					info.ionoRMS_meter = sqrt(tempVar);
 					info.ionoRMS_meter_valid = true;
-
-					info.az_deg = azimuth;
-					info.az_deg_valid = true;
-
-					info.el_deg = elevation;
-					info.el_deg_valid = true;
-
-					info.ippLat = igpPP.lat;
-					info.ippLat_valid = true;
-
-					info.ippLon = igpPP.lon;
-					info.ippLon_valid = true;
-
-					satInfo.push_back(info);
 				}
 				catch (const std::exception& e)
 				{
-					ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo info;
 					try
 					{
-						gpstk::Xvt SVxvt;
-						SVxvt = bcestore.getXvt(tempId[i], time);
-						gpstk::Position S(SVxvt);
-						elevation = Rx.elevationGeodetic(S);
-						azimuth = Rx.azimuthGeodetic(S);
+						if (klobucharModel.isValid()) {
+
+							double klobucharCorr = calcKlobucharCorrection(time, Rx, elevation, azimuth, klobucharModel);
+							double corrInMeter = klobucharCorr;
+							double varianceInMeterfromKlobuchar = std::pow((klobucharCorr / 5), 2);
+							double VariancesfromVertices = 0;
+
+							if (0 <= std::abs(igpPP.lat) && std::abs(igpPP.lat) <= 20) {
+								VariancesfromVertices = std::pow(F * 9,2);
+							}
+							else if (20 < std::abs(igpPP.lat) && std::abs(igpPP.lat) < 55) {
+								VariancesfromVertices = std::pow(F * 4.5, 2);
+							}
+							else if (55 < std::abs(igpPP.lat)) {
+								VariancesfromVertices = std::pow(F * 4.5, 2);
+							}
+							else {
+								VariancesfromVertices = std::pow(F * 6, 2);
+							}
+
+							double varianceInMeter;
+							if (VariancesfromVertices > varianceInMeterfromKlobuchar) {
+								varianceInMeter = VariancesfromVertices;
+							}
+							else {
+								varianceInMeter = varianceInMeterfromKlobuchar;
+							}
+
+							info.ionoCorr_meter = corrInMeter;
+							info.ionoCorr_meter_valid = true;
+							info.ionoRMS_meter = sqrt(varianceInMeter);
+							info.ionoRMS_meter_valid = true;
+
+							ionoCorrections.push_back(corrInMeter);
+							ionoVariance.push_back(varianceInMeter);
+							id.push_back(tempId[i]);
+						}
+
 					}
 					catch (gpstk::Exception& e) {
 
-						info.az_deg_valid = false;
-						info.el_deg_valid = false;
-						info.ippLat_valid = false;
-						info.ippLon_valid = false;
-
+						satInfo.push_back(info);
 						continue;
 					}
-
-					SlantIonoDelay_Input inputData;
-					IonosphericGridPoint igpPP;
-					SlantIonoDelay slantCalculator;
-
-					inputData.RoverPos.rlat = Rx.geodeticLatitude();
-					inputData.RoverPos.rlon = Rx.longitude();
-					inputData.RoverPos.rheight = Rx.height();
-					inputData.SatVisibility.elevationOfSatId = elevation;
-					inputData.SatVisibility.azimuthOfSatId = azimuth;
-
-					(void)slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
-
-					info.satId = tempId[i];
-
-					info.ionoCorr_meter_valid = false;
-					info.ionoRMS_meter_valid = false;
-
-					info.az_deg = azimuth;
-					info.az_deg_valid = true;
-
-					info.el_deg = elevation;
-					info.el_deg_valid = true;
-
-					info.ippLat = igpPP.lat;
-					info.ippLat_valid = true;
-
-					info.ippLon = igpPP.lon;
-					info.ippLon_valid = true;
 
 					satInfo.push_back(info);
 					continue;
 				}
 
+				satInfo.push_back(info);
 			}
 
 			if (ionoCorrections.size() == 0) {
@@ -472,20 +579,21 @@ namespace EGNOS {
 			return CovMatrix;
 		}
 
-		static Eigen::MatrixXd createIonoCovMatrix(	const gpstk::CommonTime &time, 
+		/*static Eigen::MatrixXd createIonoCovMatrix(	const gpstk::CommonTime &time, 
 													const gpstk::GPSEphemerisStore &bcestore, 
 													const vector<gpstk::SatID> &id, 
-													EGNOS::IonoModel &pIonoModel, 
+													const EGNOS::IonoModel &pIonoModel, 
+													const gpstk::IonoModel &klobucharModel,
 													const gpstk::Position &Rx, 
 													Eigen::VectorXd& corrVector) {
 			
 			std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> satInfo;
 			Eigen::MatrixXd returnCovMatrix;
 			vector<gpstk::SatID> local_id = id;
-			returnCovMatrix = createIonoCovMatrix(time, bcestore, local_id, pIonoModel, Rx, corrVector, satInfo);
+			returnCovMatrix = createIonoCovMatrix(time, bcestore, local_id, pIonoModel, klobucharModel, Rx, corrVector, satInfo);
 
 			return returnCovMatrix;
-		}
+		}*/
 
 		static std::vector<gpstk::CommonTime> createVectorofEpochforPLCalc(	EGNOS::IonoModel &iono, 
 																			int intervallBetweenEpochsinSecs) {
@@ -564,6 +672,7 @@ namespace EGNOS {
 											const gpstk::GPSEphemerisStore &bcestore, 
 											gpstk::SatID &id, 
 											EGNOS::IonoModel &pIonoModel, 
+											const gpstk::IonoModel &klobucharModel,
 											const gpstk::Position Rx, 
 											double &corrInMeter, 
 											double &varianceInMeter,

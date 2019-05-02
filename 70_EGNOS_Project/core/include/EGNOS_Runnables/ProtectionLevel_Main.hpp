@@ -66,7 +66,7 @@ namespace EGNOS {
 			zero
 		}IonoType;
 
-		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, std::string& PLwPath_out, double elevationMask, IonoType referenceIonoType, IonoType targetIonoType, double latgeodetic, double lon, double height, int intervallBetweenEpochsinSecs_in, double probability_of_inner_circle);
+		void run_PL(std::string &ephData, string& ionexFile, std::string& EMSData, std::string& PLwPath_out, double elevationMask, IonoType referenceIonoType, IonoType targetIonoType, bool useKlobucharasSecunderModel, double latgeodetic, double lon, double height, int intervallBetweenEpochsinSecs_in, double probability_of_inner_circle);
 	};
 };
 
