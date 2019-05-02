@@ -251,8 +251,15 @@ namespace gpstk
       virtual ~ComputeMOPSWeights() {};
 
 
-   private:
+	  // Compute ionospheric sigma^2 according to Appendix J.2.3
+	  // and Appendix A.4.4.10.4 in MOPS-C
+	  double sigma2iono(const double& ionoCorrection,
+		  const double& elevation,
+		  const double& azimuth,
+		  const Position& rxPosition)
+		  throw(InvalidWeights);
 
+   private:
 
          /// Default receiver class (the usual value is 2).
       int receiverClass;
@@ -277,15 +284,6 @@ namespace gpstk
                                 typeValueMap& tvMap )
          throw(InvalidWeights);
 #pragma clang diagnostic pop
-
-         // Compute ionospheric sigma^2 according to Appendix J.2.3
-         // and Appendix A.4.4.10.4 in MOPS-C
-      double sigma2iono( const double& ionoCorrection,
-                         const double& elevation,
-                         const double& azimuth,
-                         const Position& rxPosition )
-         throw(InvalidWeights);
-
 
    }; // End of class 'ComputeMOPSWeights'
 

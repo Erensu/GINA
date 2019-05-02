@@ -515,36 +515,11 @@ namespace EGNOS {
 					{
 						if (klobucharModel.isValid()) {
 
-							double klobucharCorr = calcKlobucharCorrection(time, Rx, elevation, azimuth, klobucharModel);
-							double corrInMeter = klobucharCorr;
-							double varianceInMeterfromKlobuchar = std::pow((klobucharCorr / 5), 2);
-							double VariancesfromVertices = 0;
+							double varianceInMeter = 0;
+							double corrInMeter = calcKlobucharCorrection(time, Rx, elevation, azimuth, klobucharModel);
 
-							if (0 <= std::abs(igpPP.lat) && std::abs(igpPP.lat) <= 20) {
-								VariancesfromVertices = std::pow(F * 9,2);
-							}
-							else if (20 < std::abs(igpPP.lat) && std::abs(igpPP.lat) < 55) {
-								VariancesfromVertices = std::pow(F * 4.5, 2);
-							}
-							else if (55 < std::abs(igpPP.lat)) {
-								VariancesfromVertices = std::pow(F * 4.5, 2);
-							}
-							else {
-								VariancesfromVertices = std::pow(F * 6, 2);
-							}
-
-							double varianceInMeter;
-							if (VariancesfromVertices > varianceInMeterfromKlobuchar) {
-								varianceInMeter = VariancesfromVertices;
-							}
-							else {
-								varianceInMeter = varianceInMeterfromKlobuchar;
-							}
-
-							info.ionoCorr_meter = corrInMeter;
-							info.ionoCorr_meter_valid = true;
-							info.ionoRMS_meter = sqrt(varianceInMeter);
-							info.ionoRMS_meter_valid = true;
+							gpstk::ComputeMOPSWeights weightComp;
+							varianceInMeter = weightComp.sigma2iono(corrInMeter, elevation, azimuth, Rx);
 
 							ionoCorrections.push_back(corrInMeter);
 							ionoVariance.push_back(varianceInMeter);

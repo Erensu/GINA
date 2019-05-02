@@ -53,6 +53,9 @@
 #include "ProtectionLevel_Data.hpp"
 #include "ProtectionLevel_Stream.hpp"
 
+// MOPS weigh calculation
+#include "ComputeMOPSWeights.hpp"
+
 // GPSTK Iono models
 #include <ComputeIonoModel.hpp>
 
