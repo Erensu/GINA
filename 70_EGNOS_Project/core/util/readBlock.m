@@ -41,8 +41,8 @@ function [tec_map, year, month, day, hour, minute, sec] = readBlock( fin, lat, l
               
                   ii = ii + 1;
                   tec_map(ii, 3) = tec_data;
-                  tec_map(ii, 2) = lat(i);
-                  tec_map(ii, 1) = lon(l);
+                  tec_map(ii, 2) = lon(l) ;
+                  tec_map(ii, 1) = lat(i);
               end
             end
           end

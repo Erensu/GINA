@@ -1,6 +1,5 @@
 function [] = plotIonoMap(fullFileName, world_map, tec_map, plotTitle, minC, maxC)
 
-%plot TEC MAP
         map = figure('visible','off');
         scatter(tec_map(:,1), tec_map(:,2), 50, tec_map(:,3), 's', 'filled');
         hold on;

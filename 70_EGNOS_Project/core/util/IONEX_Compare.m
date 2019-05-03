@@ -1,43 +1,34 @@
-%octave script to read ionex file and draw Total Electron Content map(s)
+%Matlab script to read ionex file and draw Total Electron Content map(s)
 
-clear all; close all; clc; %page_screen_output(0)
+clear all; close all; clc; 
 folder = fileparts(which(mfilename)); 
 addpath(genpath(folder));
 
-%ionex file name as the first argument
-%if nargin == 1
-%  arg_list = argv ();
-%  ionex_file = arg_list{1};
-%else
-    ionex_file = '\DebugFiles\Diff_CODG1030-y2019_d103_136.ion';  %just for testing
-    plusFilePath2Pics = '\DebugPlots';
-    plusFilePath2POutput = '\DebugOutputs';
+ionex_file = '\DebugFiles\Diff_CODG190-y2019_d019_136.ion';  %just for testing
+plusFilePath2Pics = '\DebugPlots';
+plusFilePath2POutput = '\DebugOutputs';
     
-    filewPath = which(ionex_file);
-    [filepath,name,ext] = fileparts(filewPath);
-
-    outPutFileNamewPath_TEC = 'Dummy_TEC.txt';
-    outPutFileNamewPath_RMS = 'Dummy_RMS.txt';
-    outPutFileNamewPath_MLH = 'Dummy_MLH.txt';
-    outPutFileNamewPath_CH2 = 'Dummy_CH2.txt';
-    
-    fullFileName_TEC = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_TEC);
-    fullFileName_RMS = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_RMS);
-    fullFileName_MLH = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_MLH);
-    fullFileName_CH2 = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_CH2);
-    
-	fopen(fullFileName_TEC,'w');
-    fopen(fullFileName_RMS','w');
-    fopen(fullFileName_MLH,'w');
-    fopen(fullFileName_CH2,'w');
-    close all;
-    
-if exist(filewPath, 'file') == 2
-    
-else
-    error('%s file open error\n', filewPath);
+filewPath = which(ionex_file);
+if exist(filewPath, 'file') ~= 2
+   	error('%s file open error\n', filewPath);
 end
+[filepath,name,ext] = fileparts(filewPath);
 
+outPutFileNamewPath_TEC = ['PlotData_',name,'_TEC',ext];
+outPutFileNamewPath_RMS = ['PlotData_',name,'_RMS',ext];
+outPutFileNamewPath_MLH = ['PlotData_',name,'_MLH',ext];
+outPutFileNamewPath_CH2 = ['PlotData_',name,'_CH2',ext];
+
+fullFileName_TEC = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_TEC);
+fullFileName_RMS = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_RMS);
+fullFileName_MLH = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_MLH);
+fullFileName_CH2 = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_CH2);
+    
+fopen(fullFileName_TEC,'w');
+fopen(fullFileName_RMS','w');
+fopen(fullFileName_MLH,'w');
+fopen(fullFileName_CH2,'w');
+close all;
 
 [fin, errormsg] = fopen(filewPath, 'r');
 if errormsg
@@ -84,14 +75,14 @@ while ~feof(fin)
             n_ch2=n_ch2+1;
         end  
 
-      	% Read data block
+      	%% Read data block
       	[iono_map, year, month, day, hour, minute, sec] = readBlock(fin, lat, lon, unitOfData);
 
      	if(isempty(iono_map))
             continue;
      	end
 
-        %short output of current map
+        %% Short output of current map
         if strfind(type_of_data,'TEC')
             fprintf ('%d TEC MAP read %d %02d %02d %02d:%02d:%02d\n', n_maps, year, month, day, hour, minute, sec);
         elseif strfind(type_of_data,'RMS')
@@ -106,7 +97,7 @@ while ~feof(fin)
      	fprintf ('max %.1f min %.1f\n', max(iono_map(:,3)), min(iono_map(:,3)));
 
 
-     	% Create plot file name and plot title
+     	%% Create plot file name and plot title
      	fullFileName = [];
      	plotTitle = [];
      	if strfind(type_of_data,'TEC')
@@ -124,8 +115,7 @@ while ~feof(fin)
             fullFileName = fullfile(filepath,plusFilePath2Pics,sprintf(strcat(strrep(strcat(name,ext),'.','_'), '_ch2%02d'), n_rms));
         end
 
-     	% Plot
-
+     	%% Plot
     	% Calc min max values for plot limit
       	minData = min(iono_map(:,3));
         maxData = max(iono_map(:,3));
@@ -146,6 +136,7 @@ while ~feof(fin)
 
     	plotIonoMap(fullFileName, world_map, iono_map, plotTitle, minC, maxC);
 
+        %% Save Iono Map data to File
         fullFileName = [];
         if strfind(type_of_data,'TEC')
             fullFileName_TEC = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_TEC);
