@@ -15,7 +15,7 @@ namespace EGNOS {
 									std::vector<gpstk::CommonTime> &epochsForPL,
 									EGNOS::IonoModel **IonoModel_PLEngine);
 
-		static void createIonexModel(std::string &ionexFile, 
+		static gpstk::IonexHeader createIonexModel(std::string &ionexFile,
 									gpstk::IonexStore &ionoStore);
 
 		static double calcKlobucharCorrection(	const gpstk::CommonTime &time,
@@ -345,8 +345,15 @@ namespace EGNOS {
 					gpstk::IonexStore ionoStore;
 					try
 					{
-						createIonexModel(ionexFile, ionoStore);
-						EGNOS::IonexModel *ionexModel = new EGNOS::IonexModel();
+						gpstk::IonexHeader hdr = createIonexModel(ionexFile, ionoStore);
+						double heightOfIonoLayerinMeter = hdr.hgt[0];
+
+						// If the iono model is not a single layer one, we throw an error.
+						if (hdr.hgt[2] != 0) {
+							throw domain_error("Iono model is not a single layer model. EGNOS::IonexModel class is not able to handle this case correctly");
+						}
+						
+						EGNOS::IonexModel *ionexModel = new EGNOS::IonexModel(heightOfIonoLayerinMeter);
 						ionexModel->addIonexStore(ionoStore);
 
 						epochsForPL = createVectorofEpochforPLCalc(*ionexModel, intervallBetweenEpochsinSecs);
@@ -370,7 +377,7 @@ namespace EGNOS {
 
 		}
 
-		static void createIonexModel(std::string &ionexFile, gpstk::IonexStore &ionoStore) {
+		static gpstk::IonexHeader createIonexModel(std::string &ionexFile, gpstk::IonexStore &ionoStore) {
 		
 				// Stream creation
 				gpstk::IonexStream strm(ionexFile.c_str(), std::ios::in);
@@ -399,7 +406,7 @@ namespace EGNOS {
 
 				// keep an inventory of the loaded files 
 				ionoStore.addFile(ionexFile, header);
-
+			
 				// this map is useful in finding DCB value
 				ionoStore.inxDCBMap[header.firstEpoch] = header.svsmap;
 
@@ -410,6 +417,8 @@ namespace EGNOS {
 					iod.time.setTimeSystem(gpstk::TimeSystem::GPS);
 					ionoStore.addMap(iod);
 				}
+
+				return header;
 		}
 
 		static double calcKlobucharCorrection(	const gpstk::CommonTime &time, 

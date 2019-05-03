@@ -54,6 +54,7 @@ namespace EGNOS {
 		static const double Re;
 		static const double hI;
 
+		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon, double heightOfIonoLayerinMeter);
 		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon);
 
 	private:
@@ -62,7 +63,7 @@ namespace EGNOS {
 		void setazimuthOfSatId(double az, double el);
 
 		void calculatePP(double &lat, double &lon);
-		double calculateSlantFactor(void);
+		double calculateSlantFactor(double heightOfIonoLayer);
 
 		double rlat;
 		double rlon;
@@ -95,6 +96,7 @@ namespace EGNOS {
 		public:
 
 			IonexModel(void) { this->heightOfIonoLayerinMeter = 350000; };
+			IonexModel(double heightOfIonoLayerinMeter) { this->heightOfIonoLayerinMeter = heightOfIonoLayerinMeter; };
 			IonexModel(gpstk::IonexStore &ionoStore);
 			IonexModel(gpstk::IonexStore &ionoStore, double heightOfIonoLayerinMeter);
 			~IonexModel() {};
@@ -283,7 +285,8 @@ namespace EGNOS {
 		
 	public:
 
-		EGNOSIonoCorrectionModel() {};
+		EGNOSIonoCorrectionModel(void) {};
+		
 		~EGNOSIonoCorrectionModel() {delete ptrIonoMapStore;};
 
 		void load(std::string EDAS_FileNamewPath);
@@ -305,6 +308,7 @@ namespace EGNOS {
 		IGPMapStore *ptrIonoMapStore = NULL;
 		VerticalIonoDelayInterpolator interPol;
 		SlantIonoDelay slantCalculator;
+		double heightOfIonoLayerinMeter = 350000;
 	};
 
 };

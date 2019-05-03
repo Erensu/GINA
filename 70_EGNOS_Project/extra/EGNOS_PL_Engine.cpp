@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
 	if (argc == 14) {
 		if (std::string(argv[12]) == "-i") {
 			referenceIonoType = EGNOS::ProtectionLevel::IonoType::ionex;
-			ionex_FileNamewPath = argv[12];
+			ionex_FileNamewPath = argv[13];
 		}
 		else if (std::string(argv[12]) == "-e") {
 			referenceIonoType = EGNOS::ProtectionLevel::IonoType::egnos;

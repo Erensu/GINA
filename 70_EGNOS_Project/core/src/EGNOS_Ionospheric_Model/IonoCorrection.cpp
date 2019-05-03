@@ -23,6 +23,21 @@ namespace EGNOS {
 
 #pragma region SlantIonoDelay
 
+	double SlantIonoDelay::getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon, double heightOfIonoLayerinMeter) {
+
+		double F = 1;
+		setRoverPosition(data.RoverPos.rlat, data.RoverPos.rlon, data.RoverPos.rheight);
+		setazimuthOfSatId(data.SatVisibility.azimuthOfSatId, data.SatVisibility.elevationOfSatId);
+
+		calculatePP(lat, lon);
+
+		lat = lat * 180 / M_PI;
+		lon = std::fmod(lon * 180 / M_PI, 180);
+		F = calculateSlantFactor(heightOfIonoLayerinMeter);
+
+		return F;
+	}
+
 	double SlantIonoDelay::getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon){
 
 		double F = 1;
@@ -33,7 +48,7 @@ namespace EGNOS {
 
 		lat = lat * 180 / M_PI;
 		lon = std::fmod(lon * 180 / M_PI,180);
-		F = calculateSlantFactor();
+		F = calculateSlantFactor(hI);
 
 		return F;
 	}
@@ -74,11 +89,11 @@ namespace EGNOS {
 		lon = ppLon;
 	}
 
-	double SlantIonoDelay::calculateSlantFactor(void) {
+	double SlantIonoDelay::calculateSlantFactor(double heightOfIonoLayer) {
 	
 		double F;
 
-		F = std::pow( 1 - pow( ( Re * cos(elevationOfSatId)) / (Re + hI) , 2) , -0.5);
+		F = std::pow( 1 - pow( ( Re * cos(elevationOfSatId)) / (Re + heightOfIonoLayer) , 2) , -0.5);
 
 		return F;
 	}
@@ -2422,7 +2437,7 @@ namespace EGNOS {
 		double F = 1;
 		try
 		{
-			F = this->slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
+			F = this->slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon, heightOfIonoLayerinMeter);
 		}
 		catch (const std::exception& e)
 		{
@@ -2575,7 +2590,7 @@ namespace EGNOS {
 		double F = 1;
 		try
 		{
-			F = this->slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon);
+			F = this->slantCalculator.getSlantFactorandPP(inputData, igpPP.lat, igpPP.lon, heightOfIonoLayerinMeter);
 		}
 		catch (const std::exception& e)
 		{
