@@ -62,7 +62,7 @@ namespace EGNOS {
 		void setRoverPosition(double lat, double lon, double height);
 		void setazimuthOfSatId(double az, double el);
 
-		void calculatePP(double &lat, double &lon);
+		void calculatePP(double &lat, double &lon, double height_in_meter);
 		double calculateSlantFactor(double heightOfIonoLayer);
 
 		double rlat;

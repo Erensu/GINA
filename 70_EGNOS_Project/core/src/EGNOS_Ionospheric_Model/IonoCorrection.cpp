@@ -29,7 +29,7 @@ namespace EGNOS {
 		setRoverPosition(data.RoverPos.rlat, data.RoverPos.rlon, data.RoverPos.rheight);
 		setazimuthOfSatId(data.SatVisibility.azimuthOfSatId, data.SatVisibility.elevationOfSatId);
 
-		calculatePP(lat, lon);
+		calculatePP(lat, lon, heightOfIonoLayerinMeter);
 
 		lat = lat * 180 / M_PI;
 		lon = std::fmod(lon * 180 / M_PI, 180);
@@ -44,7 +44,7 @@ namespace EGNOS {
 		setRoverPosition(data.RoverPos.rlat, data.RoverPos.rlon, data.RoverPos.rheight);
 		setazimuthOfSatId(data.SatVisibility.azimuthOfSatId, data.SatVisibility.elevationOfSatId);
 
-		calculatePP(lat, lon);
+		calculatePP(lat, lon, hI);
 
 		lat = lat * 180 / M_PI;
 		lon = std::fmod(lon * 180 / M_PI,180);
@@ -66,11 +66,12 @@ namespace EGNOS {
 		this->elevationOfSatId = el * M_PI / 180.0;
 	}
 
-	void SlantIonoDelay::calculatePP(double &lat, double &lon) {
+
+	void SlantIonoDelay::calculatePP(double &lat, double &lon, double height_in_meter) {
 
 		double centralAngle;
 
-		centralAngle = M_PI/2 - this->elevationOfSatId - asin(( Re / (Re + hI)) * cos(this->elevationOfSatId));
+		centralAngle = M_PI/2 - this->elevationOfSatId - asin(( Re / (Re + height_in_meter)) * cos(this->elevationOfSatId));
 
 		this->ppLat = asin(sin(this->rlat) * cos(centralAngle) + cos(this->rlat) * sin(centralAngle) * cos(this->azimuthOfSatId));
 
