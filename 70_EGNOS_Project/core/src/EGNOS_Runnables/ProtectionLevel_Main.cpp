@@ -346,7 +346,7 @@ namespace EGNOS {
 					try
 					{
 						gpstk::IonexHeader hdr = createIonexModel(ionexFile, ionoStore);
-						double heightOfIonoLayerinMeter = hdr.hgt[0];
+						double heightOfIonoLayerinMeter = hdr.hgt[0]*1000;
 
 						// If the iono model is not a single layer one, we throw an error.
 						if (hdr.hgt[2] != 0) {
