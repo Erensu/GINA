@@ -6,7 +6,7 @@
 namespace EGNOS {
 	namespace ProtectionLevel {
 
-		gpstk::IonoModel setKlobucharModel(gpstk::Rinex3NavHeader &hdr);
+		static gpstk::IonoModel setKlobucharModel(gpstk::Rinex3NavHeader &hdr);
 
 		static void loadIonoModel(	IonoType IonoType,
 									int intervallBetweenEpochsinSecs,
@@ -165,7 +165,6 @@ namespace EGNOS {
 				vector<gpstk::SatID> prnVec;
 				vector<gpstk::SatID> original_prnVec;
 				vector<gpstk::SatID> excluded_prnVec;
-				std::vector<gpstk::SatID>::iterator SatId_it;
 
 				createVectorofCandidateSV(prnVec);
 
