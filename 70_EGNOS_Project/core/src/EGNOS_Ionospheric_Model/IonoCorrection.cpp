@@ -2576,6 +2576,58 @@ namespace EGNOS {
 		this->heightOfIonoLayerinMeter = 350000;
 	};
 
+	IonCorrandVar IonexModel::getCorrection(const gpstk::CommonTime &epoch, double ippLat, double ippLon, double elevation) {
+	
+		SlantIonoDelay_Input inputData;
+		IonosphericGridPoint igpPP;
+
+		igpPP.lat = ippLat;
+		igpPP.lon = ippLon;
+
+		double F = 1;
+		try
+		{
+			F = this->slantCalculator.calculateSlantFactor(350000);
+		}
+		catch (const std::exception& e)
+		{
+			std::string errMessage = e.what();
+			errMessage = errMessage + "\n" + "Iono pierce point is uncalculable";
+			throw domain_error(errMessage);
+		}
+
+		gpstk::Position PP(igpPP.lat,
+			igpPP.lon,
+			heightOfIonoLayerinMeter,
+			gpstk::Position::CoordinateSystem::Geodetic,
+			NULL, gpstk::ReferenceFrame::WGS84);
+
+		PP.transformTo(gpstk::Position::CoordinateSystem::Geocentric);
+		gpstk::Triple tecval;
+		try
+		{
+			tecval = this->ionoStore.getIonexValue(epoch, PP, 3);
+		}
+		catch (const gpstk::InvalidRequest&)
+		{
+			try
+			{
+				tecval = this->ionoStore.getIonexValue(epoch, PP, 4);
+			}
+			catch (const gpstk::InvalidRequest&)
+			{
+				throw domain_error("Iono value is not available");
+			}
+		}
+
+		IonCorrandVar corr;
+
+		corr.CorrinMeter = F * tecval[0] * TEC_IN_METER;
+		corr.Variance = F* F * tecval[1] * TEC_IN_METER * tecval[1] * TEC_IN_METER;
+
+		return corr;
+	}
+
 	IonCorrandVar IonexModel::getCorrection(const gpstk::CommonTime &epoch, const gpstk::Position RX, double elevation, double azimuth) {
 	
 

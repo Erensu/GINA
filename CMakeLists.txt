@@ -128,6 +128,8 @@ add_subdirectory (69_GINA)
 option( EGNOS_RUNNABLES_EMS2IONEX "HELP: BUILD_EGNOS_RUNNABLES EMS2IONEX converter: SWITCH, Default = ON, Build the EMS 2 IONEX converter" ON )
 option( EGNOS_RUNNABLES_COMPARE_IONEX_FILES "HELP: EGNOS_RUNNABLES_COMPARE_IONEX_FILES compare two IONEX files: SWITCH, Default = ON, Build the compare two IONEX files" ON )
 option( EGNOS_RUNNABLES_PL_ENGINE "HELP: EGNOS Protection level engine: SWITCH, Default = ON, calculate PL from EMS file" ON )
+option( PEGASUS_IONO_UTIL "HELP: EGNOS PEGASUS iono utility: SWITCH, Default = ON, calculate iono delay from ionex according to the given Pegasus file" ON )
+
 add_subdirectory (70_EGNOS_Project)
 
 

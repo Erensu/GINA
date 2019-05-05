@@ -56,6 +56,8 @@ namespace EGNOS {
 
 		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon, double heightOfIonoLayerinMeter);
 		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon);
+		
+		double calculateSlantFactor(double heightOfIonoLayer);
 
 	private:
 
@@ -63,8 +65,7 @@ namespace EGNOS {
 		void setazimuthOfSatId(double az, double el);
 
 		void calculatePP(double &lat, double &lon, double height_in_meter);
-		double calculateSlantFactor(double heightOfIonoLayer);
-
+		
 		double rlat;
 		double rlon;
 		double rheight;
@@ -101,6 +102,7 @@ namespace EGNOS {
 			IonexModel(gpstk::IonexStore &ionoStore, double heightOfIonoLayerinMeter);
 			~IonexModel() {};
 			IonCorrandVar getCorrection(const gpstk::CommonTime &epoch, const gpstk::Position RX, double elevation, double azimuth);	// elevation and azimuth in degree
+			IonCorrandVar getCorrection(const gpstk::CommonTime &epoch, double ippLat, double ippLon, double elevation);	// elevation and azimuth in degree
 			std::string name(void) { return "Ionex model"; };
 			std::vector<gpstk::CommonTime> getFirstandLastEpoch(void);
 

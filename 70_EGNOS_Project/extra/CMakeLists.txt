@@ -21,3 +21,10 @@ if( EGNOS_RUNNABLES_PL_ENGINE )
 											PUBLIC gpstk 
 											PUBLIC GINAParser)
 endif()											
+
+if( PEGASUS_IONO_UTIL )		
+	add_executable(PegasusIONEX PegasusIonoUtility.cpp)
+	target_link_libraries (PegasusIONEX	PUBLIC EGNOS
+										PUBLIC gpstk 
+										PUBLIC GINAParser)
+endif()	
