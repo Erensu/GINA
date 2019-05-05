@@ -2587,7 +2587,7 @@ namespace EGNOS {
 		double F = 1;
 		try
 		{
-			F = this->slantCalculator.calculateSlantFactor(350000);
+			F = this->slantCalculator.calculateSlantFactor(heightOfIonoLayerinMeter);
 		}
 		catch (const std::exception& e)
 		{
