@@ -57,7 +57,11 @@ namespace EGNOS {
 		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon, double heightOfIonoLayerinMeter);
 		double getSlantFactorandPP(SlantIonoDelay_Input &data, double &lat, double &lon);
 		
-		double calculateSlantFactor(double heightOfIonoLayer);
+		double calculateSlantFactor(double heightOfIonoLayer, double elevation);
+
+		double azimuthOfSatId;
+		double elevationOfSatId;
+		double ppLat, ppLon;
 
 	private:
 
@@ -70,9 +74,7 @@ namespace EGNOS {
 		double rlon;
 		double rheight;
 
-		double azimuthOfSatId;
-		double elevationOfSatId;
-		double ppLat, ppLon;
+		
 	};
 
 	class IonoModel {

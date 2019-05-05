@@ -33,7 +33,7 @@ namespace EGNOS {
 
 		lat = lat * 180 / M_PI;
 		lon = std::fmod(lon * 180 / M_PI, 180);
-		F = calculateSlantFactor(heightOfIonoLayerinMeter);
+		F = calculateSlantFactor(heightOfIonoLayerinMeter, this->elevationOfSatId);
 
 		return F;
 	}
@@ -48,7 +48,7 @@ namespace EGNOS {
 
 		lat = lat * 180 / M_PI;
 		lon = std::fmod(lon * 180 / M_PI,180);
-		F = calculateSlantFactor(hI);
+		F = calculateSlantFactor(hI, this->elevationOfSatId);
 
 		return F;
 	}
@@ -90,11 +90,11 @@ namespace EGNOS {
 		lon = ppLon;
 	}
 
-	double SlantIonoDelay::calculateSlantFactor(double heightOfIonoLayer) {
+	double SlantIonoDelay::calculateSlantFactor(double heightOfIonoLayer, double elevation) {
 	
 		double F;
 
-		F = std::pow( 1 - pow( ( Re * cos(elevationOfSatId)) / (Re + heightOfIonoLayer) , 2) , -0.5);
+		F = std::pow( 1 - std::pow( ( Re * std::cos(elevation)) / (Re + heightOfIonoLayer) , 2) , -0.5);
 
 		return F;
 	}
@@ -2587,7 +2587,8 @@ namespace EGNOS {
 		double F = 1;
 		try
 		{
-			F = this->slantCalculator.calculateSlantFactor(heightOfIonoLayerinMeter);
+
+			F = this->slantCalculator.calculateSlantFactor(heightOfIonoLayerinMeter, elevation * M_PI / 180.0);
 		}
 		catch (const std::exception& e)
 		{
