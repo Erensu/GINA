@@ -41,9 +41,6 @@ int main(int argc, char **argv) {
 
 	double heightOfIonoLayerinMeter = 350000;
 
-	
-		//ionoStore.loadFile(ionexFile);
-
 		// Stream creation
 		gpstk::IonexStream strm(IonexFileNamewPath.c_str(), std::ios::in);
 		
@@ -93,10 +90,9 @@ int main(int argc, char **argv) {
 		}
 
 		ionexModel.addIonexStore(ionoStore);
-	
 
-	string WN, sow, ippLat, ippLon, SatId, temp, elevation, azimuth;
-	string line;
+	std::string WN, sow, ippLat, ippLon, SatId, temp, elevation, azimuth;
+	std::string line;
 
 	std::ifstream pegasusReadFile;
 	std::ofstream pegasusWriteFile;
@@ -133,21 +129,3 @@ int main(int argc, char **argv) {
 
 	return 0;
 }
-
-// Compare Ionex Files
-//////////////////////////////////////////
-
-//std::string IonexFileNamewPath_1		= ROOT "\\70_EGNOS_Project\\core\\files\\EMS_136_2019_02_11_15\\ionex_Europe00100.19i";
-//std::string IonexFileNamewPath_2		= ROOT "\\70_EGNOS_Project\\core\\files\\EMS_136_2019_02_11_15\\ionex_Europe00200.19i";
-
-//std::string IonexFileNamewPath_1		= ROOT "\\70_EGNOS_Project\\core\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
-//std::string IonexFileNamewPath_2		= ROOT "\\70_EGNOS_Project\\core\\files\\EMS_136_2019_02_11_15\\h15ems_ionex_Europe_5x5_IGPMap_All.19i";
-
-//std::string IonexFileNamewPath_1		= ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I";
-//std::string IonexFileNamewPath_2		= ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
-//std::string IonexFileNamewPath_Out	= ROOT "\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\Difference_IONEX_CODG0190-y2019_d019_136ems_ionex_Europe_5x5_IGPMap_All_with_fixedIntervals.19i";
-
-//EGNOS::EGNOS_RUNNABLE::compareIonexFiles(	IonexFileNamewPath_1, 
-//											IonexFileNamewPath_2, 
-//											IonexFileNamewPath_Out,
-//											60);
