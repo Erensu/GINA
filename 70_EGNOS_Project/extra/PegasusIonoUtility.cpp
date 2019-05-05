@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 			GPSTK_THROW(e);
 		}
 
-		heightOfIonoLayerinMeter = header.hgt[0];
+		heightOfIonoLayerinMeter = header.hgt[0]*1000;
 		EGNOS::IonexModel ionexModel(heightOfIonoLayerinMeter);
 
 		// If the iono model is not a single layer one, we throw an error.
