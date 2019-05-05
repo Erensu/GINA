@@ -116,6 +116,7 @@ int main(int argc, char **argv) {
 		try
 		{
 			ionoCorr = ionexModel.getCorrection(epoch, stod(ippLat), stod(ippLon), stod(elevation));
+			std::cout << ionoCorr.CorrinMeter << " " << ionoCorr.Variance << std::endl;
 		}
 		catch (const std::exception& e)
 		{
@@ -124,8 +125,6 @@ int main(int argc, char **argv) {
 			continue;
 		}
 		
-		std::cout << ionoCorr.CorrinMeter << " " << ionoCorr.Variance << std::endl;
-
 		pegasusWriteFile << WN << " " << sow << " " << ippLat << " " << ippLon << " " << SatId << " " << to_string(ionoCorr.CorrinMeter) << " " << to_string(ionoCorr.Variance) << std::endl;
 	}
 	
