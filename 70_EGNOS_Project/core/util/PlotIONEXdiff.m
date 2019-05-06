@@ -1,4 +1,4 @@
-function [] = PlotIONEXdiff(plot_file, sorted_plot_file, extraPlotSubFolder, PrefixforGrids, PrefixAll, PostFixAll, OnlyAllDataHist, gridBinNumber, AllDataBinNumber)
+function [] = PlotIONEXdiff(plot_file, sorted_plot_file, extraPlotSubFolder, PrefixforGrids, PrefixAll, PostFixAll, OnlyAllDataHist, fitGauss, IntervalProbability)
 
     filewPath = which(plot_file);
     if exist(filewPath, 'file') ~= 2
@@ -25,6 +25,13 @@ function [] = PlotIONEXdiff(plot_file, sorted_plot_file, extraPlotSubFolder, Pre
     RefRow = 1;
 
 if(OnlyAllDataHist ~= 1)
+    
+    if fitGauss == 1
+        fileID = fopen(fullfile(fullfile(filepath,extraPlotSubFolder), [PrefixforGrids, '_Fitted_GaussianParameters_gridwise','.txt']),'w');
+    end
+    
+    fileID_SimpleStat = fopen(fullfile(fullfile(filepath,extraPlotSubFolder), [PrefixforGrids, '_SimpleStat_','.txt']),'w');
+    
     while(RefRow<length(D))
     [~, index]=ismember(D(:,1:2),D(RefRow,1:2),'rows');
 
@@ -34,16 +41,37 @@ if(OnlyAllDataHist ~= 1)
 
 
     PostFixForGrid = sprintf('_%2.2f_lon%2.2f',Map(1,1), Map(1,2));
-    MakeStatisticsPlot( fullfile(filepath,extraPlotSubFolder), PrefixforGrids, PostFixForGrid, Map, gridBinNumber );
+    [mu, min_mu, max_mu, sigma, min_sigma, max_sigma, M, Std, Min, Max, Median] = MakeStatisticsPlot( fullfile(filepath,extraPlotSubFolder), PrefixforGrids, PostFixForGrid, Map, fitGauss, IntervalProbability );
 
+    if fitGauss == 1
+       fprintf(fileID,'%6.2f %6.2f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f \n',Map(1,1), Map(1,2), mu, min_mu, max_mu, sigma, min_sigma, max_sigma);
+    end
+    
+    fprintf(fileID_SimpleStat,'%6.2f %6.2f %6.3f %6.3f %6.3f %6.3f %6.3f\n',Map(1,1), Map(1,2), M, Std, Min, Max, Median);
+   
     RefRow = RefRow + length(I);
 
     end
+    
+	if fitGauss == 1
+        fclose(fileID);
+	end
+     
+	fclose(fileID_SimpleStat);
+    
 end
-
-    MakeStatisticsPlot( fullfile(filepath,extraPlotSubFolder), PrefixAll, PostFixAll, D, AllDataBinNumber );
-
-
+  [mu, min_mu, max_mu, sigma, min_sigma, max_sigma, M, Std, Min, Max, Median] =  MakeStatisticsPlot( fullfile(filepath,extraPlotSubFolder), PrefixAll, PostFixAll, D, fitGauss, IntervalProbability );
+%% Save FittedParameters
+    if fitGauss == 1
+        fileID = fopen(fullfile(fullfile(filepath,extraPlotSubFolder), [PrefixAll, '_Fitted_GaussianParameters_', PostFixAll,'.txt']),'w');
+        fprintf(fileID,'%6.4f %6.4f %6.4f %6.4f %6.4f %6.4f',mu, min_mu, max_mu, sigma, min_sigma, max_sigma);
+        fclose(fileID);
+    end
+    
+    fileID = fopen(fullfile(fullfile(filepath,extraPlotSubFolder), [PrefixAll, '_SimpleStat_', PostFixAll,'.txt']),'w');
+     fprintf(fileID,'%6.3f %6.3f %6.3f %6.3f %6.3f\n', M, Std, Min, Max, Median);
+     fclose(fileID);
+   
 end
 
 

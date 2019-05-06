@@ -23,7 +23,7 @@ fullFileName_TEC = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_TE
 fullFileName_RMS = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_RMS);
 fullFileName_MLH = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_MLH);
 fullFileName_CH2 = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_CH2);
-    
+
 fopen(fullFileName_TEC,'w');
 fopen(fullFileName_RMS','w');
 fopen(fullFileName_MLH,'w');
