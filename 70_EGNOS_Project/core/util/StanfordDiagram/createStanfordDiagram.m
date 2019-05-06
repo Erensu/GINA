@@ -43,7 +43,7 @@ maxXY=max([maxX maxY]);
 % colorData in color
 if isempty(colorData)==0
     
-    scatter(xAxesData,yAxesData,pointsize,colorData,'filled')
+    scatter(xAxesData,yAxesData,pointsize,colorData,'filled', 's')
 
 else
     NrOfGrids=100;

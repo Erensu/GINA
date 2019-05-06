@@ -25,7 +25,7 @@ fullFileName_MLH = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_ML
 fullFileName_CH2 = fullfile(filepath,plusFilePath2POutput,outPutFileNamewPath_CH2);
 
 fopen(fullFileName_TEC,'w');
-fopen(fullFileName_RMS','w');
+fopen(fullFileName_RMS,'w');
 fopen(fullFileName_MLH,'w');
 fopen(fullFileName_CH2,'w');
 close all;
@@ -42,11 +42,11 @@ world_map = load('coastline.txt');
 n_maps=0; n_rms=0; n_mlh = 0; n_ch2 = 0;
 while ~feof(fin)
     tline = fgetl(fin);
-    if strfind(tline, 'LAT1 / LAT2 / DLAT')
-      lat1 = str2num(tline(2:8));
-      lat2 = str2num(tline(9:15));
-      dlat = str2num(tline(16:21));
-      lat = lat1:dlat:lat2;
+    if strfind(tline, 'START OF DATA')
+      HPL = str2num(tline(4:10));
+    end
+     if strfind(tline, 'HPL')
+      HPL = str2num(tline(4:10));
     end
     if strfind(tline, 'LON1 / LON2 / DLON')
       lon1 = str2num(tline(2:8));
