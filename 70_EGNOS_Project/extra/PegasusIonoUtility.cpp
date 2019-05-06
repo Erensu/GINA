@@ -91,9 +91,9 @@ int main(int argc, char **argv) {
 
 		ionexModel.addIonexStore(ionoStore);
 
-	std::string WN, sow, ippLat, ippLon, SatId, temp, elevation, azimuth;
+	std::string WN, sow, ippLat, ippLon, SatId, SIG_TOTAL, SIG_ION, SIG_TRO, SIG_FLT, SIG_AIR, elevation, azimuth;
 	std::string line;
-
+	
 	std::ifstream pegasusReadFile;
 	std::ofstream pegasusWriteFile;
 
@@ -105,23 +105,25 @@ int main(int argc, char **argv) {
 	{
 
 		std::stringstream   ss(line);
-		ss >> WN >> sow >> ippLat >> ippLon >> SatId >> temp >> temp >> temp >> temp >> temp >> elevation >> azimuth;
+		ss >> WN >> sow >> ippLat >> ippLon >> SatId >> SIG_TOTAL >> SIG_ION >> SIG_TRO >> SIG_FLT >> SIG_AIR >> elevation >> azimuth;
 		
 		gpstk::GPSWeekSecond epoch(stod(WN), stod(sow));
 
 		try
 		{
 			ionoCorr = ionexModel.getCorrection(epoch, stod(ippLat), stod(ippLon), stod(elevation));
-			std::cout << ionoCorr.CorrinMeter << " " << ionoCorr.Variance << std::endl;
+			
 		}
 		catch (const std::exception& e)
 		{
 			std::cout << e.what() << std::endl;
-			pegasusWriteFile << WN << " " << sow << " " << ippLat << " " << ippLon << " " << SatId << std::endl;
+			
+			pegasusWriteFile << WN << " " << sow << " " << ippLat << " " << ippLon << " " << SatId << " " << SIG_TOTAL << " " << SIG_ION << " " << SIG_TRO << " " << SIG_FLT << " " << SIG_AIR << " " << elevation << " " << azimuth << std::endl;
+
 			continue;
 		}
-		
-		pegasusWriteFile << WN << " " << sow << " " << ippLat << " " << ippLon << " " << SatId << " " << to_string(ionoCorr.CorrinMeter) << " " << to_string(ionoCorr.Variance) << std::endl;
+	
+		pegasusWriteFile  << WN << " " << sow << " " << ippLat << " " << ippLon << " " << SatId << " " << SIG_TOTAL << " " << SIG_ION << " " << SIG_TRO << " " << SIG_FLT << " " << SIG_AIR << " " << elevation << " " << azimuth << " " << std::fixed << std::setprecision(3) << ionoCorr.CorrinMeter << " " << std::fixed << std::setprecision(3) << std::sqrt(ionoCorr.Variance) << std::endl;
 	}
 	
 	pegasusReadFile.close();
