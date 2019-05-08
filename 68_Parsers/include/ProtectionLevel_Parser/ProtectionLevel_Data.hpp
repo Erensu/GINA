@@ -38,6 +38,8 @@ namespace ProtectionLevel_Parser
 			eIppLonTagFound,
 			eIonoDelayTagFound,
 			eIonoRMSTagFound,
+			eReferenceIonoDelayTagFound,
+			eReferenceIonoRMSTagFound,
 			eUnknownInfoTagFound
 		};
 
@@ -90,6 +92,10 @@ namespace ProtectionLevel_Parser
 			double ionoCorr_meter = 0;
 			bool ionoRMS_meter_valid = false;
 			double ionoRMS_meter = 0;
+			bool ionoReferenceCorr_meter_valid = false;
+			double ionoReferenceCorr_meter = 0;
+			bool ionoReferenceRMS_meter_valid = false;
+			double ionoReferenceRMS_meter = 0;
 		}SatInfo;
 		
 		gpstk::CommonTime dataTime;
@@ -149,6 +155,8 @@ namespace ProtectionLevel_Parser
 		static const std::string ippLonTag;
 		static const std::string ionoDelayTag;
 		static const std::string ionoRMSTag;
+		static const std::string ionoReferenceDelayTag;
+		static const std::string ionoReferenceRMSTag;
 		static const std::string unknownInfoTag;
 
 	private:

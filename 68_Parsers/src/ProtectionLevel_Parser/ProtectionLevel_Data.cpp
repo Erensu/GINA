@@ -36,6 +36,8 @@ namespace ProtectionLevel_Parser
 	const std::string ProtectionLevel_Data::ippLonTag = "IPP_lon";
 	const std::string ProtectionLevel_Data::ionoDelayTag = "Iono_Delay_[m]";
 	const std::string ProtectionLevel_Data::ionoRMSTag = "Iono_RMS_[m]";
+	const std::string ProtectionLevel_Data::ionoReferenceDelayTag = "Ref_Iono_Delay_[m]";
+	const std::string ProtectionLevel_Data::ionoReferenceRMSTag = "Ref_Iono_RMS_[m]";
 	const std::string ProtectionLevel_Data::unknownInfoTag = "UNKNOWN";
 
 	void ProtectionLevel_Data::reallyGetRecord(gpstk::FFStream& ffs)
@@ -857,6 +859,24 @@ namespace ProtectionLevel_Parser
 							info.ionoRMS_meter_valid = true;
 						}
 						break;
+					case eReferenceIonoDelayTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ionoReferenceCorr_meter_valid = false;
+						}
+						else {
+							info.ionoReferenceCorr_meter = stod(ValueStr);
+							info.ionoReferenceCorr_meter_valid = true;
+						}
+						break;
+					case eReferenceIonoRMSTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ionoReferenceRMS_meter_valid = false;
+						}
+						else {
+							info.ionoReferenceRMS_meter = stod(ValueStr);
+							info.ionoReferenceRMS_meter_valid = true;
+						}
+						break;
 					case eUnknownInfoTagFound:
 						break;
 					default:
@@ -987,12 +1007,29 @@ namespace ProtectionLevel_Parser
 							info.ionoRMS_meter_valid = true;
 						}
 						break;
+					case eReferenceIonoDelayTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ionoReferenceCorr_meter_valid = false;
+						}
+						else {
+							info.ionoReferenceCorr_meter = stod(ValueStr);
+							info.ionoReferenceCorr_meter_valid = true;
+						}
+						break;
+					case eReferenceIonoRMSTagFound:
+						if (ValueStr == unknownInfoTag) {
+							info.ionoReferenceRMS_meter_valid = false;
+						}
+						else {
+							info.ionoReferenceRMS_meter = stod(ValueStr);
+							info.ionoReferenceRMS_meter_valid = true;
+						}
+						break;
 					case eUnknownInfoTagFound:
 						break;
 					default:
 						break;
 					}
-
 				}
 
 				satInfo.push_back(info);
@@ -1105,7 +1142,7 @@ namespace ProtectionLevel_Parser
 			strm << positionTag << endl;
 		}
 		else {
-			strm << positionTag << " " << this->posData.getGeodeticLatitude() << " " << this->posData.getLongitude() << " " << this->posData.getHeight() << " " << endl;
+			strm << positionTag << " " << std::fixed << std::setprecision(6) << this->posData.getGeodeticLatitude() << " " << std::fixed << std::setprecision(6) << this->posData.getLongitude() << " " << std::fixed << std::setprecision(3) << this->posData.getHeight() << " " << endl;
 		}
 
 		strm.lineNumber++;
@@ -1120,7 +1157,7 @@ namespace ProtectionLevel_Parser
 			strm << hplTag << endl;
 		}
 		else {
-			strm << hplTag << " " << HPL << endl;
+			strm << hplTag << " " << std::fixed << std::setprecision(3) << HPL << endl;
 		}
 		
 		strm.lineNumber++;
@@ -1135,7 +1172,7 @@ namespace ProtectionLevel_Parser
 			strm << vplTag << endl;
 		}
 		else {
-			strm << vplTag << " " << VPL << endl;
+			strm << vplTag << " " << std::fixed << std::setprecision(3) << VPL << endl;
 		}
 	
 		strm.lineNumber++;
@@ -1195,7 +1232,7 @@ namespace ProtectionLevel_Parser
 			strm << horizontalpositionerrorTag << endl;
 		}
 		else {
-			strm << horizontalpositionerrorTag << " " << horizontalPosError << endl;
+			strm << horizontalpositionerrorTag << " " << std::fixed << std::setprecision(3) << horizontalPosError << endl;
 		}
 
 		strm.lineNumber++;
@@ -1210,7 +1247,7 @@ namespace ProtectionLevel_Parser
 			strm << verticalpositionerrorTag << endl;
 		}
 		else {
-			strm << verticalpositionerrorTag << " " << verticalPosError << endl;
+			strm << verticalpositionerrorTag << " " << std::fixed << std::setprecision(3) << verticalPosError << endl;
 		}
 
 		strm.lineNumber++;
@@ -1225,7 +1262,7 @@ namespace ProtectionLevel_Parser
 			strm << positionerrorTag << endl;
 		}
 		else {
-			strm << positionerrorTag << " " << posError << endl;
+			strm << positionerrorTag << " " << std::fixed << std::setprecision(3) << posError << endl;
 		}
 
 		strm.lineNumber++;
@@ -1240,7 +1277,7 @@ namespace ProtectionLevel_Parser
 			strm << horizontalalarmTag << endl;
 		}
 		else {
-			strm << horizontalalarmTag << " " << HorizontalAlarmLimit << endl;
+			strm << horizontalalarmTag << " " << std::fixed << std::setprecision(3) << HorizontalAlarmLimit << endl;
 		}
 
 		strm.lineNumber++;
@@ -1255,7 +1292,7 @@ namespace ProtectionLevel_Parser
 			strm << verticalalarmTag << endl;
 		}
 		else {
-			strm << verticalalarmTag << " " << VerticalAlarmLimit << endl;
+			strm << verticalalarmTag << " " << std::fixed << std::setprecision(3) << VerticalAlarmLimit << endl;
 		}
 
 		strm.lineNumber++;
@@ -1270,7 +1307,7 @@ namespace ProtectionLevel_Parser
 			strm << alarmTag << endl;
 		}
 		else {
-			strm << alarmTag << " " << AlarmLimit << endl;
+			strm << alarmTag << " " << std::fixed << std::setprecision(3) << AlarmLimit << endl;
 		}
 
 		strm.lineNumber++;
@@ -1353,45 +1390,58 @@ namespace ProtectionLevel_Parser
 				if (includedSatIds[a] == satInfo[b].satId) {
 					satFound = true;
 					if (satInfo[b].el_deg_valid == true) {
-						strm << satElevationTag << " " << to_string(satInfo[b].el_deg) << " ";
+						strm << satElevationTag << " " << std::fixed << std::setprecision(3) << satInfo[b].el_deg << " ";
 					}
 					else {
 						strm << satElevationTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].az_deg_valid == true) {
-						strm << azimuthTag << " " << to_string(satInfo[b].az_deg) << " ";
+						strm << azimuthTag << " " << std::fixed << std::setprecision(3) << satInfo[b].az_deg << " ";
 					}
 					else {
 						strm << azimuthTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ippLat_valid == true) {
-						strm << ippLatTag << " " << to_string(satInfo[b].ippLat) << " ";
+						strm << ippLatTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ippLat << " ";
 					}
 					else {
 						strm << ippLatTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ippLon_valid == true) {
-						strm << ippLonTag << " " << to_string(satInfo[b].ippLon) << " ";
+						strm << ippLonTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ippLon << " ";
 					}
 					else {
 						strm << ippLonTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ionoCorr_meter_valid == true) {
-						strm << ionoDelayTag << " " << to_string(satInfo[b].ionoCorr_meter) << " ";
+						strm << ionoDelayTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ionoCorr_meter << " ";
 					}
 					else {
 						strm << ionoDelayTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ionoRMS_meter_valid == true) {
-						strm << ionoRMSTag << " " << to_string(satInfo[b].ionoRMS_meter) << " ";
+						strm << ionoRMSTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ionoRMS_meter << " ";
 					}
 					else {
 						strm << ionoRMSTag << " " << unknownInfoTag << " ";
+					}
+					if (satInfo[b].ionoReferenceCorr_meter_valid == true) {
+						strm << ionoReferenceDelayTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ionoReferenceCorr_meter << " ";
+					}
+					else {
+						strm << ionoReferenceDelayTag << " " << unknownInfoTag << " ";
+					}
+
+					if (satInfo[b].ionoReferenceRMS_meter_valid == true) {
+						strm << ionoReferenceRMSTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ionoReferenceRMS_meter << " ";
+					}
+					else {
+						strm << ionoReferenceRMSTag << " " << unknownInfoTag << " ";
 					}
 					break;
 				}
@@ -1404,6 +1454,8 @@ namespace ProtectionLevel_Parser
 				strm << ippLonTag << " " << unknownInfoTag << " ";
 				strm << ionoDelayTag << " " << unknownInfoTag << " ";
 				strm << ionoRMSTag << " " << unknownInfoTag << " ";
+				strm << ionoReferenceDelayTag << " " << unknownInfoTag << " ";
+				strm << ionoReferenceRMSTag << " " << unknownInfoTag << " ";
 			}
 		
 			strm << endl;
@@ -1444,45 +1496,58 @@ namespace ProtectionLevel_Parser
 				if (excludedSatIds[a] == satInfo[b].satId) {
 					satFound = true;
 					if (satInfo[b].el_deg_valid == true) {
-						strm << satElevationTag << " " << to_string(satInfo[b].el_deg) << " ";
+						strm << satElevationTag << " " << std::fixed << std::setprecision(3) << satInfo[b].el_deg << " ";
 					}
 					else {
 						strm << satElevationTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].az_deg_valid == true) {
-						strm << azimuthTag << " " << to_string(satInfo[b].az_deg) << " ";
+						strm << azimuthTag << " " << std::fixed << std::setprecision(3) << satInfo[b].az_deg << " ";
 					}
 					else {
 						strm << azimuthTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ippLat_valid == true) {
-						strm << ippLatTag << " " << to_string(satInfo[b].ippLat) << " ";
+						strm << ippLatTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ippLat << " ";
 					}
 					else {
 						strm << ippLatTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ippLon_valid == true) {
-						strm << ippLonTag << " " << to_string(satInfo[b].ippLon) << " ";
+						strm << ippLonTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ippLon << " ";
 					}
 					else {
 						strm << ippLonTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ionoCorr_meter_valid == true) {
-						strm << ionoDelayTag << " " << to_string(satInfo[b].ionoCorr_meter) << " ";
+						strm << ionoDelayTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ionoCorr_meter << " ";
 					}
 					else {
 						strm << ionoDelayTag << " " << unknownInfoTag << " ";
 					}
 
 					if (satInfo[b].ionoRMS_meter_valid == true) {
-						strm << ionoRMSTag << " " << to_string(satInfo[b].ionoRMS_meter) << " ";
+						strm << ionoRMSTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ionoRMS_meter << " ";
 					}
 					else {
 						strm << ionoRMSTag << " " << unknownInfoTag << " ";
+					}
+					if (satInfo[b].ionoReferenceCorr_meter_valid == true) {
+						strm << ionoReferenceDelayTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ionoReferenceCorr_meter << " ";
+					}
+					else {
+						strm << ionoReferenceDelayTag << " " << unknownInfoTag << " ";
+					}
+
+					if (satInfo[b].ionoReferenceRMS_meter_valid == true) {
+						strm << ionoReferenceRMSTag << " " << std::fixed << std::setprecision(3) << satInfo[b].ionoReferenceRMS_meter << " ";
+					}
+					else {
+						strm << ionoReferenceRMSTag << " " << unknownInfoTag << " ";
 					}
 					break;
 				}
@@ -1495,6 +1560,8 @@ namespace ProtectionLevel_Parser
 				strm << ippLonTag << " " << unknownInfoTag << " ";
 				strm << ionoDelayTag << " " << unknownInfoTag << " ";
 				strm << ionoRMSTag << " " << unknownInfoTag << " ";
+				strm << ionoReferenceDelayTag << " " << unknownInfoTag << " ";
+				strm << ionoReferenceRMSTag << " " << unknownInfoTag << " ";
 			}
 
 			strm << endl;
@@ -1514,6 +1581,8 @@ namespace ProtectionLevel_Parser
 		if (inString == ippLonTag) return eIppLonTagFound;
 		if (inString == ionoDelayTag) return eIonoDelayTagFound;
 		if (inString == ionoRMSTag) return eIonoRMSTagFound;
+		if (inString == ionoReferenceDelayTag) return eReferenceIonoDelayTagFound;
+		if (inString == ionoReferenceRMSTag) return eReferenceIonoRMSTagFound;
 		if (inString == unknownInfoTag) return eUnknownInfoTagFound;
 
 		return eUnknownInfoTagFound;

@@ -201,23 +201,32 @@ namespace EGNOS {
 						Eigen::VectorXd corrVector_reff;
 						try
 						{
-							(void)createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *referenceIonoModel_PLEngine, klobucharModel, Rx, corrVector_reff, plData.satInfo);
+							std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> Ref_satInfo;
+							(void)createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *referenceIonoModel_PLEngine, klobucharModel, Rx, corrVector_reff, Ref_satInfo);
 							
-							gpstk::CivilTime errorTime(epochsForPL[epochIndex]);
+							// If reff size is not matched with the original throw error.
 							if (corrVector_reff.size() != corrVector.size()) {
-								
+
+								gpstk::CivilTime errorTime(epochsForPL[epochIndex]);
 								std::cout << errorTime.asString() << std::endl;
 								std::cout << "The reference iono corrections cannot be calculated entirely. Some iono value hadn't been calculated. " << std::endl;
 								continue;
 							}
+							
+							// Update satInfo with reference Sat data
+							for (int a = 0; a < plData.satInfo.size(); a++){
+								for (int b = 0; b < Ref_satInfo.size(); b++){
+									if (plData.satInfo[a].satId == Ref_satInfo[b].satId) {
 
-							std::cout << errorTime.asString() << std::endl;
-							std::cout << "diff corrVector = corrVector - corrVector_reff" << endl;
-							for (int i = 0; i < corrVector.size(); i++)	{
-
-								std::cout << corrVector(i) - corrVector_reff(i) << " " << corrVector(i) << " " << corrVector_reff(i) << " " << endl;
+										plData.satInfo[a].ionoReferenceCorr_meter_valid = Ref_satInfo[b].ionoCorr_meter_valid;
+										plData.satInfo[a].ionoReferenceCorr_meter = Ref_satInfo[b].ionoCorr_meter;
+										plData.satInfo[a].ionoReferenceRMS_meter_valid = Ref_satInfo[b].ionoRMS_meter_valid;
+										plData.satInfo[a].ionoReferenceRMS_meter = Ref_satInfo[b].ionoRMS_meter;
+									}
+								}
 							}
-						
+							
+							// Correct with reference
 							corrVector -= corrVector_reff;
 						}
 						catch (const std::exception& e)

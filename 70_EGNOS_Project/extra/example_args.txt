@@ -13,14 +13,31 @@ C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionC
 -e C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems 
 -i C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\CODG0190.19I
 
+Budapest Bosch
 47.464085 19.154686 100 600 0.9973 10 0 
 C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\Pos_lat47.464085lon19.154686h100_deltaT600_el0_Tar_y2019_d019_136_brdc0190.pl 
 C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n 
 -e C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems 
 end of arg
 
+Verecke Pass
+48.818738 23.164414 841 600 0.9973 10 0 
+C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\Pos_lat48.818738lon23.164414h841_deltaT600_el0_Tar_y2019_d019_136_brdc0190.pl 
+C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n 
+-e C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems 
 
 
+Hargita
+46.453826 25.582440 1801 600 0.9973 10 0 
+C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\Pos_lat46.453826lon25.582440h1801_deltaT600_el0_Tar_y2019_d019_136_brdc0190.pl 
+C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n 
+-e C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems 
+
+National Theatre, Bucharest (FOSS4G)
+44.436874 26.103955 10 600 0.9973 10 0 
+C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\Pos_lat44.436874lon26.1039550h100_deltaT600_el0_Tar_y2019_d019_136_brdc0190.pl 
+C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\brdc0190.19n 
+-e C:\\Users\\lus2bp\\Source\\Repos\\GINA\\70_EGNOS_Project\\core\\files\\PositionComparisonInputFiles\\bute0190\\y2019_d019_136.ems 
 
 Matlab
 C:\Users\lus2bp>"C:\Program Files\MATLAB\R2015b64\bin\matlab.exe" -nodisplay -nosplash -nodesktop -r "run('C:\Users\lus2bp\Source\Repos\GINA\70_EGNOS_Project\core\util\ProtectionDataProcess_Main.m');exit;"
