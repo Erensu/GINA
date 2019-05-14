@@ -6,8 +6,8 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-	if (argc < 3 || argc > 5) {
-		std::cout << " Invalid argument. \n Expected arguments: \n #1 EMS filename with absolute path -input \n #2 Ionex filename with absolute path - output " << std::endl;
+	if (argc < 3 || argc > 6) {
+		std::cout << " Invalid argument. \n Expected arguments: \n #1 EMS filename with absolute path -input" << std::endl;
 		std::cout << " #2 Ionex filename with absolute path - output " << std::endl;
 		std::cout << " #3 MapType - optional - default value is 0 - input" << std::endl;
 		std::cout << "\t MapType value 0 - 5x5 Europe - values are NOT interpolated" << std::endl;
@@ -16,6 +16,8 @@ int main(int argc, char **argv) {
 		std::cout << "\t MapType value 3 - 1x1 Europe - values are interpolated" << std::endl;
 		std::cout << " #4 Update Interval in second - optional - default value is 3600 - input" << std::endl;
 		std::cout << "\t When 'Update Interval' value is 0, it means everytime the parser gets an iono update from the ems, creates a map" << std::endl;
+		std::cout << " #5 First update shall start full o'clock. 0 is false 1 is true for this option - input" << std::endl;
+
 		exit(1);
 	}
 
@@ -83,6 +85,22 @@ int main(int argc, char **argv) {
 		updateIntervalinSeconds = 3600;
 	}
 	
+	// #5 argument
+	bool fullHourStart = false;
+
+	if (argc == 6) {
+		if (stoi(argv[5]) > 0) {
+			fullHourStart = true;
+		}
+		else {
+			fullHourStart = false;
+		}
+		
+	}
+	else {
+		fullHourStart = false;
+	}
+
 	// Make it default
 	gpstk::CivilTime firstUpdate;
 	gpstk::CivilTime lastUpdate;
@@ -96,7 +114,8 @@ int main(int argc, char **argv) {
 		doInterpolate,
 		firstUpdate,
 		lastUpdate,
-		updateIntervalinSeconds);
+		updateIntervalinSeconds,
+		fullHourStart);
 
 	std::cout << "EMS to Ionex converter finished the job" << std::endl;
 

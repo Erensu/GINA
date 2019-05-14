@@ -51,7 +51,8 @@ namespace EGNOS
 			bool interPolationOn = true,
 			gpstk::CommonTime firstUpdate = gpstk::CommonTime(),
 			gpstk::CommonTime lastUpdate = gpstk::CommonTime(),
-			double updateIntervalinSeconds = 0);
+			double updateIntervalinSeconds = 0,
+			bool fullHourStart = false);
 	};
 		
 	namespace EGNOS_RUNNABLE_UTILITY

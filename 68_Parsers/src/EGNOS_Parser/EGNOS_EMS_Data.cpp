@@ -131,8 +131,13 @@ namespace EGNOS_EMS_Parser
 			if (civTime.hour == 24 && civTime.minute == 0 && civTime.second == 0) {
 				civTime.hour = 23;
 				civTime.minute = 59;  
-				civTime.second = 59.999;
+				civTime.second = 59;
+
+				gpstk::CommonTime temp(civTime);
+				temp += 1;
+				civTime = temp;
 			}
+
 
 			civTime.setTimeSystem(gpstk::TimeSystem::GPS);
 			this->messageTime = civTime;

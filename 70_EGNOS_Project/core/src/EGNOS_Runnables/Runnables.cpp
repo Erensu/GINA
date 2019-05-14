@@ -225,7 +225,8 @@ namespace EGNOS
 						bool interPolationOn,
 						gpstk::CommonTime firstUpdate,
 						gpstk::CommonTime lastUpdate,
-						double updateIntervalinSeconds) {
+						double updateIntervalinSeconds,
+						bool fullHourStart) {
 
 
 			if (EGNOS_RUNNABLE_UTILITY::checkArgs(	EDAS_FileNamewPath,
@@ -295,7 +296,19 @@ namespace EGNOS
 						firstUpdateinCivilTime.hour = firstCivilTime.hour;
 						firstUpdateinCivilTime.minute = firstCivilTime.minute;
 						firstUpdateinCivilTime.second = firstCivilTime.second;
-						firstUpdate = firstUpdateinCivilTime;
+
+						if (fullHourStart == true) {
+
+							if (firstUpdateinCivilTime.minute == 0) {
+								firstUpdate = firstUpdateinCivilTime;
+								hadFirstTimeData = true;
+							}
+						}
+						else {
+							firstUpdate = firstUpdateinCivilTime;
+							hadFirstTimeData = true;
+						}
+						
 					}
 					
 					if (lastUpdate == gpstk::CommonTime() || lastUpdate < firstUpdate) {
@@ -309,7 +322,7 @@ namespace EGNOS
 						lastUpdate = lastUpdateinCivilTime;
 					}
 
-					hadFirstTimeData = true;
+					
 				}
 
 				if (EData.messageId == 18) {
