@@ -252,6 +252,10 @@ namespace gpstk
          strm >> strm.header;
       }
 
+	  if (strm.headerRead == false) {
+		  FFStreamError e("Header is not readable");
+		  GPSTK_THROW(e);
+	  }
          // Clear out this object
       IonexHeader& hdr = strm.header;
 

@@ -159,9 +159,8 @@ namespace gpstk
 		 }
 
 		 if (line.size() == 0) {
-			 FFStreamError err("Empty row.");
 			 lineNumber++;
-			 GPSTK_THROW(err);
+			 return;
 		 }
             // Remove CR characters left over in the buffer from windows files
 		 while (*line.rbegin() == '\r') {
