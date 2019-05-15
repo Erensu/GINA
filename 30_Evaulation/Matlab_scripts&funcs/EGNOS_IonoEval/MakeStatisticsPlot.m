@@ -1,4 +1,4 @@
-function [mu, min_mu, max_mu, sigma, min_sigma, max_sigma, M, Std, Min, Max, Median] = MakeStatisticsPlot(Path, Prefix, PostFix, Map , fitGauss, confidanceInterval )
+function [mu, min_mu, max_mu, sigma, min_sigma, max_sigma, M, Std, Min, Max, Median] = MakeStatisticsPlot(Path, Prefix, PostFix, Map , fitGauss, confidanceInterval, binNumber )
 
 f = figure();
 mu=0; min_mu=0; max_mu=0; sigma=0; min_sigma=0; max_sigma=0;
@@ -13,7 +13,12 @@ Min = min(values);
 Max = max(values);
 Median = median(values);
 
-hist(values);
+if binNumber == 0
+    hist(values)
+else
+    hist(values,binNumber);
+end
+
 
 if(fitGauss)
     try

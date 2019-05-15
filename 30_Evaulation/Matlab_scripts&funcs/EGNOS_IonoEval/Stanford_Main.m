@@ -1,5 +1,5 @@
 
-clear all; close all; clc; 
+
 folder = fileparts(which(mfilename)); 
 addpath(genpath(folder));
 
@@ -49,4 +49,4 @@ createStanfordDiagram(	abs(errorData) ...
                       	,strcat(filepath,'\Stanford_Diagram_','PL Vertical_',out_name) ...
                         ,pparam);                    
 
-
+clear all; close all; clc; 
