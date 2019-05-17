@@ -29,29 +29,30 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < argc; ++i)
 		cout << argv[i] << "\n";
 	
-	if (argc < 12 || argc > 14) {
+	if (argc < 14 || argc > 16) {
 
 		std::cout << " Invalid arguments. Expected arguments: " << std::endl;
 
 		std::cout << "#1 Rover Position - Geodatic Lattitude [degree] - input " << std::endl;
 		std::cout << "#2 Rover Position - Longitude [degree]- input " << std::endl;
 		std::cout << "#3 Rover Position - Height [m]- input" << std::endl;
-		std::cout << "#4 Time Interval between PL calculations [s] - input" << std::endl;
-		std::cout << "#5 Integrity probability. Probability of the real position (horizontal in ENU) is within the given Horizontal Protection Level - 0 < p < 1- input" << std::endl;
-		std::cout << "#6 Elevaion mask [degree] - input" << std::endl;
-		std::cout << "#7 Shall we use Klobuchar when the target model is not available? 0 - NO | 1 - YES - input" << std::endl;
-		std::cout << "#8 Protection Level File with absolute path - output" << std::endl;
-		std::cout << "#9 RINEX NAVIGATION File with absolute path - GPS ephermis are required - input" << std::endl;
-		std::cout << "#10 Type of Target ionospheric model. '-i' stands for IONEX Model '-e' stands for EGNOS model - input" << std::endl;
-		std::cout << "#11 Ionospheric file with absolute path for Target. The previous argument could be '-i' or '-e' so this file shall be IONEX or EMS file respectivly  - input" << std::endl;
-		std::cout << "#12 Type of Reference ionospheric model. '-i' stands for IONEX Model '-e' stands for EGNOS model - input" << std::endl;
-		std::cout << "#13 Ionospheric file with absolute path for Reference. The previous argument could be '-i' or '-e' so this file shall be IONEX or EMS file respectivly  - input" << std::endl;
+		std::cout << "#4 Time matching intervall between reference and target [s] - input" << std::endl;
+		std::cout << "#5 Time Interval between PL calculations [s] - input" << std::endl;
+		std::cout << "#6 Integrity probability. Probability of the real position (horizontal in ENU) is within the given Horizontal Protection Level - 0 < p < 1- input" << std::endl;
+		std::cout << "#7 Elevaion mask [degree] - input" << std::endl;
+		std::cout << "#8 Shall we use Klobuchar when the target model is not available? 0 - NO | 1 - YES - input" << std::endl;
+		std::cout << "#9 Protection Level File with absolute path - output" << std::endl;
+		std::cout << "#10 RINEX NAVIGATION File with absolute path - GPS ephermis are required - input" << std::endl;
+		std::cout << "#11 Type of Target ionospheric model. '-i' stands for IONEX Model '-e' stands for EGNOS model - input" << std::endl;
+		std::cout << "#12 Ionospheric file with absolute path for Target. The previous argument could be '-i' or '-e' so this file shall be IONEX or EMS file respectivly  - input" << std::endl;
+		std::cout << "#13 Type of Reference ionospheric model. '-i' stands for IONEX Model '-e' stands for EGNOS model - input" << std::endl;
+		std::cout << "#14 Ionospheric file with absolute path for Reference. The previous argument could be '-i' or '-e' so this file shall be IONEX or EMS file respectivly  - input" << std::endl;
 
 		exit(1);
 	}
 
-	std::string ionex_FileNamewPath;
-	std::string EDAS_FileNamewPath;
+	std::string target_FileNamewPath;
+	std::string reference_FileNamewPath;
 	EGNOS::ProtectionLevel::IonoType referenceIonoType = EGNOS::ProtectionLevel::IonoType::zero;
 	EGNOS::ProtectionLevel::IonoType targetIonoType = EGNOS::ProtectionLevel::IonoType::zero;
 
@@ -59,23 +60,31 @@ int main(int argc, char **argv) {
 	double lon = stod(argv[2]);
 	double height = stod(argv[3]);
 
-	int intervallBetweenEpochsinSecs = stod(argv[4]);
-	if (intervallBetweenEpochsinSecs <= 0) {
+	int matchingIntervall_in_secs = stod(argv[4]);
+	if (matchingIntervall_in_secs <= 0) {
 		std::cout << "Error in arguments " << std::endl;
-		std::cout << "Time Interval between PL calculations shall be greater than ZERO " << std::endl;
+		std::cout << "Time matching between target and reference data. It should be greater than Zero " << std::endl;
 		exit(1);
 	}
-	double probability_of_inner_circle = stod(argv[5]);
+
+	int timeIntervallofRefModellMap_in_secs = stod(argv[5]);
+	if (timeIntervallofRefModellMap_in_secs <= 0) {
+		std::cout << "Error in arguments " << std::endl;
+		std::cout << "Time Intervall between reference map. It should be greater than Zero " << std::endl;
+		exit(1);
+	}
+
+	double probability_of_inner_circle = stod(argv[6]);
 	if (probability_of_inner_circle <= 0 || probability_of_inner_circle >= 1) {
 		std::cout << "Error in arguments " << std::endl;
 		std::cout << "Integrity probability shall be between 0 and 1. => 0 < p < 1 " << std::endl;
 		exit(1);
 	}
 	
-	double elevationMask = stod(argv[6]);
+	double elevationMask = stod(argv[7]);
 
 	bool useKlobucharasSecunderModel = false;
-	if (stod(argv[7]) == 0) {
+	if (stod(argv[8]) == 0) {
 		useKlobucharasSecunderModel = false;
 	}
 	else {
@@ -83,29 +92,29 @@ int main(int argc, char **argv) {
 	}
 	
 
-	std::string PLwPath_out = argv[8];
-	std::string RINEX_NAVFileNamewPath = argv[9];
+	std::string PLwPath_out = argv[9];
+	std::string RINEX_NAVFileNamewPath = argv[10];
 
-	if (std::string(argv[10]) == "-i") {
+	if (std::string(argv[11]) == "-i") {
 		targetIonoType = EGNOS::ProtectionLevel::IonoType::ionex;
-		ionex_FileNamewPath = argv[11];
+		target_FileNamewPath = argv[12];
 	}
-	else if(std::string(argv[10]) == "-e"){
+	else if(std::string(argv[11]) == "-e"){
 		targetIonoType = EGNOS::ProtectionLevel::IonoType::egnos;
-		EDAS_FileNamewPath = argv[11];
+		target_FileNamewPath = argv[12];
 	}
 	else {
 		exit(1);
 	}
 
-	if (argc == 14) {
-		if (std::string(argv[12]) == "-i") {
+	if (argc == 15) {
+		if (std::string(argv[13]) == "-i") {
 			referenceIonoType = EGNOS::ProtectionLevel::IonoType::ionex;
-			ionex_FileNamewPath = argv[13];
+			reference_FileNamewPath = argv[14];
 		}
-		else if (std::string(argv[12]) == "-e") {
+		else if (std::string(argv[13]) == "-e") {
 			referenceIonoType = EGNOS::ProtectionLevel::IonoType::egnos;
-			EDAS_FileNamewPath = argv[13];
+			reference_FileNamewPath = argv[14];
 		}
 		else {
 			exit(1);
@@ -127,7 +136,18 @@ int main(int argc, char **argv) {
 	double probability_of_inner_circle = 0.99;
 	double elevationMask = 0;*/
 
-	EGNOS::ProtectionLevel::run_PL(RINEX_NAVFileNamewPath, ionex_FileNamewPath, EDAS_FileNamewPath, PLwPath_out, elevationMask, referenceIonoType, targetIonoType, useKlobucharasSecunderModel, latgeodetic, lon, height, intervallBetweenEpochsinSecs, probability_of_inner_circle);
+	EGNOS::ProtectionLevel::run_PL(	RINEX_NAVFileNamewPath, 
+									target_FileNamewPath, 
+									reference_FileNamewPath, 
+									PLwPath_out, 
+									elevationMask, 
+									referenceIonoType, 
+									targetIonoType, 
+									useKlobucharasSecunderModel, 
+									latgeodetic, lon, height, 
+									matchingIntervall_in_secs,
+									timeIntervallofRefModellMap_in_secs,
+									probability_of_inner_circle);
 	
 	std::cout << "Job is finished" << std::endl;
 

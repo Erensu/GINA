@@ -11,9 +11,10 @@ function [] = PlotIONEXdiff(plot_file, outFolder, PrefixforGrids, PrefixAll, Pos
 
     % Import data to matrix form
     A = importdata(filewPath);
-
+    
     if(isempty(A))
-       error('%s file import error\n', filewPath); 
+       sprintf('%s file import error\n', filewPath); 
+       return;
     end
 
     % Sort matrix by lat lon rows

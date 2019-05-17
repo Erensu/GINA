@@ -99,7 +99,8 @@ namespace EGNOS
 			}
 			catch (const gpstk::FileMissingException &e)
 			{
-				throw domain_error(e.getText());
+				std::cout << e.getText();
+				return;
 			}
 			
 			ionoHeader1 = ionoStoreRef.getHeader(ReferenceIonexFileNamewPath);

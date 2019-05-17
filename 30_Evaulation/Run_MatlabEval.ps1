@@ -18,14 +18,14 @@ $PS_Main_path = $PSCommandPath | Split-Path -Parent
 ########   Process IONEX files (compared IONEX are the best candidates but not neccessarly) ############
 ########################################################################################################
 
-$in_folder = 'C:\Users\lus2bp\Source\Repos\GINA\30_Evaulation\Runnables&Data\2018\comp';
-$out_Folder = 'C:\Users\lus2bp\Source\Repos\GINA\30_Evaulation\Runnables&Data\2018\comp_results_2';
+$in_folder = 'C:\Users\lus2bp\Source\Repos\GINA\30_Evaulation\Runnables&Data\2018\comp_2ndHalf';
+$out_Folder = 'C:\Users\lus2bp\Source\Repos\GINA\30_Evaulation\Runnables&Data\2018\comp_results_20190515_NightRun';
 $ext = '18I';
 
 $in_folder
 $out_Folder
 
-#matlab -nosplash -noFigureWindows -wait -nodesktop -r "addpath(genpath('$PS_Main_path')); ext ='$ext'; in_folder='$in_folder'; out_Folder='$out_Folder'; IONEX_Compare_Main; quit"
+matlab -nosplash -noFigureWindows -wait -nodesktop -r "addpath(genpath('$PS_Main_path')); ext ='$ext'; in_folder='$in_folder'; out_Folder='$out_Folder'; IONEX_Compare_Main; quit"
 
 ########################################################################################################
 ########################################################################################################
@@ -55,7 +55,7 @@ $RMSbool = 1;
 $MLHbool = 1;
 $CH2bool = 1;
 
-matlab -nosplash -noFigureWindows -wait -nodesktop -r "addpath(genpath('$PS_Main_path')); TECbool = $TECbool; RMSbool = $RMSbool; MLHbool = $MLHbool; CH2bool = $CH2bool; fitGauss = $fitGauss; IntervalProbability = $IntervalProbability; binNumberOfAllHist = $binNumberOfAllHist; OnlyAllDataHist = $OnlyAllDataHist; in_folder='$in_folder'; out_folder_Base='$out_folder_Base'; PlotIONEXdiff_Main; quit"
+#matlab -nosplash -noFigureWindows -wait -nodesktop -r "addpath(genpath('$PS_Main_path')); TECbool = $TECbool; RMSbool = $RMSbool; MLHbool = $MLHbool; CH2bool = $CH2bool; fitGauss = $fitGauss; IntervalProbability = $IntervalProbability; binNumberOfAllHist = $binNumberOfAllHist; OnlyAllDataHist = $OnlyAllDataHist; in_folder='$in_folder'; out_folder_Base='$out_folder_Base'; PlotIONEXdiff_Main; quit"
 
 ########################################################################################################
 ########################################################################################################

@@ -4,23 +4,23 @@
 %folder = fileparts(which(mfilename)); 
 %addpath(genpath(folder));
 
-%  in_folder = 'C:\Users\lus2bp\Source\Repos\GINA\30_Evaulation\Runnables&Data\2018\comp_results_2\data';
-%  out_folder_Base = 'C:\Users\lus2bp\Source\Repos\GINA\30_Evaulation\Runnables&Data\2018\comp_results_2\data\Results2';
+ in_folder = 'C:\Users\lus2bp\Source\Repos\GINA\30_Evaulation\Runnables&Data\2018\comp_results_20190515_NightRun\data';
+ out_folder_Base = 'C:\Users\lus2bp\Source\Repos\GINA\30_Evaulation\Runnables&Data\2018\comp_results_20190515_NightRun\data\Stats';
 
 
 if ~exist(out_folder_Base, 'dir')
   mkdir(out_folder_Base);
 end
 % 
-% fitGauss = 1;
-% IntervalProbability = 0.0027;
-% binNumberOfAllHist = 50;
-% OnlyAllDataHist = 1;
-% 
-% TECbool = 1;
-% RMSbool = 1;
-% MLHbool = 1;
-% CH2bool = 1;
+fitGauss = 1;
+IntervalProbability = 0.0027;
+binNumberOfAllHist = 50;
+OnlyAllDataHist = 1;
+
+TECbool = 1;
+RMSbool = 1;
+MLHbool = 1;
+CH2bool = 1;
 
 %% TEC
 if(TECbool == 1)

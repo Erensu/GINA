@@ -106,16 +106,16 @@ int main(int argc, char **argv) {
 	gpstk::CivilTime lastUpdate;
 
 	// Call function
-	EGNOS::EGNOS_RUNNABLE::processEMS(EDAS_FileNamewPath,
-		Output_IonexFileNamewPath,
-		Output_IonexFileNamewPathLast,
-		Output_IonexFileNamewPath_Detailed,
-		mapType,
-		doInterpolate,
-		firstUpdate,
-		lastUpdate,
-		updateIntervalinSeconds,
-		fullHourStart);
+	EGNOS::EGNOS_RUNNABLE::processEMS(	EDAS_FileNamewPath,
+										Output_IonexFileNamewPath,
+										Output_IonexFileNamewPathLast,
+										Output_IonexFileNamewPath_Detailed,
+										mapType,
+										doInterpolate,
+										firstUpdate,
+										lastUpdate,
+										updateIntervalinSeconds,
+										fullHourStart);
 
 	std::cout << "EMS to Ionex converter finished the job" << std::endl;
 

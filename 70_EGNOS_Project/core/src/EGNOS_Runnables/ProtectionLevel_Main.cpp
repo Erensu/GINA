@@ -6,12 +6,15 @@
 namespace EGNOS {
 	namespace ProtectionLevel {
 
+		static gpstk::CommonTime findEpoch(std::vector<gpstk::CommonTime> &epochVector, 
+											gpstk::CommonTime &targetEpoch, 
+											int matchingIntervallinSecs);
+
 		static gpstk::IonoModel setKlobucharModel(gpstk::Rinex3NavHeader &hdr);
 
 		static void loadIonoModel(	IonoType IonoType,
 									int intervallBetweenEpochsinSecs,
-									std::string& ionexFile,
-									std::string& EMSData,
+									std::string& dataFile,
 									std::vector<gpstk::CommonTime> &epochsForPL,
 									EGNOS::IonoModel **IonoModel_PLEngine);
 
@@ -63,8 +66,8 @@ namespace EGNOS {
 										double &az);
 
 		void run_PL(std::string &ephData,
-					string& ionexFile,
-					std::string& EMSData,
+					std::string& targetFile,
+					std::string& referenceFile,
 					std::string& PLwPath_out,
 					double elevationMask,
 					IonoType referenceIonoType,
@@ -73,10 +76,10 @@ namespace EGNOS {
 					double latgeodetic, 
 					double lon, 
 					double height, 
-					int intervallBetweenEpochsinSecs_in, 
+					int matchingIntervall_in_secs,
+					int timeIntervallofRefModellMap_in_secs,
 					double probability_of_inner_circle) {
 
-		    double intervallBetweenEpochsinSecs = intervallBetweenEpochsinSecs_in;
 			gpstk::Position Rx({ latgeodetic, lon, height },
 				gpstk::Position::CoordinateSystem::Geodetic,
 				NULL, gpstk::ReferenceFrame::WGS84);
@@ -136,21 +139,39 @@ namespace EGNOS {
 			}
 
 			// Load Iono models
-			loadIonoModel(	targetIonoType,
-							intervallBetweenEpochsinSecs,
-							ionexFile,
-							EMSData,
-							epochsForPL,
-							&targetIonoModel_PLEngine);
+			try
+			{
+				loadIonoModel(	targetIonoType,
+								(int)(matchingIntervall_in_secs/2.0),
+								targetFile,
+								epochsForPL,
+								&targetIonoModel_PLEngine);
 
-			loadIonoModel(	referenceIonoType,
-							intervallBetweenEpochsinSecs,
-							ionexFile,
-							EMSData,
-							refEpochsForPL,
-							&referenceIonoModel_PLEngine);
+				std::cout << "Target IonoModel is set " << std::endl;
+			}
+			catch (const std::domain_error& e)
+			{
+				std::cout << "Target IonoModel is not set " << std::endl;
+			}
+			
+			try
+			{
+				loadIonoModel(	referenceIonoType,
+								timeIntervallofRefModellMap_in_secs,
+								referenceFile,
+								refEpochsForPL,
+								&referenceIonoModel_PLEngine);
 
-			std::cout << "IonoModel is set " << std::endl;
+				std::cout << "Reference IonoModel is  set " << std::endl;
+			}
+			catch (const std::domain_error& e)
+			{
+				std::cout << "Reference IonoModel is not set " << std::endl;
+			}
+
+			
+
+			
 			
 			
 			EGNOS::ProtectionLevel::EGNOS_PL plEngine(bcestoreGps, bcestoreGal, bcestoreGlo);
@@ -158,7 +179,20 @@ namespace EGNOS {
 
 			ProtectionLevel_Parser::ProtectionLevel_Stream pl_strm_out(PLwPath_out.c_str(), std::ios::out);
 			
-			for (int epochIndex = 0; epochIndex < epochsForPL.size(); epochIndex++)	{
+			for (int epochIndex = 0; epochIndex < refEpochsForPL.size(); epochIndex++)	{
+
+				gpstk::CommonTime mathchedEpoch;
+				try
+				{
+					mathchedEpoch = findEpoch(epochsForPL, refEpochsForPL[epochIndex], 600);
+				}
+				catch (const std::domain_error& e)
+				{
+					gpstk::CivilTime errorTime(refEpochsForPL[epochIndex]);
+					std::cout << errorTime.asString();
+					std::cout << " The target iono corrections is not available in current epoch " << std::endl;
+					continue;
+				}
 
 				// Apply elevation mask
 				ProtectionLevel_Parser::ProtectionLevel_Data plData;
@@ -172,8 +206,8 @@ namespace EGNOS {
 									Rx,
 									prnVec,
 									bcestoreGps,
-									epochsForPL[epochIndex]);
-			
+									mathchedEpoch);
+	
 				Eigen::VectorXd corrVector;
 				Eigen::MatrixXd CovMatrix;
 				Eigen::MatrixXd WeightMatrix;
@@ -185,7 +219,9 @@ namespace EGNOS {
 						std::exit(1);
 					}
 
-					CovMatrix = createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *targetIonoModel_PLEngine, klobucharModel, Rx, corrVector, plData.satInfo);
+					
+
+					CovMatrix = createIonoCovMatrix(mathchedEpoch, bcestoreGps, prnVec, *targetIonoModel_PLEngine, klobucharModel, Rx, corrVector, plData.satInfo);
 					WeightMatrix = CovMatrix.inverse();
 
 					for (int a = 0; a < original_prnVec.size(); a++){
@@ -202,12 +238,12 @@ namespace EGNOS {
 						try
 						{
 							std::vector<ProtectionLevel_Parser::ProtectionLevel_Data::SatInfo> Ref_satInfo;
-							(void)createIonoCovMatrix(epochsForPL[epochIndex], bcestoreGps, prnVec, *referenceIonoModel_PLEngine, klobucharModel, Rx, corrVector_reff, Ref_satInfo);
+							(void)createIonoCovMatrix(mathchedEpoch, bcestoreGps, prnVec, *referenceIonoModel_PLEngine, klobucharModel, Rx, corrVector_reff, Ref_satInfo);
 							
 							// If reff size is not matched with the original throw error.
 							if (corrVector_reff.size() != corrVector.size()) {
 
-								gpstk::CivilTime errorTime(epochsForPL[epochIndex]);
+								gpstk::CivilTime errorTime(mathchedEpoch);
 								std::cout << errorTime.asString() << std::endl;
 								std::cout << "The reference iono corrections cannot be calculated entirely. Some iono value hadn't been calculated. " << std::endl;
 								continue;
@@ -231,7 +267,7 @@ namespace EGNOS {
 						}
 						catch (const std::exception& e)
 						{
-							gpstk::CivilTime errorTime(epochsForPL[epochIndex]);
+							gpstk::CivilTime errorTime(mathchedEpoch);
 							std::cout << errorTime.asString() << " ";
 							std::cout << e.what() << std::endl;
 							continue;
@@ -240,17 +276,17 @@ namespace EGNOS {
 				}
 				catch (const std::exception&e)
 				{
-					gpstk::CivilTime errorTime(epochsForPL[epochIndex]);
+					gpstk::CivilTime errorTime(mathchedEpoch);
 					std::cout << errorTime.asString() << " ";
 					std::cout << e.what() << std::endl;
 					continue;
 				}
 				
-				hp_radius = plEngine.calculatePL(epochsForPL[epochIndex], Rx, prnVec, CovMatrix, probability_of_inner_circle);
+				hp_radius = plEngine.calculatePL(mathchedEpoch, Rx, prnVec, CovMatrix, probability_of_inner_circle);
 				
 				try
 				{
-					Eigen::Vector3d enuError = plEngine.calculatePositionError_in_enu(epochsForPL[epochIndex], Rx, prnVec, corrVector, WeightMatrix);
+					Eigen::Vector3d enuError = plEngine.calculatePositionError_in_enu(mathchedEpoch, Rx, prnVec, corrVector, WeightMatrix);
 
 					plData.posError = enuError.norm();
 					plData.horizontalPosError = std::sqrt(std::pow(enuError(0), 2) + std::pow(enuError(1), 2));
@@ -263,7 +299,7 @@ namespace EGNOS {
 					plData.verticalPosError = ProtectionLevel_Parser::ProtectionLevel_Data::UNVALID_PL_DATA;
 				}
 				
-				plData.dataTime = epochsForPL[epochIndex];
+				plData.dataTime = mathchedEpoch;//refEpochsForPL[epochIndex];
 				plData.posData = Rx;
 				plData.elevationMask = elevationMask;
 				plData.Covariance_enu = plEngine.PosCovMatrix;
@@ -282,6 +318,36 @@ namespace EGNOS {
 			delete referenceIonoModel_PLEngine;
 			delete targetIonoModel_PLEngine;
 			std::exit(0);
+		}
+
+		static gpstk::CommonTime findEpoch( std::vector<gpstk::CommonTime> &epochVector,
+											gpstk::CommonTime &targetEpoch,
+											int matchingIntervallinSecs) {
+		
+			gpstk::CommonTime foundTime;
+
+			for (size_t a = 0; a < epochVector.size(); a++)
+			{
+				if (abs(epochVector[a] - targetEpoch) <= matchingIntervallinSecs && epochVector[a] <=  targetEpoch + matchingIntervallinSecs) {
+
+					double dt = abs(epochVector[a] - targetEpoch);
+					if (a + 1 < epochVector.size() && dt > abs(epochVector[a + 1] - targetEpoch)) {
+						
+						continue;
+					}
+					else {
+						foundTime = epochVector[a];
+						break;
+					}
+				}
+			}
+
+			gpstk::CommonTime defaultTime;
+			if (foundTime == defaultTime) {
+				throw std::domain_error("No matched time had been found");
+			}
+
+			return foundTime;
 		}
 
 		static gpstk::IonoModel setKlobucharModel(gpstk::Rinex3NavHeader &hdr) {
@@ -331,8 +397,7 @@ namespace EGNOS {
 
 		static void loadIonoModel(	IonoType IonoType, 
 									int intervallBetweenEpochsinSecs, 
-									std::string& ionexFile,
-									std::string& EMSData,
+									std::string& dataFile,
 									std::vector<gpstk::CommonTime> &epochsForPL,
 									EGNOS::IonoModel **IonoModel_PLEngine) {
 		
@@ -342,7 +407,7 @@ namespace EGNOS {
 
 					EGNOS::EGNOSIonoCorrectionModel *egnosIonoModel = new EGNOS::EGNOSIonoCorrectionModel();
 					egnosIonoModel->updateIntervalinSeconds = intervallBetweenEpochsinSecs;
-					egnosIonoModel->load(EMSData);
+					egnosIonoModel->load(dataFile);
 					epochsForPL = createVectorofEpochforPLCalc(*egnosIonoModel, intervallBetweenEpochsinSecs);
 
 					*IonoModel_PLEngine = egnosIonoModel;
@@ -353,7 +418,7 @@ namespace EGNOS {
 					gpstk::IonexStore ionoStore;
 					try
 					{
-						gpstk::IonexHeader hdr = createIonexModel(ionexFile, ionoStore);
+						gpstk::IonexHeader hdr = createIonexModel(dataFile, ionoStore);
 						double heightOfIonoLayerinMeter = hdr.hgt[0]*1000;
 
 						// If the iono model is not a single layer one, we throw an error.
@@ -369,7 +434,7 @@ namespace EGNOS {
 					}
 					catch (gpstk::Exception& e)
 					{
-						std::cout << e.what() << std::endl;
+						std::domain_error(e.what());
 					}
 					break;
 				}
@@ -641,13 +706,16 @@ namespace EGNOS {
 
 				gpstk::Xvt satPos;
 
-				try {
-
+				try 
+				{
 					satPos = bcestore.getXvt(prnVec_old[i], gpstime);
-
 				}
-				catch (gpstk::Exception& e) {
-					throw domain_error("Sat position cannot be calculated");
+				catch (gpstk::Exception& e) 
+				{
+					//gpstk::CivilTime errorTime(gpstime);
+					//std::cout << errorTime.asString() << std::endl;
+					//std::cout << e.what() << std::endl;
+					continue;
 				}
 
 				gpstk::Position S(satPos);
