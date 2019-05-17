@@ -34,3 +34,17 @@
 /bin/Debug
 *.asv
 GINAConfig.h
+
+dataFiles
+*.18I
+*.19I
+*.ems
+*.pl
+*.fig
+*.png
+*.ion*
+*.Z
+*.18n
+*.19n
+*.18d
+*.19d
